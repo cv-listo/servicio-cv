@@ -44,6 +44,66 @@ export async function onRequestPost({ request, env }) {
     });
   }
 
+  if (env.MP_ACCESS_TOKEN) {
+    const origin = new URL(request.url).origin;
+    const preferencePayload = {
+      items: [
+        {
+          id: plan.id,
+          title: `CV Listo - Plan ${plan.name}`,
+          quantity: 1,
+          unit_price: plan.amount,
+          currency_id: "ARS",
+        },
+      ],
+      external_reference: id,
+      notification_url: `${origin}/api/webhook-mp`,
+      back_urls: {
+        success: `${origin}/formulario.html?order=${id}&token=${token}`,
+        failure: `${origin}/confirmar.html?plan=${plan.id}`,
+        pending: `${origin}/confirmar.html?plan=${plan.id}`,
+      },
+      auto_return: "approved",
+      metadata: {
+        order_id: id,
+        plan_id: plan.id,
+      },
+    };
+
+    const mpResponse = await fetch("https://api.mercadopago.com/checkout/preferences", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${env.MP_ACCESS_TOKEN}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(preferencePayload),
+    });
+
+    const mpData = await mpResponse.json();
+
+    if (!mpResponse.ok) {
+      return json(
+        { ok: false, error: "No se pudo crear la preferencia de Mercado Pago", detail: mpData },
+        { status: 502 }
+      );
+    }
+
+    await env.DB.prepare(
+      "UPDATE orders SET mp_preference_id = ?, updated_at = ? WHERE id = ?"
+    )
+      .bind(mpData.id || null, nowIso(), id)
+      .run();
+
+    return json({
+      ok: true,
+      orderId: id,
+      token,
+      status,
+      redirectUrl: mpData.init_point || mpData.sandbox_init_point,
+      preferenceId: mpData.id,
+    });
+  }
+
   return json({
     ok: true,
     orderId: id,

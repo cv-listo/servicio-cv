@@ -40,6 +40,15 @@ database_name = "cv_listo"
 
 Falta aplicar `schema.sql` en la consola de D1 para crear las tablas.
 
+Variables de entorno necesarias en Cloudflare Pages:
+
+```text
+TEST_DISCOUNT_CODE = TEST
+MP_ACCESS_TOKEN = (Access Token de Mercado Pago)
+```
+
+No guardar credenciales de Mercado Pago en el repositorio.
+
 ## Arquitectura objetivo
 
 Ver `ARCHITECTURE.md`.
