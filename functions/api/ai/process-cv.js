@@ -287,21 +287,21 @@ function auditAndMerge(original, ai) {
   const aiExperiences = Array.isArray(ai.experiences) ? ai.experiences : ai.refinedExperiences;
   if (Array.isArray(aiExperiences) && original.experienceType !== "formal" && cleanText(original.informalExperience)) {
     const first = aiExperiences[0] || {};
-    const bullets = Array.isArray(first.bulletPoints) ? first.bulletPoints : splitLines(first.tasks);
+    const bullets = normalizeBullets(Array.isArray(first.bulletPoints) ? first.bulletPoints : first.tasks);
     if (bullets.length) {
-      data.informalExperience = bullets.map(cleanText).filter(Boolean).join("\n");
+      data.informalExperience = bullets.join("\n");
     }
   }
 
   if (Array.isArray(aiExperiences) && Array.isArray(original.experiences)) {
     data.experiences = original.experiences.map((source, index) => {
       const improved = aiExperiences[index] || {};
-      const bulletTasks = Array.isArray(improved.bulletPoints) ? improved.bulletPoints.join("\n") : improved.tasks;
+      const bulletTasks = normalizeBullets(Array.isArray(improved.bulletPoints) ? improved.bulletPoints : improved.tasks).join("\n");
       return {
         ...source,
         place: sameEntityOrOriginal(source.place, improved.place || improved.organization),
         role: cleanText(improved.role) || source.role,
-        tasks: cleanText(bulletTasks) || source.tasks,
+        tasks: cleanMultiline(bulletTasks) || source.tasks,
       };
     });
   }
@@ -335,6 +335,16 @@ function cleanText(value) {
     .trim();
 }
 
+function cleanMultiline(value) {
+  return String(value || "")
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email]")
+    .replace(/(?:\+?54)?\s?9?\s?\d{2,4}[\s.-]?\d{3,4}[\s.-]?\d{3,4}/g, "[telefono]")
+    .split(/\n+/)
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter(Boolean)
+    .join("\n");
+}
+
 function titleCase(value) {
   return cleanText(value).toLowerCase().replace(/\b\p{L}/gu, (char) => char.toUpperCase());
 }
@@ -350,9 +360,29 @@ function splitLines(value) {
     .filter(Boolean);
 }
 
+function normalizeBullets(value) {
+  const rawItems = Array.isArray(value) ? value : splitLines(value);
+  return rawItems
+    .flatMap((item) => splitActionPhrases(item))
+    .map(cleanText)
+    .filter(Boolean)
+    .slice(0, 5);
+}
+
+function splitActionPhrases(value) {
+  const text = cleanText(value);
+  if (!text) return [];
+  return text
+    .replace(/\s+(?=(Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion)\b)/g, "\n")
+    .split(/\n+/)
+    .map(cleanText)
+    .filter(Boolean);
+}
+
 function filterNoisyDiagnostics(items, original) {
   const modalityOk = /^indistint[oa]$/i.test(cleanText(original.modality));
   const availabilityOk = /^indistint[oa]$/i.test(cleanText(original.availability));
+  const educationOk = Boolean(cleanText(original.education) || cleanText(original.educationLevel) || cleanText(original.educationStatus));
   return items
     .map(cleanText)
     .filter(Boolean)
@@ -360,6 +390,7 @@ function filterNoisyDiagnostics(items, original) {
       const text = item.toLowerCase();
       if (modalityOk && text.includes("modalidad")) return false;
       if (availabilityOk && text.includes("disponibilidad")) return false;
+      if (educationOk && (text.includes("educación") || text.includes("educacion") || text.includes("formal alcanzado"))) return false;
       return true;
     });
 }
