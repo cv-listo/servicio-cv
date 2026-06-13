@@ -20,6 +20,11 @@
           <p class="eyebrow">Retomar pedido</p>
           <h1>Continuá donde quedaste</h1>
           <p class="lead">Si cerraste la pestaña, podés volver al formulario con el enlace que guardaste o con los datos de acceso del pedido.</p>
+          <div class="app-card last-order-card" id="last-order-card" hidden>
+            <strong>Encontramos un pedido reciente en este dispositivo</strong>
+            <p>Podés continuar sin volver a copiar datos de acceso.</p>
+            <button class="button primary" type="button" id="resume-last-order">Continuar con mi último pedido</button>
+          </div>
           <form class="app-form checkout-form" id="resume-order-form">
             <label>
               Email del pedido
@@ -45,6 +50,23 @@
     </main>
     <script src="./app.js"></script>
     <script>
+      const savedOrders = Object.values(CVListo.getOrders?.() || {});
+      const latestOrder = savedOrders.sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))[0];
+      if (latestOrder?.id && latestOrder?.token) {
+        document.querySelector("#last-order-card").hidden = false;
+        document.querySelector("#resume-last-order").addEventListener("click", () => {
+          if (latestOrder.status === "generated") {
+            window.location.href = `./descargar.html?order=${latestOrder.id}&token=${latestOrder.token}`;
+            return;
+          }
+          if (latestOrder.status === "preview_ready") {
+            window.location.href = `./preview.html?order=${latestOrder.id}&token=${latestOrder.token}`;
+            return;
+          }
+          window.location.href = `./formulario.html?order=${latestOrder.id}&token=${latestOrder.token}`;
+        });
+      }
+
       document.querySelector("#resume-order-form").addEventListener("submit", async (event) => {
         event.preventDefault();
         const data = CVListo.collectFormData(event.currentTarget);

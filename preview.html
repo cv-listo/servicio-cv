@@ -139,9 +139,13 @@
         if (updateA4Status()) {
           reports.push({ severity: "warning", message: "La vista previa podría exceder una página A4. Revisá longitud de textos antes de generar." });
         }
-        list.innerHTML = reports.length
-          ? reports.map((report) => `<p class="audit ${report.severity}">${report.message}</p>`).join("")
-          : "<p class='audit ok'>Sin errores bloqueantes detectados.</p>";
+        list.innerHTML = `
+          <ul class="quality-list">
+            ${reports.length
+              ? reports.map((report) => `<li class="${report.severity === "critical" ? "danger" : report.severity === "warning" ? "warn" : "ok"}"><span>${report.severity === "critical" ? "!" : report.severity === "warning" ? "!" : "✓"}</span>${CVListo.escapeHtml(report.message)}</li>`).join("")
+              : "<li class='ok'><span>✓</span>Sin errores bloqueantes detectados.</li>"}
+          </ul>
+        `;
 
         document.querySelector("#refresh-preview").addEventListener("click", async () => {
           order.data.summary = document.querySelector("#quick-summary").value;

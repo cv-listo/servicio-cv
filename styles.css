@@ -9,6 +9,8 @@
   --accent-soft: #e8edff;
   --ok: #0f766e;
   --warning: #a16207;
+  --ai: #7c3aed;
+  --ai-soft: #f3e8ff;
   --shadow: 0 18px 45px rgba(23, 32, 51, 0.1);
 }
 
@@ -62,6 +64,26 @@ a {
   font-size: 0.92rem;
   font-weight: 800;
   text-decoration: none;
+}
+
+.topbar .brand-link {
+  margin-right: auto;
+  color: var(--ink);
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.brand-link span {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  margin-right: 8px;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--ai));
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 950;
 }
 
 .topbar a:hover,
@@ -439,6 +461,18 @@ h3 {
 
 .plan-summary-card {
   border-color: rgba(52, 87, 213, 0.45);
+}
+
+.last-order-card {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0;
+  background: linear-gradient(135deg, #fff, #f8faff);
+}
+
+.last-order-card p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .plan-summary-note {
@@ -1196,15 +1230,15 @@ h3 {
   border-radius: 14px;
   margin: 12px 0;
   padding: 10px 12px;
-  background: #eef2ff;
-  color: var(--accent-dark);
+  background: var(--ai-soft);
+  color: var(--ai);
   font-size: 0.92rem;
   font-weight: 850;
 }
 
 .ai-status.ok {
-  background: #e8f7f4;
-  color: var(--ok);
+  background: var(--ai-soft);
+  color: var(--ai);
 }
 
 .ai-status.warning {
@@ -1213,8 +1247,65 @@ h3 {
 }
 
 .ai-status.loading {
-  background: #eef2ff;
-  color: var(--accent-dark);
+  background: var(--ai-soft);
+  color: var(--ai);
+}
+
+.quality-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quality-list li {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-weight: 780;
+}
+
+.quality-list span {
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.quality-list .ok {
+  background: #e8f7f4;
+  color: var(--ok);
+}
+
+.quality-list .ok span {
+  background: var(--ok);
+}
+
+.quality-list .warn {
+  background: #fff7e6;
+  color: var(--warning);
+}
+
+.quality-list .warn span {
+  background: var(--warning);
+}
+
+.quality-list .danger {
+  background: #ffecec;
+  color: #b42318;
+}
+
+.quality-list .danger span {
+  background: #b42318;
 }
 
 .a4-status.ok {

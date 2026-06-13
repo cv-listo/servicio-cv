@@ -406,6 +406,7 @@ function buildResumeHtml(data) {
 window.CVListo = {
   PLANS,
   getParam,
+  getOrders,
   createOrder,
   getOrder,
   updateOrder,
