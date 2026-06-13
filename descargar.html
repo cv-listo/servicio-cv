@@ -28,10 +28,12 @@
           <article>
             <strong>1. Guardá una copia</strong>
             <p>Descargá el PDF en tu celular o computadora para tenerlo siempre a mano.</p>
+            <button class="link-button" type="button" id="print-step">Guardar PDF</button>
           </article>
           <article>
             <strong>2. Enviá por WhatsApp o email</strong>
             <p>Usalo para responder búsquedas laborales y compartir tu perfil.</p>
+            <a class="link-button" id="share-wa" href="#" target="_blank" rel="noopener">Compartir por WhatsApp</a>
           </article>
           <article>
             <strong>3. Subilo a portales de empleo</strong>
@@ -65,6 +67,11 @@
         document.querySelector("#print-again").addEventListener("click", () => {
           setTimeout(() => window.print(), 100);
         });
+        document.querySelector("#print-step").addEventListener("click", () => {
+          setTimeout(() => window.print(), 100);
+        });
+        const shareText = encodeURIComponent("Ya tengo mi CV listo. Si querés, te lo comparto por acá.");
+        document.querySelector("#share-wa").href = `https://wa.me/?text=${shareText}`;
       }
 
       loadDownload();

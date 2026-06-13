@@ -25,8 +25,14 @@
         <form class="app-form wide wizard" id="resume-form">
           <div class="wizard-progress">
             <div class="progress-track" id="progress-track" aria-hidden="true"></div>
-            <span id="step-label">Paso 1 de 6</span>
-            <div><strong id="step-title">Contacto</strong></div>
+            <div class="wizard-title-row">
+              <span class="wizard-step-icon" id="step-icon" aria-hidden="true">👤</span>
+              <div>
+                <span id="step-label">Paso 1 de 6</span>
+                <div><strong id="step-title">Contacto</strong></div>
+                <small id="step-helper">No hace falta que escribas perfecto; lo ordenamos antes de generar.</small>
+              </div>
+            </div>
           </div>
 
           <section class="wizard-step active" data-step="0">
@@ -333,6 +339,8 @@
         const autosaveNote = document.querySelector("#autosave-note");
         const label = document.querySelector("#step-label");
         const title = document.querySelector("#step-title");
+        const helper = document.querySelector("#step-helper");
+        const icon = document.querySelector("#step-icon");
         const progressTrack = document.querySelector("#progress-track");
         let current = 0;
         let lastRenderedArea = "";
@@ -364,7 +372,11 @@
           submit.style.display = current === steps.length - 1 ? "inline-flex" : "none";
           autosaveNote.hidden = current === steps.length - 1;
           label.textContent = `Paso ${current + 1} de ${steps.length}`;
-          title.textContent = steps[current].querySelector("h2")?.textContent || "Formulario";
+          const currentTitle = steps[current].querySelector("h2")?.textContent || "Formulario";
+          title.textContent = currentTitle;
+          const meta = getStepMeta(currentTitle);
+          helper.textContent = meta.helper;
+          icon.textContent = meta.icon;
           document.documentElement.style.setProperty("--step", current + 1);
           progressTrack.querySelectorAll("span").forEach((dot, index) => {
             dot.classList.toggle("done", index <= current);
@@ -407,6 +419,15 @@
         });
 
         render();
+      }
+
+      function getStepMeta(title) {
+        if (title.includes("Datos personales")) return { icon: "👤", helper: "Vos elegís qué datos se muestran en el CV final." };
+        if (title.includes("Objetivo")) return { icon: "🎯", helper: "Contá qué buscás; la IA puede ordenar la redacción después." };
+        if (title.includes("Experiencia")) return { icon: "💼", helper: "También sirven changas, ayuda familiar, voluntariado o proyectos." };
+        if (title.includes("Educación")) return { icon: "🎓", helper: "Sumá estudios, cursos y habilidades reales, aunque sean básicos." };
+        if (title.includes("Enfocado")) return { icon: "🔎", helper: "Pegá el aviso o requisitos para adaptar el CV sin inventar datos." };
+        return { icon: "✓", helper: "Revisá todo antes de pasar a la vista previa." };
       }
 
       const suggestionsByArea = {

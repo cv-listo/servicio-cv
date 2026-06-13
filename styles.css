@@ -34,6 +34,11 @@ a {
   color: inherit;
 }
 
+:focus-visible {
+  outline: 3px solid rgba(52, 87, 213, 0.32);
+  outline-offset: 3px;
+}
+
 .hero {
   background:
     radial-gradient(circle at 15% 20%, rgba(52, 87, 213, 0.18), transparent 28%),
@@ -473,6 +478,20 @@ h3 {
 .last-order-card p {
   margin: 0;
   color: var(--muted);
+}
+
+.manual-recovery-details {
+  margin-top: 18px;
+}
+
+.manual-recovery-details summary {
+  cursor: pointer;
+  color: var(--accent-dark);
+  font-weight: 900;
+}
+
+.manual-recovery-details .checkout-form {
+  margin-top: 14px;
 }
 
 .plan-summary-note {
@@ -957,6 +976,35 @@ h3 {
   font-size: 0.86rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.wizard-title-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.wizard-step-icon {
+  display: inline-grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 14px;
+  background: #fff;
+  color: var(--accent-dark);
+  box-shadow: 0 8px 22px rgba(23, 32, 51, 0.08);
+  font-size: 1.2rem !important;
+  letter-spacing: 0 !important;
+}
+
+#step-helper {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .wizard-step {
@@ -1532,6 +1580,42 @@ h3 {
   margin: 0;
   color: var(--muted);
   font-size: 0.94rem;
+}
+
+.link-button {
+  display: inline-flex;
+  width: fit-content;
+  border: 0;
+  margin-top: 12px;
+  padding: 0;
+  background: transparent;
+  color: var(--accent-dark);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .problem-grid article,
+  .steps article,
+  .price-card,
+  .mockup-compare article,
+  .app-card {
+    animation: fadeUp 0.45s ease both;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 @media print {
