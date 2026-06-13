@@ -47,9 +47,23 @@ Variables de entorno necesarias en Cloudflare Pages:
 ```text
 TEST_DISCOUNT_CODE = TEST
 MP_ACCESS_TOKEN = (Access Token de Mercado Pago)
-RESEND_API_KEY = (API Key de Resend, opcional)
-EMAIL_FROM = CV Listo <no-reply@tu-dominio.com>
 RECOVERY_BY_EMAIL_ENABLED = true
+```
+
+Para email sin dominio propio, usar Google Apps Script:
+
+```text
+EMAIL_PROVIDER = google_script
+EMAIL_WEBHOOK_URL = (URL del Web App de Google Apps Script)
+EMAIL_WEBHOOK_SECRET = (secreto opcional del script)
+ACCESS_EMAIL_FROM = CV Listo <tu-gmail@gmail.com>
+```
+
+Si más adelante hay dominio propio verificado en Resend:
+
+```text
+RESEND_API_KEY = (API Key de Resend)
+EMAIL_FROM = CV Listo <no-reply@tu-dominio.com>
 ```
 
 No guardar credenciales de Mercado Pago en el repositorio.
