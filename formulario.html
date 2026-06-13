@@ -17,6 +17,10 @@
         </div>
 
         <form class="app-form wide" id="resume-form">
+          <div class="form-section">
+            <h2>Datos visibles en el CV</h2>
+            <p>Completá solo lo que quieras usar. Podés decidir qué datos se muestran.</p>
+          </div>
           <div class="form-grid">
             <label>
               Nombre completo *
@@ -29,22 +33,22 @@
             <label>
               Email
               <input type="email" name="email" />
-              <span class="toggle-row"><input type="checkbox" name="showEmail" checked /> Mostrar en el CV</span>
+              <span class="toggle-row"><input type="checkbox" name="showEmail" checked /> <span>Mostrar en el CV</span></span>
             </label>
             <label>
               Teléfono / WhatsApp
               <input type="tel" name="phone" />
-              <span class="toggle-row"><input type="checkbox" name="showPhone" checked /> Mostrar en el CV</span>
+              <span class="toggle-row"><input type="checkbox" name="showPhone" checked /> <span>Mostrar en el CV</span></span>
             </label>
             <label>
               DNI
               <input type="text" name="dni" />
-              <span class="toggle-row"><input type="checkbox" name="showDni" /> Mostrar en el CV</span>
+              <span class="toggle-row"><input type="checkbox" name="showDni" /> <span>Mostrar en el CV</span></span>
             </label>
             <label>
               Dirección o zona
               <input type="text" name="address" />
-              <span class="toggle-row"><input type="checkbox" name="showAddress" /> Mostrar en el CV</span>
+              <span class="toggle-row"><input type="checkbox" name="showAddress" /> <span>Mostrar en el CV</span></span>
             </label>
             <label>
               LinkedIn o portfolio
@@ -56,6 +60,10 @@
             </label>
           </div>
 
+          <div class="form-section">
+            <h2>Contenido del CV</h2>
+            <p>Esta información se organiza en la vista previa A4.</p>
+          </div>
           <label>
             Resumen o perfil
             <textarea name="summary" rows="3" placeholder="Contá brevemente qué tipo de perfil querés mostrar"></textarea>
@@ -72,19 +80,25 @@
             Habilidades
             <textarea name="skills" rows="3" placeholder="Herramientas, idiomas, oficios, atención al cliente, ventas, etc."></textarea>
           </label>
-          <label class="focused-only">
-            Empresa objetivo
-            <input type="text" name="targetCompany" placeholder="Opcional: nombre de la empresa" />
-          </label>
-          <label class="focused-only">
-            Aviso laboral o requisitos del puesto
-            <textarea name="jobAd" rows="4" placeholder="Para el plan Enfocado: pegá el texto del aviso o sus requisitos"></textarea>
-          </label>
+          <div class="focused-only">
+            <div class="form-section">
+              <h2>Plan Enfocado</h2>
+              <p>Estos campos se usan para adaptar el CV a una búsqueda concreta.</p>
+            </div>
+            <label>
+              Empresa objetivo
+              <input type="text" name="targetCompany" placeholder="Opcional: nombre de la empresa" />
+            </label>
+            <label>
+              Aviso laboral o requisitos del puesto
+              <textarea name="jobAd" rows="4" placeholder="Para el plan Enfocado: pegá el texto del aviso o sus requisitos"></textarea>
+            </label>
+          </div>
           <label class="consent">
             <input type="checkbox" name="consent" required />
             Acepto que mis datos se procesen para generar este CV y entiendo que debo revisar la vista previa antes de la generación final.
           </label>
-          <button type="submit">Ver vista previa</button>
+          <button class="button primary" type="submit">Ver vista previa</button>
         </form>
       </section>
     </main>
@@ -110,7 +124,7 @@
         }
 
         if (order?.planId !== "focused") {
-          document.querySelector(".focused-only")?.remove();
+          document.querySelectorAll(".focused-only").forEach((element) => element.remove());
         }
 
         if (order?.data) {
