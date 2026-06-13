@@ -63,6 +63,24 @@ function updateOrder(id, patch) {
   return orders[id];
 }
 
+function cacheOrder(order) {
+  const orders = getOrders();
+  const cached = {
+    id: order.id,
+    token: order.token,
+    planId: order.planId || order.plan_id,
+    status: order.status,
+    generated: Boolean(order.generated || order.generated_at),
+    createdAt: order.createdAt || order.created_at,
+    generatedAt: order.generatedAt || order.generated_at || null,
+    data: order.data || order.data_json || {},
+    reports: order.reports || [],
+  };
+  orders[cached.id] = cached;
+  saveOrders(orders);
+  return cached;
+}
+
 async function fetchBackendOrder(id, token) {
   const response = await fetch(`/api/orders/${id}?token=${encodeURIComponent(token)}`);
   if (!response.ok) throw new Error("Backend order unavailable");
@@ -208,6 +226,7 @@ window.CVListo = {
   createOrder,
   getOrder,
   updateOrder,
+  cacheOrder,
   fetchBackendOrder,
   saveBackendProfile,
   finalizeBackendOrder,

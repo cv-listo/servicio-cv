@@ -94,15 +94,26 @@
       const token = CVListo.getParam("token");
       let order = CVListo.getOrder(orderId);
 
-      if (!order || order.token !== token || !["discount_test", "paid", "preview_ready"].includes(order.status)) {
-        document.body.innerHTML = "<main class='app-shell'><h1>Pedido no habilitado</h1><p>Para completar el formulario, primero debe existir un pago confirmado o un código de prueba válido.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
-      }
+      async function loadOrder() {
+        if (!order && orderId && token) {
+          try {
+            const backendOrder = await CVListo.fetchBackendOrder(orderId, token);
+            order = CVListo.cacheOrder(backendOrder);
+          } catch {
+            // Sin backend disponible.
+          }
+        }
 
-      if (order?.planId !== "focused") {
-        document.querySelector(".focused-only")?.remove();
-      }
+        if (!order || order.token !== token || !["discount_test", "paid", "preview_ready"].includes(order.status)) {
+          document.body.innerHTML = "<main class='app-shell'><h1>Pedido no habilitado</h1><p>Para completar el formulario, primero debe existir un pago confirmado o un código de prueba válido.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
+          return;
+        }
 
-      if (order?.data) {
+        if (order?.planId !== "focused") {
+          document.querySelector(".focused-only")?.remove();
+        }
+
+        if (order?.data) {
         const form = document.querySelector("#resume-form");
         Object.entries(order.data).forEach(([key, value]) => {
           const field = form?.elements[key];
@@ -114,6 +125,9 @@
           }
         });
       }
+      }
+
+      loadOrder();
 
       document.querySelector("#resume-form")?.addEventListener("submit", async (event) => {
         event.preventDefault();

@@ -27,11 +27,23 @@
     <script>
       const orderId = CVListo.getParam("order");
       const token = CVListo.getParam("token");
-      const order = CVListo.getOrder(orderId);
+      let order = CVListo.getOrder(orderId);
 
-      if (!order || order.token !== token || order.status !== "preview_ready") {
-        document.body.innerHTML = "<main class='app-shell'><h1>Vista previa no disponible</h1><p>Completá el formulario para generar la vista previa.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
-      } else {
+      async function loadPreview() {
+        if (!order && orderId && token) {
+          try {
+            const backendOrder = await CVListo.fetchBackendOrder(orderId, token);
+            order = CVListo.cacheOrder(backendOrder);
+          } catch {
+            // Sin backend disponible.
+          }
+        }
+
+        if (!order || order.token !== token || order.status !== "preview_ready") {
+          document.body.innerHTML = "<main class='app-shell'><h1>Vista previa no disponible</h1><p>Completá el formulario para generar la vista previa.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
+          return;
+        }
+
         document.querySelector("#edit-link").href = `./formulario.html?order=${order.id}&token=${order.token}`;
         document.querySelector("#cv-preview").innerHTML = CVListo.buildResumeHtml(order.data);
         const list = document.querySelector("#audit-list");
@@ -63,6 +75,8 @@
           window.location.href = `./descargar.html?order=${order.id}&token=${order.token}`;
         });
       }
+
+      loadPreview();
     </script>
   </body>
 </html>

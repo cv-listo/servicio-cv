@@ -24,13 +24,27 @@
     <script>
       const orderId = CVListo.getParam("order");
       const token = CVListo.getParam("token");
-      const order = CVListo.getOrder(orderId);
+      let order = CVListo.getOrder(orderId);
 
-      if (!order || order.token !== token || order.status !== "generated") {
-        document.body.innerHTML = "<main class='app-shell'><h1>Descarga no disponible</h1><p>El CV final todavía no fue generado para este pedido.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
-      } else {
+      async function loadDownload() {
+        if (!order && orderId && token) {
+          try {
+            const backendOrder = await CVListo.fetchBackendOrder(orderId, token);
+            order = CVListo.cacheOrder(backendOrder);
+          } catch {
+            // Sin backend disponible.
+          }
+        }
+
+        if (!order || order.token !== token || order.status !== "generated") {
+          document.body.innerHTML = "<main class='app-shell'><h1>Descarga no disponible</h1><p>El CV final todavía no fue generado para este pedido.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
+          return;
+        }
+
         document.querySelector("#final-cv").innerHTML = CVListo.buildResumeHtml(order.data);
       }
+
+      loadDownload();
     </script>
   </body>
 </html>
