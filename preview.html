@@ -14,6 +14,7 @@
           <p class="eyebrow">Vista previa</p>
           <h1>Revisá antes de generar</h1>
           <p>La generación final es única. Si hay advertencias, volvé al formulario y corregí antes de confirmar.</p>
+          <div id="a4-status" class="a4-status">Verificando formato A4...</div>
           <div id="audit-list"></div>
           <div class="quick-edit">
             <h2>Edición rápida</h2>
@@ -61,15 +62,23 @@
         render();
         const list = document.querySelector("#audit-list");
         const reports = order.reports || [];
-        const cvPage = document.querySelector(".cv-page");
-        if (cvPage && cvPage.scrollHeight > cvPage.clientHeight + 8) {
+        const updateA4Status = () => {
+          const cvPage = document.querySelector(".cv-page");
+          const status = document.querySelector("#a4-status");
+          if (!cvPage || !status) return;
+          const overflow = cvPage.scrollHeight > cvPage.clientHeight + 8 || cvPage.scrollWidth > cvPage.clientWidth + 8;
+          status.className = `a4-status ${overflow ? "warning" : "ok"}`;
+          status.textContent = overflow ? "Puede exceder una página A4. Revisá textos largos." : "Formato A4 correcto en la vista previa.";
+          return overflow;
+        };
+        if (updateA4Status()) {
           reports.push({ severity: "warning", message: "La vista previa podría exceder una página A4. Revisá longitud de textos antes de generar." });
         }
         list.innerHTML = reports.length
           ? reports.map((report) => `<p class="audit ${report.severity}">${report.message}</p>`).join("")
           : "<p class='audit ok'>Sin errores bloqueantes detectados.</p>";
 
-        document.querySelector("#refresh-preview").addEventListener("click", () => {
+        document.querySelector("#refresh-preview").addEventListener("click", async () => {
           order.data.summary = document.querySelector("#quick-summary").value;
           order.data.experience = document.querySelector("#quick-experience").value;
           if (order.data.experiences?.length) {
@@ -77,7 +86,13 @@
           }
           order.data.skills = document.querySelector("#quick-skills").value;
           CVListo.updateOrder(order.id, { data: order.data });
+          try {
+            await CVListo.saveBackendProfile(order.id, order.token, order.data, order.reports || []);
+          } catch {
+            // Sin backend disponible.
+          }
           render();
+          updateA4Status();
         });
 
         document.querySelector("#generate-btn").addEventListener("click", async () => {

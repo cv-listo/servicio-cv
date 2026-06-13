@@ -588,6 +588,23 @@ h3 {
   color: #b42318;
 }
 
+.a4-status {
+  border-radius: 14px;
+  margin: 12px 0;
+  padding: 10px 12px;
+  font-weight: 850;
+}
+
+.a4-status.ok {
+  background: #e8f7f4;
+  color: var(--ok);
+}
+
+.a4-status.warning {
+  background: #fff7e6;
+  color: var(--warning);
+}
+
 .quick-edit {
   display: grid;
   gap: 10px;
