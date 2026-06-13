@@ -31,18 +31,14 @@ En GitHub Pages este flujo usa `localStorage`. En Cloudflare Pages, el endpoint 
 
 ## Cloudflare Pages
 
-El `wrangler.toml` actual no incluye todavía el binding D1 para permitir desplegar la landing y las Functions sin error.
-
-Cuando exista la base D1 real, agregar:
+El `wrangler.toml` ya incluye el binding D1:
 
 ```toml
-[[d1_databases]]
 binding = "DB"
 database_name = "cv_listo"
-database_id = "ID_REAL_DE_D1"
 ```
 
-Luego aplicar `schema.sql` sobre esa base.
+Falta aplicar `schema.sql` en la consola de D1 para crear las tablas.
 
 ## Arquitectura objetivo
 
