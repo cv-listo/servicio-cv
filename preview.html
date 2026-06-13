@@ -15,6 +15,13 @@
           <h1>Revisá antes de generar</h1>
           <p>La generación final es única. Si hay advertencias, volvé al formulario y corregí antes de confirmar.</p>
           <div id="audit-list"></div>
+          <div class="quick-edit">
+            <h2>Edición rápida</h2>
+            <label>Perfil<textarea id="quick-summary" rows="3"></textarea></label>
+            <label>Experiencia<textarea id="quick-experience" rows="4"></textarea></label>
+            <label>Habilidades<textarea id="quick-skills" rows="3"></textarea></label>
+            <button class="button secondary" id="refresh-preview" type="button">Actualizar vista</button>
+          </div>
           <div class="app-actions">
             <a class="button secondary" id="edit-link" href="#">Editar datos</a>
             <button class="button primary" id="generate-btn">Generar CV final</button>
@@ -45,7 +52,13 @@
         }
 
         document.querySelector("#edit-link").href = `./formulario.html?order=${order.id}&token=${order.token}`;
-        document.querySelector("#cv-preview").innerHTML = CVListo.buildResumeHtml(order.data);
+        const render = () => {
+          document.querySelector("#cv-preview").innerHTML = CVListo.buildResumeHtml(order.data);
+        };
+        document.querySelector("#quick-summary").value = order.data.summary || "";
+        document.querySelector("#quick-experience").value = order.data.experiences?.[0]?.tasks || order.data.experience || "";
+        document.querySelector("#quick-skills").value = order.data.skills || "";
+        render();
         const list = document.querySelector("#audit-list");
         const reports = order.reports || [];
         const cvPage = document.querySelector(".cv-page");
@@ -55,6 +68,17 @@
         list.innerHTML = reports.length
           ? reports.map((report) => `<p class="audit ${report.severity}">${report.message}</p>`).join("")
           : "<p class='audit ok'>Sin errores bloqueantes detectados.</p>";
+
+        document.querySelector("#refresh-preview").addEventListener("click", () => {
+          order.data.summary = document.querySelector("#quick-summary").value;
+          order.data.experience = document.querySelector("#quick-experience").value;
+          if (order.data.experiences?.length) {
+            order.data.experiences[0].tasks = order.data.experience;
+          }
+          order.data.skills = document.querySelector("#quick-skills").value;
+          CVListo.updateOrder(order.id, { data: order.data });
+          render();
+        });
 
         document.querySelector("#generate-btn").addEventListener("click", async () => {
           const hasCritical = (order.reports || []).some((report) => report.severity === "critical");
