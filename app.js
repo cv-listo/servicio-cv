@@ -88,6 +88,13 @@ async function fetchBackendOrder(id, token) {
   return result.order;
 }
 
+async function recoverBackendOrder(email) {
+  const response = await fetch(`/api/recover?email=${encodeURIComponent(email)}`);
+  if (!response.ok) throw new Error("Backend recovery unavailable");
+  const result = await response.json();
+  return result.order;
+}
+
 async function saveBackendProfile(id, token, data, reports) {
   const response = await fetch(`/api/orders/${id}/profile`, {
     method: "POST",
@@ -349,6 +356,7 @@ window.CVListo = {
   updateOrder,
   cacheOrder,
   fetchBackendOrder,
+  recoverBackendOrder,
   saveBackendProfile,
   saveBackendDraft,
   finalizeBackendOrder,

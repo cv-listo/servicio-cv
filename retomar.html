@@ -14,15 +14,20 @@
         <div>
           <p class="eyebrow">Retomar pedido</p>
           <h1>Continuá donde quedaste</h1>
-          <p class="lead">Si cerraste la pestaña, pegá el ID del pedido y el token de recuperación.</p>
+          <p class="lead">Si cerraste la pestaña, pegá el ID y token. La recuperación solo por email quedará habilitada cuando se configure el envío de correo.</p>
           <form class="app-form checkout-form" id="resume-order-form">
             <label>
+              Email del pedido
+              <input type="email" name="email" placeholder="tu@email.com" />
+            </label>
+            <p class="form-note">Por ahora, para retomar en pruebas usá ID y token. El email servirá cuando activemos correo transaccional.</p>
+            <label>
               ID del pedido
-              <input type="text" name="orderId" placeholder="order_..." required />
+              <input type="text" name="orderId" placeholder="order_..." />
             </label>
             <label>
               Token
-              <input type="text" name="token" placeholder="token_..." required />
+              <input type="text" name="token" placeholder="token_..." />
             </label>
             <button class="button primary" type="submit">Retomar</button>
           </form>
@@ -38,8 +43,8 @@
       document.querySelector("#resume-order-form").addEventListener("submit", async (event) => {
         event.preventDefault();
         const data = CVListo.collectFormData(event.currentTarget);
-        let order = CVListo.getOrder(data.orderId);
-        if (!order) {
+        let order = data.orderId ? CVListo.getOrder(data.orderId) : null;
+        if (!order && data.orderId && data.token) {
           try {
             const backendOrder = await CVListo.fetchBackendOrder(data.orderId, data.token);
             order = CVListo.cacheOrder(backendOrder);
@@ -47,8 +52,16 @@
             // Sin backend disponible.
           }
         }
-        if (!order || order.token !== data.token) {
-          alert("No se encontró un pedido con esos datos.");
+        if (!order && data.email) {
+          try {
+            const backendOrder = await CVListo.recoverBackendOrder(data.email);
+            order = CVListo.cacheOrder(backendOrder);
+          } catch {
+            // Sin backend disponible.
+          }
+        }
+        if (!order || (data.token && order.token !== data.token)) {
+          alert("No se encontró un pedido activo con esos datos.");
           return;
         }
         if (order.status === "generated") {

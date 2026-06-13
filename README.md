@@ -29,6 +29,8 @@ Este sitio está preparado para GitHub Pages desde `main / root`.
 
 En GitHub Pages este flujo usa `localStorage`. En Cloudflare Pages, el endpoint `/api/orders` podrá crear órdenes reales en D1.
 
+La recuperación solo por email queda deshabilitada hasta configurar un proveedor de correo transaccional. Por ahora, el flujo de prueba usa ID + token.
+
 ## Cloudflare Pages
 
 El `wrangler.toml` ya incluye el binding D1:
