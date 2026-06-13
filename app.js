@@ -375,29 +375,30 @@ function buildResumeHtml(data) {
   const skillsHtml = renderBullets(skills);
 
   return `
-    <article class="cv-page">
+    <article class="cv-page cv-page-polished">
       <header class="cv-header">
         <h1>${escapeHtml(data.fullName) || "Nombre Apellido"}</h1>
-        <p>${escapeHtml(contact) || "Datos de contacto"}</p>
+        ${target ? `<p class="cv-headline">${escapeHtml(sentenceCase(target))}</p>` : ""}
+        <p class="cv-contact-line">${escapeHtml(contact) || "Datos de contacto"}</p>
       </header>
-      <section>
+      <section class="cv-section">
         <h2>Perfil</h2>
         <p>${formatMultiline(polishCvText(data.summary)) || escapeHtml(profileFallback)}</p>
       </section>
-      ${objectiveDetails ? `<section><h2>Objetivo</h2><p>${escapeHtml(objectiveDetails)}</p></section>` : ""}
-      ${experienceHtml ? `<section>
+      ${objectiveDetails ? `<section class="cv-section"><h2>Objetivo</h2><p>${escapeHtml(objectiveDetails)}</p></section>` : ""}
+      ${experienceHtml ? `<section class="cv-section">
         <h2>Experiencia</h2>
         ${experienceHtml}
       </section>` : ""}
-      ${educationHtml ? `<section>
+      ${educationHtml ? `<section class="cv-section">
         <h2>Educación</h2>
         ${educationHtml}
       </section>` : ""}
-      ${skillsHtml ? `<section>
+      ${skillsHtml ? `<section class="cv-section">
         <h2>Habilidades</h2>
         ${skillsHtml}
       </section>` : ""}
-      ${normalizeText(data.jobAd) ? `<section><h2>Enfoque del puesto</h2><p>${formatMultiline(data.jobAd)}</p></section>` : ""}
+      ${normalizeText(data.jobAd) ? `<section class="cv-section"><h2>Enfoque del puesto</h2><p>${formatMultiline(data.jobAd)}</p></section>` : ""}
     </article>
   `;
 }

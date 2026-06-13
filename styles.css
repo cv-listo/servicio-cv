@@ -1339,6 +1339,11 @@ h3 {
   box-shadow: var(--shadow);
 }
 
+.cv-page-polished {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.42;
+}
+
 .cv-header {
   border-bottom: 2px solid var(--accent);
   margin-bottom: 18px;
@@ -1350,6 +1355,23 @@ h3 {
   letter-spacing: -0.02em;
 }
 
+.cv-headline {
+  margin-top: 4px !important;
+  color: var(--accent-dark);
+  font-weight: 850;
+}
+
+.cv-contact-line {
+  margin-top: 8px !important;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.cv-section {
+  break-inside: avoid;
+  margin-top: 16px;
+}
+
 .cv-page h2 {
   margin-top: 18px;
   margin-bottom: 8px;
@@ -1357,6 +1379,8 @@ h3 {
   font-size: 15px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 4px;
 }
 
 .cv-page p {
@@ -1370,6 +1394,7 @@ h3 {
 
 .cv-page li {
   margin-bottom: 4px;
+  padding-left: 2px;
 }
 
 .cv-entry + .cv-entry {
@@ -1378,6 +1403,44 @@ h3 {
 
 .download-card {
   max-width: 920px;
+}
+
+.success-mark {
+  display: grid;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+  border-radius: 50%;
+  margin: 0 0 18px;
+  background: #e8f7f4;
+  color: var(--ok);
+  font-size: 2.3rem;
+  font-weight: 950;
+}
+
+.next-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.next-steps article {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 16px;
+  background: #fbfcff;
+}
+
+.next-steps strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.next-steps p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
 }
 
 @media print {
@@ -1522,6 +1585,10 @@ h3 {
   .price-card ul,
   .check-list {
     padding-left: 18px;
+  }
+
+  .next-steps {
+    grid-template-columns: 1fr;
   }
 
   .form-panel .button {

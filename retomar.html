@@ -19,27 +19,27 @@
         <div>
           <p class="eyebrow">Retomar pedido</p>
           <h1>Continuá donde quedaste</h1>
-          <p class="lead">Si cerraste la pestaña, pegá el ID y token. La recuperación solo por email quedará habilitada cuando se configure el envío de correo.</p>
+          <p class="lead">Si cerraste la pestaña, podés volver al formulario con el enlace que guardaste o con los datos de acceso del pedido.</p>
           <form class="app-form checkout-form" id="resume-order-form">
             <label>
               Email del pedido
               <input type="email" name="email" placeholder="tu@email.com" />
             </label>
-            <p class="form-note">Por ahora, para retomar en pruebas usá ID y token. El email servirá cuando activemos correo transaccional.</p>
+            <p class="form-note">Por seguridad, necesitamos validar el pedido antes de mostrar tus datos.</p>
             <label>
-              ID del pedido
+              Código del pedido
               <input type="text" name="orderId" placeholder="order_..." />
             </label>
             <label>
-              Token
+              Código de acceso
               <input type="text" name="token" placeholder="token_..." />
             </label>
             <button class="button primary" type="submit">Retomar</button>
           </form>
         </div>
         <div class="app-card">
-          <h2>¿Dónde encuentro estos datos?</h2>
-          <p>Durante el flujo de prueba se muestran en el formulario. En la versión final también podrán enviarse por email o recuperarse desde el pago confirmado.</p>
+          <h2>¿Dónde encuentro el enlace?</h2>
+          <p>En el formulario podés usar “Guardar link para retomar”. Si pagaste con Mercado Pago, también podés volver desde la pantalla de verificación o escribir a soporte con el comprobante.</p>
         </div>
       </section>
     </main>
