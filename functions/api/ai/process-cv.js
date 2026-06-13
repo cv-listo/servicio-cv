@@ -1,6 +1,7 @@
 import { json, readJson } from "../_utils.js";
 
 const AI_PLANS = new Set(["professional", "focused"]);
+const DEFAULT_TIMEOUT_MS = 10000;
 
 export async function onRequestPost({ request, env }) {
   const body = await readJson(request);
@@ -34,14 +35,13 @@ export async function onRequestPost({ request, env }) {
   const sanitized = sanitizeForLlm(input, planId);
 
   try {
-    if (!env.GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY no configurada");
-    }
-    const aiResult = await callGemini(env, planId, sanitized);
+    const aiResult = await callLlmProvider(env, planId, sanitized);
     const audited = auditAndMerge(input, aiResult);
     return json({
       ok: true,
       source: "llm",
+      provider: aiResult.provider,
+      model: aiResult.model,
       data: audited.data,
       warnings: audited.warnings,
       questions: audited.questions,
@@ -58,38 +58,139 @@ export async function onRequestPost({ request, env }) {
   }
 }
 
+async function callLlmProvider(env, planId, sanitized) {
+  const provider = String(env.LLM_PROVIDER || "groq").toLowerCase();
+  if (provider === "groq") return callGroq(env, planId, sanitized);
+  if (provider === "gemini") return callGemini(env, planId, sanitized);
+  if (provider === "openai") return callOpenAI(env, planId, sanitized);
+  throw new Error(`Proveedor LLM no soportado: ${provider}`);
+}
+
+async function callGroq(env, planId, sanitized) {
+  if (!env.GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY no configurada");
+  }
+
+  const model = selectGroqModel(env, planId, sanitized);
+  const response = await fetchWithTimeout("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${env.GROQ_API_KEY}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: buildSystemPrompt() },
+        { role: "user", content: buildUserPrompt(planId, sanitized) },
+      ],
+      temperature: 0.2,
+      max_tokens: planId === "focused" ? 2400 : 1600,
+      response_format: { type: "json_object" },
+    }),
+  }, Number(env.AI_TIMEOUT_MS || DEFAULT_TIMEOUT_MS));
+
+  if (!response.ok) {
+    throw new Error(`Groq HTTP ${response.status}`);
+  }
+
+  const payload = await response.json();
+  const text = payload?.choices?.[0]?.message?.content;
+  if (!text) throw new Error("Respuesta vacía de Groq");
+  return { ...parseJsonObject(text), provider: "groq", model };
+}
+
 async function callGemini(env, planId, sanitized) {
+  if (!env.GEMINI_API_KEY) {
+    throw new Error("GEMINI_API_KEY no configurada");
+  }
+
   const model = env.GEMINI_MODEL || "gemini-1.5-flash-latest";
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`;
+  const response = await fetchWithTimeout(endpoint, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
+      contents: [{ role: "user", parts: [{ text: buildUserPrompt(planId, sanitized) }] }],
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: planId === "focused" ? 2600 : 1800,
+        responseMimeType: "application/json",
+      },
+    }),
+  }, Number(env.AI_TIMEOUT_MS || DEFAULT_TIMEOUT_MS));
+
+  if (!response.ok) {
+    throw new Error(`Gemini HTTP ${response.status}`);
+  }
+
+  const payload = await response.json();
+  const text = payload?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("Respuesta vacía de Gemini");
+  return { ...parseJsonObject(text), provider: "gemini", model };
+}
+
+async function callOpenAI(env, planId, sanitized) {
+  if (!env.OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY no configurada");
+  }
+
+  const model = env.OPENAI_MODEL || "gpt-4o-mini";
+  const response = await fetchWithTimeout("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${env.OPENAI_API_KEY}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: buildSystemPrompt() },
+        { role: "user", content: buildUserPrompt(planId, sanitized) },
+      ],
+      temperature: 0.2,
+      max_tokens: planId === "focused" ? 2600 : 1800,
+      response_format: { type: "json_object" },
+    }),
+  }, Number(env.AI_TIMEOUT_MS || DEFAULT_TIMEOUT_MS));
+
+  if (!response.ok) {
+    throw new Error(`OpenAI HTTP ${response.status}`);
+  }
+
+  const payload = await response.json();
+  const text = payload?.choices?.[0]?.message?.content;
+  if (!text) throw new Error("Respuesta vacía de OpenAI");
+  return { ...parseJsonObject(text), provider: "openai", model };
+}
+
+async function fetchWithTimeout(url, options, timeoutMs) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
-
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      signal: controller.signal,
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
-        contents: [{ role: "user", parts: [{ text: buildUserPrompt(planId, sanitized) }] }],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: planId === "focused" ? 2600 : 1800,
-          responseMimeType: "application/json",
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Gemini HTTP ${response.status}`);
-    }
-
-    const payload = await response.json();
-    const text = payload?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error("Respuesta vacía de Gemini");
-    return JSON.parse(text);
+    return await fetch(url, { ...options, signal: controller.signal });
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+function selectGroqModel(env, planId, sanitized) {
+  if (env.GROQ_MODEL) return env.GROQ_MODEL;
+  const inputSize = JSON.stringify(sanitized).length;
+  if (planId === "focused" || inputSize > 6500) {
+    return "llama-3.3-70b-versatile";
+  }
+  return "llama-3.1-8b-instant";
+}
+
+function parseJsonObject(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    const match = String(text || "").match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("El proveedor no devolvió JSON válido");
+    return JSON.parse(match[0]);
   }
 }
 
