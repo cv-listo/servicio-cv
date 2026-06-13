@@ -317,6 +317,35 @@ h3 {
   align-items: start;
 }
 
+.checkout-shell {
+  max-width: 980px;
+}
+
+.checkout-layout {
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 22px;
+}
+
+.checkout-copy h1 {
+  max-width: 520px;
+  font-size: clamp(2.5rem, 7vw, 4.2rem);
+}
+
+.checkout-copy .lead {
+  max-width: 560px;
+  font-size: 1.08rem;
+}
+
+.checkout-form {
+  max-width: 520px;
+  margin-top: 18px;
+  padding: 20px;
+}
+
+.checkout-form button {
+  width: 100%;
+}
+
 .app-layout.single {
   grid-template-columns: 1fr;
 }
@@ -518,6 +547,10 @@ h3 {
   .form-grid {
     grid-template-columns: 1fr;
   }
+
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 620px) {
@@ -622,6 +655,10 @@ h3 {
 
   .app-shell {
     padding: 36px 16px;
+  }
+
+  .checkout-copy h1 {
+    font-size: clamp(2.2rem, 13vw, 3rem);
   }
 
   .app-card,

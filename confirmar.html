@@ -8,14 +8,14 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="app-shell">
+    <main class="app-shell checkout-shell">
       <a class="back-link" href="./index.html#planes">← Volver a planes</a>
-      <section class="app-layout">
-        <div>
+      <section class="app-layout checkout-layout">
+        <div class="checkout-copy">
           <p class="eyebrow">Confirmación</p>
           <h1>Confirmá tu plan</h1>
-          <p class="lead">Revisá el plan elegido. En producción, el pago se validará con Mercado Pago Checkout Pro. Para pruebas, el código <strong>TEST</strong> habilita el formulario.</p>
-          <form class="app-form" id="checkout-form">
+          <p class="lead">Revisá el plan elegido y completá el email para crear el pedido. Luego se habilitará el pago o el acceso de prueba.</p>
+          <form class="app-form checkout-form" id="checkout-form">
             <label>
               Email para el pedido
               <input type="email" name="email" placeholder="tu@email.com" required />
@@ -24,8 +24,7 @@
               Código de descuento
               <input type="text" name="discount" placeholder="Opcional" />
             </label>
-            <button type="submit">Continuar</button>
-            <p class="form-note">Código de prueba: TEST. En GitHub Pages funciona en modo local; en Cloudflare se validará del lado servidor.</p>
+            <button class="button primary" type="submit">Continuar al pago</button>
           </form>
         </div>
         <div id="plan-summary"></div>
@@ -75,7 +74,7 @@
           return;
         }
 
-        alert("Placeholder: acá se redirige a Mercado Pago Checkout Pro cuando esté configurado.");
+        alert("Todavía falta configurar Mercado Pago. Para probar el flujo, usá el código de prueba.");
       });
     </script>
   </body>
