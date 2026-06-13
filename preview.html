@@ -3,15 +3,22 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta property="og:title" content="CV Listo | Generá tu CV profesional en minutos" />
-    <meta property="og:description" content="Pagás, cargás tus datos y descargás tu CV A4 al instante. Desde $10.000." />
+    <meta property="og:title" content="CV Listo | Generá tu CV profesional" />
+    <meta property="og:description" content="Completás tus datos, pagás con Mercado Pago y descargás tu CV A4 al instante. Desde $10.000." />
     <meta property="og:image" content="https://servicio-cv.pages.dev/og-image.png" />
+    <meta property="og:type" content="website" />
     <meta property="og:url" content="https://servicio-cv.pages.dev/" />
     <title>Vista previa | CV Listo</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <div class="print-overlay" id="print-overlay" hidden>
+      <div>
+        <strong>Preparando tu CV para descargar...</strong>
+        <p>En unos segundos se abrirá el diálogo para guardar o imprimir.</p>
+      </div>
+    </div>
     <main class="app-shell">
       <section class="preview-layout">
         <aside class="audit-panel">
@@ -22,9 +29,9 @@
           <div id="audit-list"></div>
           <div class="quick-edit">
             <h2>Edición rápida</h2>
-            <label>Perfil<textarea id="quick-summary" rows="3"></textarea></label>
-            <label>Experiencia<textarea id="quick-experience" rows="4"></textarea></label>
-            <label>Habilidades<textarea id="quick-skills" rows="3"></textarea></label>
+            <label>Perfil<textarea id="quick-summary" rows="3" placeholder="Ej: Perfil orientado a atención al cliente, ventas y tareas administrativas."></textarea></label>
+            <label>Experiencia<textarea id="quick-experience" rows="4" placeholder="Ej: 2022-2024: Vendedor en Supermercado XYZ. Atención al cliente, manejo de caja, reposición."></textarea></label>
+            <label>Habilidades<textarea id="quick-skills" rows="3" placeholder="Ej: Excel, atención al cliente, trabajo en equipo, puntual."></textarea></label>
             <button class="button secondary" id="refresh-preview" type="button">Actualizar vista</button>
           </div>
           <div class="app-actions">
@@ -117,6 +124,8 @@
           if (!confirm("La generación final se puede hacer una sola vez. ¿Confirmás que revisaste los datos?")) {
             return;
           }
+          const overlay = document.querySelector("#print-overlay");
+          overlay.hidden = false;
           const contentHash = await CVListo.sha256(JSON.stringify(order.data));
           try {
             await CVListo.finalizeBackendOrder(order.id, order.token, contentHash, order.data);
@@ -124,7 +133,14 @@
             // GitHub Pages no ejecuta Functions. Sellamos local para probar UX.
           }
           CVListo.updateOrder(order.id, { status: "generated", generated: true, generatedAt: new Date().toISOString() });
-          window.location.href = `./descargar.html?order=${order.id}&token=${order.token}`;
+          const redirectToDownload = () => {
+            window.location.href = `./descargar.html?order=${order.id}&token=${order.token}`;
+          };
+          window.onafterprint = redirectToDownload;
+          setTimeout(() => {
+            window.print();
+            setTimeout(redirectToDownload, 1200);
+          }, 500);
         });
       }
 

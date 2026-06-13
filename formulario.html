@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta property="og:title" content="CV Listo | Generá tu CV profesional en minutos" />
-    <meta property="og:description" content="Pagás, cargás tus datos y descargás tu CV A4 al instante. Desde $10.000." />
+    <meta property="og:title" content="CV Listo | Generá tu CV profesional" />
+    <meta property="og:description" content="Completás tus datos, pagás con Mercado Pago y descargás tu CV A4 al instante. Desde $10.000." />
     <meta property="og:image" content="https://servicio-cv.pages.dev/og-image.png" />
+    <meta property="og:type" content="website" />
     <meta property="og:url" content="https://servicio-cv.pages.dev/" />
     <title>Formulario | CV Listo</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
@@ -18,7 +19,7 @@
           <p class="eyebrow">Formulario guiado</p>
           <h1>Completá tus datos</h1>
           <p class="lead">Estos datos se usan para armar la vista previa. Los campos como DNI, teléfono o dirección son opcionales y podés elegir si se muestran en el CV.</p>
-          <div class="recovery-box" id="recovery-box"></div>
+          <button class="button secondary small-button" type="button" id="copy-recovery-link">Guardar link para retomar</button>
         </div>
 
         <form class="app-form wide wizard" id="resume-form">
@@ -105,13 +106,18 @@
               <h2>Experiencia</h2>
               <p>También cuentan changas, emprendimientos, voluntariados o ayuda familiar.</p>
             </div>
-            <label>Tipo de experiencia
-              <select name="experienceType">
+            <label>¿Tuviste trabajos formales?
+              <select name="experienceType" class="visually-hidden-select" aria-label="Tipo de experiencia">
                 <option value="formal">Tengo experiencia formal</option>
                 <option value="informal">Trabajos informales, changas o negocio familiar</option>
                 <option value="none">No tengo experiencia previa</option>
               </select>
             </label>
+            <div class="choice-row" data-choice-for="experienceType">
+              <button type="button" data-value="formal">Sí, trabajos formales</button>
+              <button type="button" data-value="informal">Changas o proyectos</button>
+              <button type="button" data-value="none">No todavía</button>
+            </div>
             <div id="experience-list">
               <div class="repeat-card" data-repeat="experience">
                 <div class="form-grid">
@@ -206,6 +212,7 @@
       const orderId = CVListo.getParam("order");
       const token = CVListo.getParam("token");
       let order = CVListo.getOrder(orderId);
+      const wizardStateKey = `cvListoWizardState:${orderId || "draft"}`;
 
       async function loadOrder() {
         if (!order && orderId && token) {
@@ -221,11 +228,10 @@
           document.body.innerHTML = "<main class='app-shell'><h1>Pedido no habilitado</h1><p>Para completar el formulario, primero debe existir un pago confirmado o un código de prueba válido.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
           return;
         }
-        document.querySelector("#recovery-box").innerHTML = `
-          <strong>Datos para retomar:</strong>
-          <span>ID: ${order.id}</span>
-          <span>Token: ${order.token}</span>
-        `;
+        document.querySelector("#copy-recovery-link")?.addEventListener("click", async () => {
+          await navigator.clipboard?.writeText(window.location.href);
+          alert("Link copiado. Guardalo para retomar el formulario.");
+        });
 
         setupWizard(order?.planId || "basic");
 
@@ -241,8 +247,33 @@
             field.value = value;
           }
         });
-        document.querySelector('[name="targetArea"]')?.dispatchEvent(new Event("change"));
+        form?.elements.experienceType?.dispatchEvent(new Event("change", { bubbles: true }));
+        persistArea(order.data.targetArea || "");
+        restoreSavedArea();
+        document.querySelector('[name="targetArea"]')?.dispatchEvent(new Event("change", { bubbles: true }));
       }
+      }
+
+      function getWizardState() {
+        try {
+          return JSON.parse(localStorage.getItem(wizardStateKey) || "{}");
+        } catch {
+          return {};
+        }
+      }
+
+      function persistArea(value) {
+        const state = getWizardState();
+        state.area = value || "";
+        localStorage.setItem(wizardStateKey, JSON.stringify(state));
+      }
+
+      function restoreSavedArea() {
+        const savedData = getWizardState();
+        const area = document.getElementById("area");
+        if (area && savedData.area) {
+          area.value = savedData.area;
+        }
       }
 
       function populateDateSelects() {
@@ -270,6 +301,7 @@
         setupRepeaters();
         setupSuggestionChips();
         setupAreaSuggestions();
+        setupChoiceRows();
         const steps = Array.from(document.querySelectorAll(".wizard-step"));
         const previous = document.querySelector("#prev-step");
         const next = document.querySelector("#next-step");
@@ -291,10 +323,16 @@
         };
 
         const render = () => {
+          restoreSavedArea();
+          const restoredArea = document.getElementById("area");
+          if (restoredArea?.value) {
+            restoredArea.dispatchEvent(new Event("change", { bubbles: true }));
+          }
           steps.forEach((step, index) => step.classList.toggle("active", index === current));
           previous.disabled = current === 0;
           next.hidden = current === steps.length - 1;
           submit.hidden = current !== steps.length - 1;
+          submit.style.display = current === steps.length - 1 ? "inline-flex" : "none";
           autosaveNote.hidden = current === steps.length - 1;
           label.textContent = `Paso ${current + 1} de ${steps.length}`;
           title.textContent = steps[current].querySelector("h2")?.textContent || "Formulario";
@@ -308,12 +346,19 @@
           await autosaveDraft();
           current = Math.max(0, current - 1);
           render();
+          window.scrollTo({ top: 0, behavior: "smooth" });
         });
 
         next.addEventListener("click", async () => {
-          const areaSelect = steps[current].querySelector('[name="targetArea"]');
-          const areaError = steps[current].querySelector("#area-error");
-          if (areaSelect && !areaSelect.value) {
+          const sel = document.getElementById("area");
+          if (sel && sel.value) {
+            persistArea(sel.value);
+            sel.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+          const areaVal = document.getElementById("area")?.value || "";
+          const areaSelect = steps[current].querySelector("#area");
+          const areaError = document.querySelector("#area-error");
+          if (areaSelect && !areaVal) {
             areaSelect.classList.add("is-invalid");
             if (areaError) areaError.style.display = "block";
             areaSelect.focus();
@@ -328,6 +373,7 @@
           await autosaveDraft();
           current = Math.min(steps.length - 1, current + 1);
           render();
+          window.scrollTo({ top: 0, behavior: "smooth" });
         });
 
         render();
@@ -384,11 +430,12 @@
       }
 
       function setupAreaSuggestions() {
-        const areaSelect = document.querySelector('[name="targetArea"]');
+        const areaSelect = document.getElementById("area");
         const apply = () => {
           areaSelect?.classList.remove("is-invalid");
           const error = document.querySelector("#area-error");
           if (error) error.style.display = "none";
+          if (areaSelect?.value) persistArea(areaSelect.value);
           const selected = suggestionsByArea[areaSelect.value] || suggestionsByArea["Comercio y ventas"];
           renderChipRow("summary", selected.summary);
           renderChipRow("tasks", selected.tasks);
@@ -444,6 +491,27 @@
         });
       }
 
+      function setupChoiceRows() {
+        document.querySelectorAll("[data-choice-for]").forEach((row) => {
+          const field = document.querySelector(`[name="${row.dataset.choiceFor}"]`);
+          const sync = () => {
+            row.querySelectorAll("button").forEach((button) => {
+              button.classList.toggle("active", button.dataset.value === field?.value);
+            });
+          };
+          row.querySelectorAll("button").forEach((button) => {
+            button.addEventListener("click", () => {
+              if (!field) return;
+              field.value = button.dataset.value;
+              field.dispatchEvent(new Event("change", { bubbles: true }));
+              sync();
+            });
+          });
+          field?.addEventListener("change", sync);
+          sync();
+        });
+      }
+
       function handleChipClick(event) {
         const button = event.currentTarget;
         const row = button.closest(".chip-row");
@@ -457,7 +525,7 @@
         if (!current.toLowerCase().includes(value.toLowerCase())) {
           target.value = `${current}${separator}${value}`;
         }
-        button.classList.add("active");
+        button.classList.add("active", "activo");
       }
 
       function restoreRepeaters(data) {

@@ -204,6 +204,15 @@ h3 {
   background: var(--accent-dark);
 }
 
+.button.basic-cta {
+  background: #1f2937;
+  color: #fff;
+}
+
+.button.basic-cta:hover {
+  background: #111827;
+}
+
 .button.gradient {
   background: linear-gradient(135deg, var(--accent), #7c3aed);
   color: #fff;
@@ -585,8 +594,27 @@ h3 {
   border-radius: 16px;
   padding: 18px;
   background: #fff;
-  color: #64748b;
-  font-family: "Comic Sans MS", cursive, sans-serif;
+  color: #475569;
+}
+
+.bad-cv strong {
+  display: block;
+  margin-bottom: 16px;
+  color: #1f2937;
+  font-size: 1.35rem;
+}
+
+.bad-cv ul {
+  display: grid;
+  gap: 14px;
+  padding-left: 20px;
+}
+
+.avatar-placeholder {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #cbd5e1;
 }
 
 .good-cv {
@@ -833,6 +861,16 @@ h3 {
   border-color: #ef4444;
 }
 
+.visually-hidden-select {
+  position: absolute;
+  width: 1px !important;
+  height: 1px;
+  padding: 0 !important;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 .error-msg {
   display: none;
   color: #ef4444;
@@ -893,6 +931,10 @@ h3 {
 
 .wizard-actions button {
   min-width: 130px;
+}
+
+#submit-form {
+  display: none;
 }
 
 .wizard-actions button:disabled {
@@ -993,6 +1035,30 @@ h3 {
   background: #f8faff;
 }
 
+.choice-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.choice-row button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: #fff;
+  color: var(--accent-dark);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
+.choice-row button.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
 .suggestion-box p {
   margin: 0 0 10px;
   color: var(--muted);
@@ -1022,13 +1088,15 @@ h3 {
   background: var(--accent-soft);
 }
 
-.chip-row button.active {
+.chip-row button.active,
+.chip-row button.activo {
   border-color: var(--accent);
   background: var(--accent);
   color: white;
 }
 
-.chip-row button.active::before {
+.chip-row button.active::before,
+.chip-row button.activo::before {
   content: "✓ ";
 }
 
@@ -1046,9 +1114,20 @@ h3 {
 
 .preview-layout {
   display: grid;
-  grid-template-columns: 330px minmax(0, 1fr);
+  grid-template-columns: 360px minmax(0, 1fr);
   gap: 24px;
   align-items: start;
+}
+
+.audit-panel {
+  overflow: hidden;
+}
+
+.audit-panel h1 {
+  max-width: 100%;
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
 }
 
 .app-actions {
@@ -1124,6 +1203,40 @@ h3 {
   padding: 9px 11px;
   font: inherit;
   font-size: 0.9rem;
+}
+
+.print-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(23, 32, 51, 0.58);
+  backdrop-filter: blur(4px);
+}
+
+.print-overlay[hidden] {
+  display: none;
+}
+
+.print-overlay > div {
+  max-width: 420px;
+  border-radius: 24px;
+  padding: 24px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.print-overlay strong {
+  display: block;
+  font-size: 1.2rem;
+}
+
+.print-overlay p {
+  margin: 8px 0 0;
+  color: var(--muted);
 }
 
 .cv-preview,

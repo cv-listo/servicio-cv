@@ -246,6 +246,12 @@ function renderBullets(items) {
   return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
 }
 
+function meaningfulOption(value) {
+  const text = normalizeText(value);
+  if (!text) return "";
+  return /^indistint[oa]$/i.test(text) ? "" : text;
+}
+
 function formatDateRange(data) {
   const start = [data.startMonth, data.startYear].map(normalizeText).filter(Boolean).join("/");
   const end = data.isCurrent === "on" ? "Actualidad" : [data.endMonth, data.endYear].map(normalizeText).filter(Boolean).join("/");
@@ -283,7 +289,7 @@ function renderExperiences(data) {
       `;
     })
     .join("");
-  return rendered || "<p>Experiencia a completar.</p>";
+  return rendered;
 }
 
 function renderEducation(data) {
@@ -292,7 +298,7 @@ function renderEducation(data) {
     .filter((item) => normalizeText(item.text))
     .map((item) => `<p>${formatMultiline(item.text)}</p>`)
     .join("");
-  return rendered || "<p>Educación a completar.</p>";
+  return rendered;
 }
 
 function buildResumeHtml(data) {
@@ -317,10 +323,18 @@ function buildResumeHtml(data) {
   const profileFallback = target
     ? `Perfil orientado a ${target}${company ? ` en ${company}` : ""}.`
     : "Perfil orientado a nuevas oportunidades laborales.";
-  const objectiveDetails = [data.targetArea, data.modality, data.availability]
+  const objectiveDetails = [
+    data.targetArea ? `Área: ${data.targetArea}` : "",
+    target ? `Puesto objetivo: ${target}` : "",
+    meaningfulOption(data.modality) ? `Modalidad: ${meaningfulOption(data.modality)}` : "",
+    meaningfulOption(data.availability) ? `Disponibilidad: ${meaningfulOption(data.availability)}` : "",
+  ]
     .map(normalizeText)
     .filter(Boolean)
-    .join(" · ");
+    .join(" | ");
+  const experienceHtml = renderExperiences(data);
+  const educationHtml = renderEducation({ ...data, education: educationText });
+  const skillsHtml = renderBullets(skills);
 
   return `
     <article class="cv-page">
@@ -333,18 +347,18 @@ function buildResumeHtml(data) {
         <p>${formatMultiline(data.summary) || escapeHtml(profileFallback)}</p>
       </section>
       ${objectiveDetails ? `<section><h2>Objetivo</h2><p>${escapeHtml(objectiveDetails)}</p></section>` : ""}
-      <section>
+      ${experienceHtml ? `<section>
         <h2>Experiencia</h2>
-        ${renderExperiences(data)}
-      </section>
-      <section>
+        ${experienceHtml}
+      </section>` : ""}
+      ${educationHtml ? `<section>
         <h2>Educación</h2>
-        ${renderEducation({ ...data, education: educationText })}
-      </section>
-      <section>
+        ${educationHtml}
+      </section>` : ""}
+      ${skillsHtml ? `<section>
         <h2>Habilidades</h2>
-        ${renderBullets(skills) || "<p>Habilidades a completar.</p>"}
-      </section>
+        ${skillsHtml}
+      </section>` : ""}
       ${normalizeText(data.jobAd) ? `<section><h2>Enfoque del puesto</h2><p>${formatMultiline(data.jobAd)}</p></section>` : ""}
     </article>
   `;

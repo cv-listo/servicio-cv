@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta property="og:title" content="CV Listo | Generá tu CV profesional en minutos" />
-    <meta property="og:description" content="Pagás, cargás tus datos y descargás tu CV A4 al instante. Desde $10.000." />
+    <meta property="og:title" content="CV Listo | Generá tu CV profesional" />
+    <meta property="og:description" content="Completás tus datos, pagás con Mercado Pago y descargás tu CV A4 al instante. Desde $10.000." />
     <meta property="og:image" content="https://servicio-cv.pages.dev/og-image.png" />
+    <meta property="og:type" content="website" />
     <meta property="og:url" content="https://servicio-cv.pages.dev/" />
     <title>Descargar CV | CV Listo</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
@@ -16,10 +17,10 @@
       <section class="download-card">
         <p class="eyebrow">CV generado</p>
         <h1>Tu CV está listo</h1>
-        <p>El CV final quedó generado para este pedido. Podés imprimirlo o guardarlo como PDF desde el navegador.</p>
+        <p>Tu CV fue generado. Si el envío de email está habilitado, también te lo mandamos al correo del pedido. Podés volver a abrir el diálogo de descarga cuando quieras.</p>
         <div id="final-cv"></div>
         <div class="app-actions">
-          <button class="button primary" onclick="window.print()">Guardar como PDF</button>
+          <button class="button primary" id="print-again">Guardar como PDF</button>
           <a class="button secondary" href="./index.html">Volver al inicio</a>
         </div>
       </section>
@@ -46,6 +47,9 @@
         }
 
         document.querySelector("#final-cv").innerHTML = CVListo.buildResumeHtml(order.data);
+        document.querySelector("#print-again").addEventListener("click", () => {
+          setTimeout(() => window.print(), 100);
+        });
       }
 
       loadDownload();
