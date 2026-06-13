@@ -304,12 +304,76 @@ h3 {
     justify-content: flex-start;
     overflow-x: auto;
     flex-wrap: nowrap;
+    padding: 10px 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .topbar a {
+    flex: 0 0 auto;
+    padding: 8px 10px;
+    font-size: 0.86rem;
   }
 
   .hero-content,
   .section,
   .section.tinted {
-    padding-top: 48px;
-    padding-bottom: 48px;
+    padding-top: 42px;
+    padding-bottom: 42px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .hero-content {
+    padding-top: 54px;
+  }
+
+  h1 {
+    font-size: clamp(2.35rem, 13vw, 3.2rem);
+    letter-spacing: -0.055em;
+  }
+
+  h2 {
+    font-size: clamp(1.7rem, 9vw, 2.25rem);
+  }
+
+  .lead {
+    font-size: 1.04rem;
+  }
+
+  .hero-actions,
+  .button {
+    width: 100%;
+  }
+
+  .button {
+    min-height: 46px;
+    padding: 12px 14px;
+  }
+
+  .problem-grid article,
+  .steps article,
+  .price-card,
+  .faq article,
+  .form-panel,
+  .privacy-box {
+    border-radius: 20px;
+    padding: 20px;
+  }
+
+  .price {
+    font-size: 2rem;
+  }
+
+  .price-card ul,
+  .check-list {
+    padding-left: 18px;
+  }
+
+  .form-panel .button {
+    width: 100%;
+  }
+
+  .footer {
+    padding: 28px 16px;
   }
 }
