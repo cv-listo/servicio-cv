@@ -63,6 +63,41 @@ function updateOrder(id, patch) {
   return orders[id];
 }
 
+async function fetchBackendOrder(id, token) {
+  const response = await fetch(`/api/orders/${id}?token=${encodeURIComponent(token)}`);
+  if (!response.ok) throw new Error("Backend order unavailable");
+  const result = await response.json();
+  return result.order;
+}
+
+async function saveBackendProfile(id, token, data, reports) {
+  const response = await fetch(`/api/orders/${id}/profile`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ token, data, reports }),
+  });
+  if (!response.ok) throw new Error("Backend profile save unavailable");
+  return response.json();
+}
+
+async function finalizeBackendOrder(id, token, contentHash) {
+  const response = await fetch("/api/generate-final", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ orderId: id, token, contentHash }),
+  });
+  if (!response.ok) throw new Error("Backend finalize unavailable");
+  return response.json();
+}
+
+async function sha256(value) {
+  const buffer = new TextEncoder().encode(value);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 function renderPlanSummary(container, planId) {
   const plan = PLANS[planId] || PLANS.basic;
   container.innerHTML = `
@@ -173,9 +208,13 @@ window.CVListo = {
   createOrder,
   getOrder,
   updateOrder,
+  fetchBackendOrder,
+  saveBackendProfile,
+  finalizeBackendOrder,
   renderPlanSummary,
   collectFormData,
   validateResumeData,
   buildResumeHtml,
   escapeHtml,
+  sha256,
 };

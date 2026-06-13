@@ -92,7 +92,7 @@
     <script>
       const orderId = CVListo.getParam("order");
       const token = CVListo.getParam("token");
-      const order = CVListo.getOrder(orderId);
+      let order = CVListo.getOrder(orderId);
 
       if (!order || order.token !== token || !["discount_test", "paid", "preview_ready"].includes(order.status)) {
         document.body.innerHTML = "<main class='app-shell'><h1>Pedido no habilitado</h1><p>Para completar el formulario, primero debe existir un pago confirmado o un código de prueba válido.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
@@ -115,15 +115,16 @@
         });
       }
 
-      document.querySelector("#resume-form")?.addEventListener("submit", (event) => {
+      document.querySelector("#resume-form")?.addEventListener("submit", async (event) => {
         event.preventDefault();
         const data = CVListo.collectFormData(event.currentTarget);
         const reports = CVListo.validateResumeData(data, order.planId);
-        CVListo.updateOrder(order.id, {
-          status: "preview_ready",
-          data,
-          reports,
-        });
+        try {
+          await CVListo.saveBackendProfile(order.id, order.token, data, reports);
+        } catch {
+          // GitHub Pages no ejecuta Functions. Guardamos local para probar UX.
+        }
+        CVListo.updateOrder(order.id, { status: "preview_ready", data, reports });
         window.location.href = `./preview.html?order=${order.id}&token=${order.token}`;
       });
     </script>

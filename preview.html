@@ -44,7 +44,7 @@
           ? reports.map((report) => `<p class="audit ${report.severity}">${report.message}</p>`).join("")
           : "<p class='audit ok'>Sin errores bloqueantes detectados.</p>";
 
-        document.querySelector("#generate-btn").addEventListener("click", () => {
+        document.querySelector("#generate-btn").addEventListener("click", async () => {
           const hasCritical = (order.reports || []).some((report) => report.severity === "critical");
           if (hasCritical) {
             alert("Hay errores obligatorios. Corregilos antes de generar.");
@@ -53,11 +53,13 @@
           if (!confirm("La generación final se puede hacer una sola vez. ¿Confirmás que revisaste los datos?")) {
             return;
           }
-          CVListo.updateOrder(order.id, {
-            status: "generated",
-            generated: true,
-            generatedAt: new Date().toISOString(),
-          });
+          const contentHash = await CVListo.sha256(JSON.stringify(order.data));
+          try {
+            await CVListo.finalizeBackendOrder(order.id, order.token, contentHash);
+          } catch {
+            // GitHub Pages no ejecuta Functions. Sellamos local para probar UX.
+          }
+          CVListo.updateOrder(order.id, { status: "generated", generated: true, generatedAt: new Date().toISOString() });
           window.location.href = `./descargar.html?order=${order.id}&token=${order.token}`;
         });
       }
