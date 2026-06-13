@@ -118,7 +118,7 @@
               <button type="button" data-value="informal">Changas o proyectos</button>
               <button type="button" data-value="none">No todavía</button>
             </div>
-            <div id="experience-list">
+            <div id="experience-list" data-experience-panel="formal">
               <div class="repeat-card" data-repeat="experience">
                 <div class="form-grid">
               <label>Empresa, lugar o actividad<input type="text" name="experiencePlace" placeholder="Ej: Supermercado Sol / Manicuría a domicilio" /></label>
@@ -141,6 +141,22 @@
                   </div>
                 </div>
                 <label>Tareas principales<textarea name="experience" rows="4" placeholder="Ej: atención al cliente, cobro con tarjeta y efectivo, reposición de mercadería."></textarea></label>
+              </div>
+            </div>
+            <div class="repeat-card alternative-experience" data-experience-panel="none">
+              <h3>Si todavía no tuviste empleo formal</h3>
+              <p>También podés sumar actividades que demuestren responsabilidad, aprendizaje o trato con personas.</p>
+              <label>Changas, voluntariados, emprendimientos o proyectos<textarea name="informalExperience" rows="4" placeholder="Ej: Ayudé en un negocio familiar atendiendo clientes y ordenando mercadería. Participé en proyectos escolares o voluntariados."></textarea></label>
+              <div class="suggestion-box">
+                <p>Ideas útiles</p>
+                <div class="chip-row" data-target="informalExperience" data-chip-kind="informal">
+                  <button type="button">Ayuda en negocio familiar</button>
+                  <button type="button">Voluntariado</button>
+                  <button type="button">Cuidado de personas</button>
+                  <button type="button">Emprendimiento propio</button>
+                  <button type="button">Proyectos escolares</button>
+                  <button type="button">Atención a personas</button>
+                </div>
               </div>
             </div>
             <button class="button secondary small-button" type="button" id="add-experience">+ Agregar otra experiencia</button>
@@ -248,6 +264,9 @@
           }
         });
         form?.elements.experienceType?.dispatchEvent(new Event("change", { bubbles: true }));
+        document.querySelectorAll("[data-choice-for='experienceType'] button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.value === form?.elements.experienceType?.value);
+        });
         persistArea(order.data.targetArea || "");
         restoreSavedArea();
         document.querySelector('[name="targetArea"]')?.dispatchEvent(new Event("change", { bubbles: true }));
@@ -302,6 +321,7 @@
         setupSuggestionChips();
         setupAreaSuggestions();
         setupChoiceRows();
+        setupExperiencePanels();
         const steps = Array.from(document.querySelectorAll(".wizard-step"));
         const previous = document.querySelector("#prev-step");
         const next = document.querySelector("#next-step");
@@ -510,6 +530,24 @@
           field?.addEventListener("change", sync);
           sync();
         });
+      }
+
+      function setupExperiencePanels() {
+        const field = document.querySelector('[name="experienceType"]');
+        const addExperience = document.querySelector("#add-experience");
+        const sync = () => {
+          const value = field?.value || "formal";
+          document.querySelectorAll("[data-experience-panel]").forEach((panel) => {
+            const panelType = panel.dataset.experiencePanel;
+            const visible = value === "formal" ? panelType === "formal" : panelType === "none";
+            panel.hidden = !visible;
+          });
+          if (addExperience) {
+            addExperience.hidden = value !== "formal";
+          }
+        };
+        field?.addEventListener("change", sync);
+        sync();
       }
 
       function handleChipClick(event) {

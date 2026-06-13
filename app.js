@@ -196,7 +196,7 @@ function validateResumeData(data, planId) {
   if (!normalizeText(data.targetRole)) {
     reports.push({ severity: "warning", message: "Conviene indicar el puesto o rubro objetivo." });
   }
-  const hasExperience = normalizeText(data.experience) || (data.experiences || []).some((item) => item.tasks || item.role || item.place);
+  const hasExperience = normalizeText(data.experience) || normalizeText(data.informalExperience) || (data.experiences || []).some((item) => item.tasks || item.role || item.place);
   const hasEducation = normalizeText(data.education) || (data.educationItems || []).some((item) => item.text);
   if (!hasExperience && !hasEducation && !normalizeText(data.skills)) {
     reports.push({ severity: "critical", message: "Cargá experiencia, estudios o habilidades para generar el CV." });
@@ -266,6 +266,14 @@ function formatExperienceDateRange(item) {
 }
 
 function renderExperiences(data) {
+  if (normalizeText(data.informalExperience) && data.experienceType !== "formal") {
+    return `
+      <div class="cv-entry">
+        <p><strong>Experiencia práctica y actividades</strong></p>
+        ${renderBullets(splitItems(data.informalExperience)) || `<p>${formatMultiline(data.informalExperience)}</p>`}
+      </div>
+    `;
+  }
   const items = data.experiences?.length ? data.experiences : [{
     place: data.experiencePlace,
     role: data.experienceRole,
