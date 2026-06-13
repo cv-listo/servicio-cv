@@ -251,9 +251,27 @@ function splitItems(value) {
     .slice(0, 8);
 }
 
+function polishCvText(value) {
+  const dictionary = [
+    [/\bgondolas\b/gi, "góndolas"],
+    [/\bgondola\b/gi, "góndola"],
+    [/\bposnet\b/gi, "Posnet"],
+    [/\bwhatsapp\b/gi, "WhatsApp"],
+    [/\bexcel\b/gi, "Excel"],
+    [/\batendia\b/gi, "atendía"],
+  ];
+  return dictionary.reduce((text, [pattern, replacement]) => text.replace(pattern, replacement), normalizeText(value));
+}
+
+function sentenceCase(value) {
+  const text = polishCvText(value);
+  if (!text) return "";
+  return text.charAt(0).toLocaleUpperCase("es-AR") + text.slice(1);
+}
+
 function renderBullets(items) {
   if (!items.length) return "";
-  return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+  return `<ul>${items.map((item) => `<li>${escapeHtml(sentenceCase(item))}</li>`).join("")}</ul>`;
 }
 
 function meaningfulOption(value) {
@@ -301,7 +319,7 @@ function renderExperiences(data) {
       const range = formatExperienceDateRange(item);
       return `
         <div class="cv-entry">
-          ${title ? `<p><strong>${escapeHtml(title)}</strong>${range ? ` · ${escapeHtml(range)}` : ""}</p>` : ""}
+          ${title ? `<p><strong>${escapeHtml(sentenceCase(title))}</strong>${range ? ` · ${escapeHtml(range)}` : ""}</p>` : ""}
           ${renderBullets(splitItems(item.tasks)) || ""}
         </div>
       `;
@@ -331,10 +349,10 @@ function buildResumeHtml(data) {
     .filter(Boolean)
     .join(" · ");
 
-  const target = normalizeText(data.targetRole);
+  const target = polishCvText(data.targetRole);
   const company = normalizeText(data.targetCompany);
   const educationText = normalizeText(data.education) || [data.educationLevel, data.educationStatus]
-    .map(normalizeText)
+    .map(polishCvText)
     .filter(Boolean)
     .join(" - ");
   const skills = splitItems(data.skills);
@@ -342,7 +360,7 @@ function buildResumeHtml(data) {
     ? `Perfil orientado a ${target}${company ? ` en ${company}` : ""}.`
     : "Perfil orientado a nuevas oportunidades laborales.";
   const objectiveDetails = [
-    data.targetArea ? `Área: ${data.targetArea}` : "",
+    data.targetArea ? `Área: ${polishCvText(data.targetArea)}` : "",
     target ? `Puesto objetivo: ${target}` : "",
     meaningfulOption(data.modality) ? `Modalidad: ${meaningfulOption(data.modality)}` : "",
     meaningfulOption(data.availability) ? `Disponibilidad: ${meaningfulOption(data.availability)}` : "",
@@ -363,7 +381,7 @@ function buildResumeHtml(data) {
       </header>
       <section>
         <h2>Perfil</h2>
-        <p>${formatMultiline(data.summary) || escapeHtml(profileFallback)}</p>
+        <p>${formatMultiline(polishCvText(data.summary)) || escapeHtml(profileFallback)}</p>
       </section>
       ${objectiveDetails ? `<section><h2>Objetivo</h2><p>${escapeHtml(objectiveDetails)}</p></section>` : ""}
       ${experienceHtml ? `<section>
