@@ -30,14 +30,14 @@ Profesional - $20.000 ARS
   LLM económico para mejorar redacción.
   Perfil profesional y experiencia mejor redactados.
   PDF + DOCX.
-  Hasta 2 generaciones.
+  Preview editable y una única generación final.
 
 Enfocado - $30.000 ARS
   LLM obligatorio.
   Adaptación a puesto, empresa y aviso laboral.
   Versión ATS-friendly.
   PDF + DOCX.
-  Hasta 3 generaciones.
+  Preview editable y una única generación final.
 ```
 
 ## Flujo técnico
@@ -62,9 +62,14 @@ Usuario elige plan
 
 ```text
 created
+discount_applied
+discount_test
 payment_pending
 paid
 form_started
+validating
+preview_ready
+final_confirmed
 processing
 generated
 delivered
@@ -78,14 +83,20 @@ error
 ```sql
 orders (
   id TEXT PRIMARY KEY,
+  token TEXT,
   email TEXT,
   plan_id TEXT,
   amount INTEGER,
   currency TEXT,
   status TEXT,
+  discount_code TEXT,
   mp_preference_id TEXT,
   mp_payment_id TEXT,
   external_reference TEXT,
+  data_json TEXT,
+  cv_json TEXT,
+  display_flags TEXT,
+  generated_at TEXT,
   created_at TEXT,
   paid_at TEXT,
   expires_at TEXT
@@ -135,6 +146,43 @@ Usar Checkout Pro, no links fijos, para poder:
 - impedir generación sin pago aprobado.
 
 El frontend nunca decide si el pedido está pagado. El Worker consulta Mercado Pago y actualiza D1.
+
+## Código TEST
+
+El código de descuento `TEST` sirve solo para pruebas. Debe validarse del lado servidor.
+
+Reglas:
+
+- normalizar con `trim().toUpperCase()`;
+- permitirlo solo si está habilitado por variable/secret del entorno;
+- crear orden con estado `discount_test`;
+- saltear Mercado Pago;
+- habilitar formulario y generación como si estuviera pagado;
+- deshabilitar o rotar el código antes de producción pública.
+
+## Generación única
+
+Cada compra habilita una única generación final.
+
+Antes de generar:
+
+- formulario editable;
+- preview editable;
+- validaciones client-side y server-side;
+- advertencias de calidad;
+- confirmación explícita del usuario.
+
+Después de generar:
+
+- bloquear edición;
+- permitir descarga del resultado;
+- no permitir regeneraciones sobre el mismo pedido.
+
+Regla:
+
+```text
+Si orders.generated_at no es null, /api/generate-final responde 409.
+```
 
 ## Archivos
 
@@ -216,11 +264,19 @@ Etapa 5:
 
 ## Privacidad
 
-No pedir:
+Datos personales opcionales:
 
 - DNI;
-- CUIL;
-- domicilio exacto;
+- teléfono;
+- email;
+- dirección o zona de residencia;
+- localidad/provincia;
+- LinkedIn.
+
+El usuario debe poder elegir qué datos se muestran en el CV final mediante `display_flags`.
+
+No pedir como campos dedicados:
+
 - estado civil;
 - datos de salud;
 - afiliación política o sindical.
