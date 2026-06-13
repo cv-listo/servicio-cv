@@ -1,11 +1,11 @@
 import { json, nowIso, randomId, readJson } from "./_utils.js";
-import { sendEmail } from "./_email.js";
 
 export async function onRequestPost({ request, env }) {
   const body = await readJson(request);
   const orderId = String(body.orderId || "");
   const token = String(body.token || "");
   const contentHash = String(body.contentHash || randomId("hash"));
+  const cvData = body.cvData || null;
 
   const order = await env.DB.prepare("SELECT * FROM orders WHERE id = ? AND token = ?")
     .bind(orderId, token)
@@ -25,9 +25,9 @@ export async function onRequestPost({ request, env }) {
 
   const now = nowIso();
   await env.DB.prepare(
-    "UPDATE orders SET status = 'generated', generated_at = ?, updated_at = ? WHERE id = ?"
+    "UPDATE orders SET status = 'generated', cv_json = ?, generated_at = ?, updated_at = ? WHERE id = ?"
   )
-    .bind(now, now, orderId)
+    .bind(cvData ? JSON.stringify(cvData) : order.data_json || "{}", now, now, orderId)
     .run();
 
   await env.DB.prepare(
@@ -35,19 +35,6 @@ export async function onRequestPost({ request, env }) {
   )
     .bind(randomId("doc"), orderId, contentHash, now)
     .run();
-
-  if (order.email) {
-    const origin = new URL(request.url).origin;
-    await sendEmail(env, {
-      to: order.email,
-      subject: "Tu CV fue generado",
-      html: `
-        <p>Tu CV fue generado correctamente.</p>
-        <p>Podés volver a descargarlo desde este enlace:</p>
-        <p><a href="${origin}/descargar.html?order=${orderId}&token=${token}">Descargar CV</a></p>
-      `,
-    });
-  }
 
   return json({ ok: true, status: "generated", generatedAt: now });
 }

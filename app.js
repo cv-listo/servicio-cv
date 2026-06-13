@@ -115,11 +115,11 @@ async function saveBackendDraft(id, token, data) {
   return response.json();
 }
 
-async function finalizeBackendOrder(id, token, contentHash) {
+async function finalizeBackendOrder(id, token, contentHash, cvData = null) {
   const response = await fetch("/api/generate-final", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ orderId: id, token, contentHash }),
+    body: JSON.stringify({ orderId: id, token, contentHash, cvData }),
   });
   if (!response.ok) throw new Error("Backend finalize unavailable");
   return response.json();

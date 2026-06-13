@@ -17,6 +17,7 @@
         <a href="#como-funciona">Cómo funciona</a>
         <a href="#planes">Planes</a>
         <a href="./retomar.html">Retomar pedido</a>
+        <a href="#soporte">Soporte</a>
         <a href="#privacidad">Privacidad</a>
         <a class="nav-cta" href="#planes">Ver precios</a>
       </nav>
@@ -205,6 +206,24 @@
             <p>Es una versión simple, clara y de una columna, pensada para que sistemas automáticos de selección puedan leer mejor el contenido.</p>
           </article>
         </div>
+      </section>
+
+      <section class="section tinted" id="soporte">
+        <div class="section-heading">
+          <p class="eyebrow">Soporte</p>
+          <h2>¿Tuviste un problema con el pago o la descarga?</h2>
+          <p>Si algo falla, enviá el comprobante de pago y un contacto para revisar el pedido manualmente.</p>
+        </div>
+        <form class="support-form" action="https://formsubmit.co/lic.poletti@gmail.com" method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="_subject" value="Soporte CV Listo" />
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="text" name="_honey" class="hidden-field" tabindex="-1" autocomplete="off" />
+          <label>Email de contacto<input type="email" name="email" placeholder="tu@email.com" required /></label>
+          <label>ID del pedido, si lo tenés<input type="text" name="order_id" placeholder="order_..." /></label>
+          <label>Qué pasó<textarea name="detalle" rows="4" placeholder="Contá brevemente el problema" required></textarea></label>
+          <label>Comprobante de pago<input type="file" name="comprobante" accept=".pdf,.jpg,.jpeg,.png" /></label>
+          <button class="button primary" type="submit">Enviar soporte</button>
+        </form>
       </section>
 
       <section class="section tinted" id="privacidad">
