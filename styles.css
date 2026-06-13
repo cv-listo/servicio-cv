@@ -384,13 +384,59 @@ h3 {
 }
 
 .app-form input,
-.app-form textarea {
+.app-form textarea,
+.app-form select {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 11px 13px;
   color: var(--ink);
   font: inherit;
+}
+
+.wizard-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-radius: 18px;
+  padding: 12px 14px;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  font-weight: 900;
+}
+
+.wizard-progress span {
+  font-size: 0.86rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.wizard-step {
+  display: none;
+}
+
+.wizard-step.active {
+  display: grid;
+  gap: 18px;
+}
+
+.wizard-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+
+.wizard-actions button {
+  min-width: 130px;
+}
+
+.wizard-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .app-form button,

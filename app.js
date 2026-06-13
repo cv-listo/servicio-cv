@@ -190,6 +190,14 @@ function buildResumeHtml(data) {
 
   const target = normalizeText(data.targetRole);
   const company = normalizeText(data.targetCompany);
+  const experienceText = normalizeText(data.experience) || [data.experienceRole, data.experiencePlace]
+    .map(normalizeText)
+    .filter(Boolean)
+    .join(" - ");
+  const educationText = normalizeText(data.education) || [data.educationLevel, data.educationStatus]
+    .map(normalizeText)
+    .filter(Boolean)
+    .join(" - ");
   const profileFallback = target
     ? `Perfil orientado a ${target}${company ? ` en ${company}` : ""}.`
     : "Perfil orientado a nuevas oportunidades laborales.";
@@ -206,11 +214,11 @@ function buildResumeHtml(data) {
       </section>
       <section>
         <h2>Experiencia</h2>
-        <p>${formatMultiline(data.experience) || "Experiencia a completar."}</p>
+        <p>${formatMultiline(experienceText) || "Experiencia a completar."}</p>
       </section>
       <section>
         <h2>Educación</h2>
-        <p>${formatMultiline(data.education) || "Educación a completar."}</p>
+        <p>${formatMultiline(educationText) || "Educación a completar."}</p>
       </section>
       <section>
         <h2>Habilidades</h2>

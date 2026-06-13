@@ -16,89 +16,137 @@
           <p class="lead">Estos datos se usan para armar la vista previa. Los campos como DNI, teléfono o dirección son opcionales y podés elegir si se muestran en el CV.</p>
         </div>
 
-        <form class="app-form wide" id="resume-form">
-          <div class="form-section">
-            <h2>Datos visibles en el CV</h2>
-            <p>Completá solo lo que quieras usar. Podés decidir qué datos se muestran.</p>
-          </div>
-          <div class="form-grid">
-            <label>
-              Nombre completo *
-              <input type="text" name="fullName" required />
-            </label>
-            <label>
-              Puesto o rubro objetivo *
-              <input type="text" name="targetRole" required />
-            </label>
-            <label>
-              Email
-              <input type="email" name="email" />
-              <span class="toggle-row"><input type="checkbox" name="showEmail" checked /> <span>Mostrar en el CV</span></span>
-            </label>
-            <label>
-              Teléfono / WhatsApp
-              <input type="tel" name="phone" />
-              <span class="toggle-row"><input type="checkbox" name="showPhone" checked /> <span>Mostrar en el CV</span></span>
-            </label>
-            <label>
-              DNI
-              <input type="text" name="dni" />
-              <span class="toggle-row"><input type="checkbox" name="showDni" /> <span>Mostrar en el CV</span></span>
-            </label>
-            <label>
-              Dirección o zona
-              <input type="text" name="address" />
-              <span class="toggle-row"><input type="checkbox" name="showAddress" /> <span>Mostrar en el CV</span></span>
-            </label>
-            <label>
-              LinkedIn o portfolio
-              <input type="url" name="linkedin" />
-            </label>
-            <label>
-              Localidad / provincia
-              <input type="text" name="location" />
-            </label>
+        <form class="app-form wide wizard" id="resume-form">
+          <div class="wizard-progress">
+            <span id="step-label">Paso 1 de 6</span>
+            <div><strong id="step-title">Contacto</strong></div>
           </div>
 
-          <div class="form-section">
-            <h2>Contenido del CV</h2>
-            <p>Esta información se organiza en la vista previa A4.</p>
-          </div>
-          <label>
-            Resumen o perfil
-            <textarea name="summary" rows="3" placeholder="Contá brevemente qué tipo de perfil querés mostrar"></textarea>
-          </label>
-          <label>
-            Experiencia laboral o informal
-            <textarea name="experience" rows="5" placeholder="Puestos, empresas, tareas, logros, changas o proyectos"></textarea>
-          </label>
-          <label>
-            Educación y cursos
-            <textarea name="education" rows="3" placeholder="Estudios, instituciones, cursos o certificaciones"></textarea>
-          </label>
-          <label>
-            Habilidades
-            <textarea name="skills" rows="3" placeholder="Herramientas, idiomas, oficios, atención al cliente, ventas, etc."></textarea>
-          </label>
-          <div class="focused-only">
+          <section class="wizard-step active" data-step="0">
+            <div class="form-section">
+              <h2>Datos personales</h2>
+              <p>Vos decidís qué datos aparecen en el CV final.</p>
+            </div>
+            <div class="form-grid">
+              <label>Nombre completo *<input type="text" name="fullName" placeholder="Ej: Ana Martínez" required /></label>
+              <label>Email *<input type="email" name="email" placeholder="ana@email.com" required /><span class="toggle-row"><input type="checkbox" name="showEmail" checked /> <span>Mostrar en el CV</span></span></label>
+              <label>Teléfono / WhatsApp<input type="tel" name="phone" placeholder="Ej: 11 2345 6789" /><span class="toggle-row"><input type="checkbox" name="showPhone" checked /> <span>Mostrar en el CV</span></span></label>
+              <label>DNI<input type="text" name="dni" placeholder="Opcional" /><span class="toggle-row"><input type="checkbox" name="showDni" /> <span>Mostrar en el CV</span></span></label>
+              <label>Dirección o zona<input type="text" name="address" placeholder="Ej: Palermo, CABA" /><span class="toggle-row"><input type="checkbox" name="showAddress" /> <span>Mostrar en el CV</span></span></label>
+              <label>Localidad / provincia<input type="text" name="location" placeholder="Ej: Córdoba capital" /></label>
+              <label>LinkedIn o portfolio<input type="url" name="linkedin" placeholder="https://linkedin.com/in/..." /></label>
+            </div>
+          </section>
+
+          <section class="wizard-step" data-step="1">
+            <div class="form-section">
+              <h2>Objetivo laboral</h2>
+              <p>No hace falta escribir perfecto; el sistema lo ordena.</p>
+            </div>
+            <div class="form-grid">
+              <label>Área buscada *
+                <select name="targetArea" required>
+                  <option value="">Elegí una opción</option>
+                  <option>Administración y oficina</option>
+                  <option>Comercio y ventas</option>
+                  <option>Atención al cliente</option>
+                  <option>Gastronomía</option>
+                  <option>Logística y depósito</option>
+                  <option>Oficios y servicios</option>
+                  <option>Salud</option>
+                  <option>Tecnología</option>
+                  <option>Primer empleo</option>
+                  <option>Otro</option>
+                </select>
+              </label>
+              <label>Puesto o rubro objetivo *<input type="text" name="targetRole" placeholder="Ej: cajera, vendedor, administrativo" required /></label>
+              <label>Modalidad
+                <select name="modality">
+                  <option>Indistinto</option>
+                  <option>Presencial</option>
+                  <option>Híbrido</option>
+                  <option>Remoto</option>
+                </select>
+              </label>
+              <label>Disponibilidad
+                <select name="availability">
+                  <option>Indistinta</option>
+                  <option>Full-time</option>
+                  <option>Part-time</option>
+                  <option>Turno mañana</option>
+                  <option>Turno tarde/noche</option>
+                  <option>Fines de semana</option>
+                </select>
+              </label>
+            </div>
+            <label>¿Qué te gustaría destacar?<textarea name="summary" rows="3" placeholder="Ej: Tengo facilidad para tratar con el público, soy puntual y aprendo rápido."></textarea></label>
+          </section>
+
+          <section class="wizard-step" data-step="2">
+            <div class="form-section">
+              <h2>Experiencia</h2>
+              <p>También cuentan changas, emprendimientos, voluntariados o ayuda familiar.</p>
+            </div>
+            <label>Tipo de experiencia
+              <select name="experienceType">
+                <option value="formal">Tengo experiencia formal</option>
+                <option value="informal">Trabajos informales, changas o negocio familiar</option>
+                <option value="none">No tengo experiencia previa</option>
+              </select>
+            </label>
+            <div class="form-grid">
+              <label>Empresa, lugar o actividad<input type="text" name="experiencePlace" placeholder="Ej: Supermercado Sol / Manicuría a domicilio" /></label>
+              <label>Puesto o tarea<input type="text" name="experienceRole" placeholder="Ej: Cajera y reposición / Atención a clientes" /></label>
+              <label>Mes inicio<select name="startMonth"><option value="">Mes</option></select></label>
+              <label>Año inicio<select name="startYear"><option value="">Año</option></select></label>
+              <label>Mes fin<select name="endMonth"><option value="">Mes</option></select></label>
+              <label>Año fin<select name="endYear"><option value="">Año</option></select></label>
+            </div>
+            <span class="toggle-row"><input type="checkbox" name="isCurrent" /> <span>Trabajo actualmente acá</span></span>
+            <label>Tareas principales<textarea name="experience" rows="4" placeholder="Ej: atención al cliente, cobro con tarjeta y efectivo, reposición de mercadería."></textarea></label>
+          </section>
+
+          <section class="wizard-step" data-step="3">
+            <div class="form-section">
+              <h2>Educación y habilidades</h2>
+              <p>Completá estudios, cursos y habilidades útiles para el puesto.</p>
+            </div>
+            <div class="form-grid">
+              <label>Nivel educativo<select name="educationLevel"><option>Secundario</option><option>Terciario</option><option>Universitario</option><option>Curso / oficio</option><option>Otro</option></select></label>
+              <label>Estado<select name="educationStatus"><option>Completo</option><option>En curso</option><option>Incompleto / pausado</option></select></label>
+            </div>
+            <label>Educación y cursos<textarea name="education" rows="3" placeholder="Ej: Secundario completo, curso de Excel básico, manipulación de alimentos."></textarea></label>
+            <label>Habilidades<textarea name="skills" rows="3" placeholder="Ej: atención al cliente, manejo de caja, Excel, trabajo en equipo, puntualidad."></textarea></label>
+          </section>
+
+          <section class="wizard-step focused-only" data-step="4">
             <div class="form-section">
               <h2>Plan Enfocado</h2>
-              <p>Estos campos se usan para adaptar el CV a una búsqueda concreta.</p>
+              <p>Estos datos permiten adaptar el CV a un puesto y empresa específicos.</p>
             </div>
-            <label>
-              Empresa objetivo
-              <input type="text" name="targetCompany" placeholder="Opcional: nombre de la empresa" />
+            <div class="form-grid">
+              <label>Empresa objetivo<input type="text" name="targetCompany" placeholder="Ej: Frávega, supermercado, clínica" /></label>
+              <label>Tono deseado<select name="desiredTone"><option>Formal</option><option>Moderno</option><option>Simple y operativo</option></select></label>
+            </div>
+            <label>Aviso laboral o requisitos del puesto<textarea name="jobAd" rows="5" placeholder="Pegá el texto del aviso o los requisitos principales."></textarea></label>
+          </section>
+
+          <section class="wizard-step" data-step="5">
+            <div class="form-section">
+              <h2>Revisión final</h2>
+              <p>Antes de generar, confirmá que la información es correcta.</p>
+            </div>
+            <label class="consent">
+              <input type="checkbox" name="consent" required />
+              Acepto que mis datos se procesen para generar este CV y entiendo que debo revisar la vista previa antes de la generación final.
             </label>
-            <label>
-              Aviso laboral o requisitos del puesto
-              <textarea name="jobAd" rows="4" placeholder="Para el plan Enfocado: pegá el texto del aviso o sus requisitos"></textarea>
-            </label>
+          </section>
+
+          <div class="wizard-actions">
+            <button class="button secondary" type="button" id="prev-step">Volver</button>
+            <button class="button primary" type="button" id="next-step">Siguiente</button>
+            <button class="button primary" type="submit" id="submit-form">Ver vista previa</button>
           </div>
-          <label class="consent">
-            <input type="checkbox" name="consent" required />
-            Acepto que mis datos se procesen para generar este CV y entiendo que debo revisar la vista previa antes de la generación final.
-          </label>
-          <button class="button primary" type="submit">Ver vista previa</button>
         </form>
       </section>
     </main>
@@ -123,9 +171,7 @@
           return;
         }
 
-        if (order?.planId !== "focused") {
-          document.querySelectorAll(".focused-only").forEach((element) => element.remove());
-        }
+        setupWizard(order?.planId || "basic");
 
         if (order?.data) {
         const form = document.querySelector("#resume-form");
@@ -139,6 +185,64 @@
           }
         });
       }
+      }
+
+      function populateDateSelects() {
+        const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        document.querySelectorAll('select[name$="Month"]').forEach((select) => {
+          if (select.options.length > 1) return;
+          months.forEach((month, index) => {
+            select.insertAdjacentHTML("beforeend", `<option value="${String(index + 1).padStart(2, "0")}">${month}</option>`);
+          });
+        });
+        const currentYear = new Date().getFullYear();
+        document.querySelectorAll('select[name$="Year"]').forEach((select) => {
+          if (select.options.length > 1) return;
+          for (let year = currentYear; year >= 1980; year -= 1) {
+            select.insertAdjacentHTML("beforeend", `<option value="${year}">${year}</option>`);
+          }
+        });
+      }
+
+      function setupWizard(planId) {
+        populateDateSelects();
+        if (planId !== "focused") {
+          document.querySelectorAll(".focused-only").forEach((element) => element.remove());
+        }
+        const steps = Array.from(document.querySelectorAll(".wizard-step"));
+        const previous = document.querySelector("#prev-step");
+        const next = document.querySelector("#next-step");
+        const submit = document.querySelector("#submit-form");
+        const label = document.querySelector("#step-label");
+        const title = document.querySelector("#step-title");
+        let current = 0;
+
+        const render = () => {
+          steps.forEach((step, index) => step.classList.toggle("active", index === current));
+          previous.disabled = current === 0;
+          next.hidden = current === steps.length - 1;
+          submit.hidden = current !== steps.length - 1;
+          label.textContent = `Paso ${current + 1} de ${steps.length}`;
+          title.textContent = steps[current].querySelector("h2")?.textContent || "Formulario";
+        };
+
+        previous.addEventListener("click", () => {
+          current = Math.max(0, current - 1);
+          render();
+        });
+
+        next.addEventListener("click", () => {
+          const requiredFields = Array.from(steps[current].querySelectorAll("[required]"));
+          const invalid = requiredFields.find((field) => !field.checkValidity());
+          if (invalid) {
+            invalid.reportValidity();
+            return;
+          }
+          current = Math.min(steps.length - 1, current + 1);
+          render();
+        });
+
+        render();
       }
 
       loadOrder();
