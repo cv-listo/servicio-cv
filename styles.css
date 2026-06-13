@@ -569,6 +569,19 @@ h3 {
   text-transform: uppercase;
 }
 
+.cv-page p {
+  margin: 0 0 8px;
+}
+
+.cv-page ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.cv-page li {
+  margin-bottom: 4px;
+}
+
 .download-card {
   max-width: 920px;
 }

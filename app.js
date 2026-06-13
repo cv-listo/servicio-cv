@@ -157,6 +157,19 @@ function validateResumeData(data, planId) {
   if (!normalizeText(data.experience) && !normalizeText(data.education) && !normalizeText(data.skills)) {
     reports.push({ severity: "critical", message: "Cargá experiencia, estudios o habilidades para generar el CV." });
   }
+  if (normalizeText(data.startYear) && normalizeText(data.endYear) && !data.isCurrent) {
+    const start = Number(data.startYear) * 12 + Number(data.startMonth || 1);
+    const end = Number(data.endYear) * 12 + Number(data.endMonth || 12);
+    if (start > end) {
+      reports.push({ severity: "critical", message: "La fecha de inicio de la experiencia no puede ser posterior a la fecha de fin." });
+    }
+  }
+  if (!normalizeText(data.experience) && data.experienceType !== "none") {
+    reports.push({ severity: "warning", message: "La experiencia quedó breve. Agregar tareas ayuda a mejorar el CV." });
+  }
+  if (!normalizeText(data.skills)) {
+    reports.push({ severity: "warning", message: "Agregar habilidades mejora la lectura del CV." });
+  }
   if (planId === "focused" && !normalizeText(data.jobAd)) {
     reports.push({ severity: "critical", message: "El plan Enfocado requiere el texto o resumen del aviso laboral." });
   }
@@ -176,6 +189,26 @@ function formatMultiline(value) {
   return escapeHtml(value).replace(/\n+/g, "<br />");
 }
 
+function splitItems(value) {
+  return normalizeText(value)
+    .split(/\n|;|,/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 8);
+}
+
+function renderBullets(items) {
+  if (!items.length) return "";
+  return `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+}
+
+function formatDateRange(data) {
+  const start = [data.startMonth, data.startYear].map(normalizeText).filter(Boolean).join("/");
+  const end = data.isCurrent === "on" ? "Actualidad" : [data.endMonth, data.endYear].map(normalizeText).filter(Boolean).join("/");
+  if (!start && !end) return "";
+  return [start, end].filter(Boolean).join(" - ");
+}
+
 function buildResumeHtml(data) {
   const contact = [
     data.showEmail === "on" ? data.email : "",
@@ -190,17 +223,22 @@ function buildResumeHtml(data) {
 
   const target = normalizeText(data.targetRole);
   const company = normalizeText(data.targetCompany);
-  const experienceText = normalizeText(data.experience) || [data.experienceRole, data.experiencePlace]
-    .map(normalizeText)
-    .filter(Boolean)
-    .join(" - ");
+  const experienceTitle = [data.experienceRole, data.experiencePlace].map(normalizeText).filter(Boolean).join(" · ");
+  const experienceText = normalizeText(data.experience);
   const educationText = normalizeText(data.education) || [data.educationLevel, data.educationStatus]
     .map(normalizeText)
     .filter(Boolean)
     .join(" - ");
+  const skills = splitItems(data.skills);
+  const experienceBullets = splitItems(experienceText);
+  const dateRange = formatDateRange(data);
   const profileFallback = target
     ? `Perfil orientado a ${target}${company ? ` en ${company}` : ""}.`
     : "Perfil orientado a nuevas oportunidades laborales.";
+  const objectiveDetails = [data.targetArea, data.modality, data.availability]
+    .map(normalizeText)
+    .filter(Boolean)
+    .join(" · ");
 
   return `
     <article class="cv-page">
@@ -212,9 +250,11 @@ function buildResumeHtml(data) {
         <h2>Perfil</h2>
         <p>${formatMultiline(data.summary) || escapeHtml(profileFallback)}</p>
       </section>
+      ${objectiveDetails ? `<section><h2>Objetivo</h2><p>${escapeHtml(objectiveDetails)}</p></section>` : ""}
       <section>
         <h2>Experiencia</h2>
-        <p>${formatMultiline(experienceText) || "Experiencia a completar."}</p>
+        ${experienceTitle ? `<p><strong>${escapeHtml(experienceTitle)}</strong>${dateRange ? ` · ${escapeHtml(dateRange)}` : ""}</p>` : ""}
+        ${renderBullets(experienceBullets) || "<p>Experiencia a completar.</p>"}
       </section>
       <section>
         <h2>Educación</h2>
@@ -222,8 +262,9 @@ function buildResumeHtml(data) {
       </section>
       <section>
         <h2>Habilidades</h2>
-        <p>${formatMultiline(data.skills) || "Habilidades a completar."}</p>
+        ${renderBullets(skills) || "<p>Habilidades a completar.</p>"}
       </section>
+      ${normalizeText(data.jobAd) ? `<section><h2>Enfoque del puesto</h2><p>${formatMultiline(data.jobAd)}</p></section>` : ""}
     </article>
   `;
 }
