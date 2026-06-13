@@ -167,6 +167,11 @@ h3 {
   color: var(--accent-dark);
 }
 
+.button.disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
 .section-heading {
   max-width: 760px;
   margin-bottom: 28px;
@@ -282,6 +287,15 @@ h3 {
   margin: 8px auto;
 }
 
+.footer a {
+  color: inherit;
+  font-weight: 800;
+}
+
+.mobile-sticky-cta {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .problem-grid,
   .steps,
@@ -371,6 +385,28 @@ h3 {
 
   .form-panel .button {
     width: 100%;
+  }
+
+  .mobile-sticky-cta {
+    position: fixed;
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 14px 34px rgba(23, 32, 51, 0.22);
+    font-weight: 900;
+    text-decoration: none;
+  }
+
+  body {
+    padding-bottom: 76px;
   }
 
   .footer {
