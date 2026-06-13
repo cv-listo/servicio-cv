@@ -24,9 +24,7 @@
 
         <form class="app-form wide wizard" id="resume-form">
           <div class="wizard-progress">
-            <div class="progress-track" aria-hidden="true">
-              <span></span><span></span><span></span><span></span><span></span>
-            </div>
+            <div class="progress-track" id="progress-track" aria-hidden="true"></div>
             <span id="step-label">Paso 1 de 6</span>
             <div><strong id="step-title">Contacto</strong></div>
           </div>
@@ -329,7 +327,9 @@
         const autosaveNote = document.querySelector("#autosave-note");
         const label = document.querySelector("#step-label");
         const title = document.querySelector("#step-title");
+        const progressTrack = document.querySelector("#progress-track");
         let current = 0;
+        let lastRenderedArea = "";
 
         const autosaveDraft = async () => {
           const form = document.querySelector("#resume-form");
@@ -345,9 +345,11 @@
         const render = () => {
           restoreSavedArea();
           const restoredArea = document.getElementById("area");
-          if (restoredArea?.value) {
+          if (restoredArea?.value && restoredArea.value !== lastRenderedArea) {
+            lastRenderedArea = restoredArea.value;
             restoredArea.dispatchEvent(new Event("change", { bubbles: true }));
           }
+          progressTrack.innerHTML = steps.map(() => "<span></span>").join("");
           steps.forEach((step, index) => step.classList.toggle("active", index === current));
           previous.disabled = current === 0;
           next.hidden = current === steps.length - 1;
@@ -357,7 +359,7 @@
           label.textContent = `Paso ${current + 1} de ${steps.length}`;
           title.textContent = steps[current].querySelector("h2")?.textContent || "Formulario";
           document.documentElement.style.setProperty("--step", current + 1);
-          document.querySelectorAll(".progress-track span").forEach((dot, index) => {
+          progressTrack.querySelectorAll("span").forEach((dot, index) => {
             dot.classList.toggle("done", index <= current);
           });
         };
