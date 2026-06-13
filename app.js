@@ -2,22 +2,22 @@ const PLANS = {
   basic: {
     id: "basic",
     name: "Básico",
-    price: "$10.000",
-    amount: 10000,
+    price: "$9.999",
+    amount: 9999,
     includes: ["CV A4 simple", "PDF", "Sin IA avanzada", "Una generación final"],
   },
   professional: {
     id: "professional",
     name: "Profesional",
-    price: "$20.000",
-    amount: 20000,
+    price: "$19.999",
+    amount: 19999,
     includes: ["Mejora de redacción", "PDF + DOCX", "Vista previa editable", "Una generación final"],
   },
   focused: {
     id: "focused",
     name: "Enfocado",
-    price: "$30.000",
-    amount: 30000,
+    price: "$29.999",
+    amount: 29999,
     includes: ["Puesto y empresa objetivo", "Aviso laboral", "Versión ATS-friendly", "Una generación final"],
   },
 };

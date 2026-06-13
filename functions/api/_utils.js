@@ -1,7 +1,7 @@
 export const PLANS = {
-  basic: { id: "basic", name: "Básico", amount: 10000 },
-  professional: { id: "professional", name: "Profesional", amount: 20000 },
-  focused: { id: "focused", name: "Enfocado", amount: 30000 },
+  basic: { id: "basic", name: "Básico", amount: 9999 },
+  professional: { id: "professional", name: "Profesional", amount: 19999 },
+  focused: { id: "focused", name: "Enfocado", amount: 29999 },
 };
 
 export function json(data, init = {}) {

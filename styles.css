@@ -399,6 +399,7 @@ h3 {
 .price-card {
   display: grid;
   gap: 14px;
+  grid-template-rows: auto minmax(46px, auto) auto 1fr auto auto;
 }
 
 .price-card.featured {
@@ -406,30 +407,8 @@ h3 {
   transform: translateY(-6px);
 }
 
-.price-card.featured::before {
-  content: "Más elegido";
-  justify-self: start;
-  border-radius: 999px;
-  padding: 6px 10px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 900;
-}
-
 .price-card:nth-child(3) {
   border-color: rgba(124, 58, 237, 0.42);
-}
-
-.price-card:nth-child(3)::before {
-  content: "Más completo";
-  justify-self: start;
-  border-radius: 999px;
-  padding: 6px 10px;
-  background: linear-gradient(135deg, var(--accent), #7c3aed);
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 900;
 }
 
 .price-card li::marker {
@@ -446,12 +425,26 @@ h3 {
 }
 
 .plan-label {
+  justify-self: start;
+  border-radius: 999px;
   margin: 0;
+  padding: 6px 10px;
+  background: var(--accent-soft);
   color: var(--accent-dark);
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-size: 0.8rem;
+}
+
+.price-card.featured .plan-label {
+  background: var(--accent);
+  color: #fff;
+}
+
+.price-card:nth-child(3) .plan-label {
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  color: #fff;
 }
 
 .price {
