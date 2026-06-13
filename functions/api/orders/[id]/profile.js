@@ -5,6 +5,7 @@ export async function onRequestPost({ request, params, env }) {
   const token = String(body.token || "");
   const data = body.data || {};
   const reports = body.reports || [];
+  const isDraft = Boolean(body.draft);
 
   const order = await env.DB.prepare("SELECT * FROM orders WHERE id = ? AND token = ?")
     .bind(params.id, token)
@@ -14,15 +15,16 @@ export async function onRequestPost({ request, params, env }) {
     return json({ ok: false, error: "Orden no encontrada" }, { status: 404 });
   }
 
-  if (!["paid", "discount_test", "preview_ready"].includes(order.status)) {
+  if (!["paid", "discount_test", "form_started", "preview_ready"].includes(order.status)) {
     return json({ ok: false, error: "Orden no habilitada para formulario" }, { status: 403 });
   }
 
   const now = nowIso();
+  const nextStatus = isDraft ? "form_started" : "preview_ready";
   await env.DB.prepare(
-    "UPDATE orders SET status = 'preview_ready', data_json = ?, updated_at = ? WHERE id = ?"
+    "UPDATE orders SET status = ?, data_json = ?, updated_at = ? WHERE id = ?"
   )
-    .bind(JSON.stringify(data), now, params.id)
+    .bind(nextStatus, JSON.stringify(data), now, params.id)
     .run();
 
   await env.DB.prepare("DELETE FROM order_audits WHERE order_id = ?")
@@ -37,5 +39,5 @@ export async function onRequestPost({ request, params, env }) {
       .run();
   }
 
-  return json({ ok: true, status: "preview_ready" });
+  return json({ ok: true, status: nextStatus });
 }

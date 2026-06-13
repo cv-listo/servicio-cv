@@ -207,7 +207,7 @@
           }
         }
 
-        if (!order || order.token !== token || !["discount_test", "paid", "preview_ready"].includes(order.status)) {
+        if (!order || order.token !== token || !["discount_test", "paid", "form_started", "preview_ready"].includes(order.status)) {
           document.body.innerHTML = "<main class='app-shell'><h1>Pedido no habilitado</h1><p>Para completar el formulario, primero debe existir un pago confirmado o un código de prueba válido.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
           return;
         }
@@ -262,6 +262,17 @@
         const title = document.querySelector("#step-title");
         let current = 0;
 
+        const autosaveDraft = async () => {
+          const form = document.querySelector("#resume-form");
+          const data = CVListo.collectFormData(form);
+          CVListo.updateOrder(order.id, { status: "form_started", data });
+          try {
+            await CVListo.saveBackendDraft(order.id, order.token, data);
+          } catch {
+            // Sin backend disponible.
+          }
+        };
+
         const render = () => {
           steps.forEach((step, index) => step.classList.toggle("active", index === current));
           previous.disabled = current === 0;
@@ -271,18 +282,20 @@
           title.textContent = steps[current].querySelector("h2")?.textContent || "Formulario";
         };
 
-        previous.addEventListener("click", () => {
+        previous.addEventListener("click", async () => {
+          await autosaveDraft();
           current = Math.max(0, current - 1);
           render();
         });
 
-        next.addEventListener("click", () => {
+        next.addEventListener("click", async () => {
           const requiredFields = Array.from(steps[current].querySelectorAll("[required]"));
           const invalid = requiredFields.find((field) => !field.checkValidity());
           if (invalid) {
             invalid.reportValidity();
             return;
           }
+          await autosaveDraft();
           current = Math.min(steps.length - 1, current + 1);
           render();
         });

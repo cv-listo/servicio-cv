@@ -98,6 +98,16 @@ async function saveBackendProfile(id, token, data, reports) {
   return response.json();
 }
 
+async function saveBackendDraft(id, token, data) {
+  const response = await fetch(`/api/orders/${id}/profile`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ token, data, reports: [], draft: true }),
+  });
+  if (!response.ok) throw new Error("Backend draft save unavailable");
+  return response.json();
+}
+
 async function finalizeBackendOrder(id, token, contentHash) {
   const response = await fetch("/api/generate-final", {
     method: "POST",
@@ -340,6 +350,7 @@ window.CVListo = {
   cacheOrder,
   fetchBackendOrder,
   saveBackendProfile,
+  saveBackendDraft,
   finalizeBackendOrder,
   validateBackendProfile,
   renderPlanSummary,
