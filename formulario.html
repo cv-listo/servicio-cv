@@ -359,6 +359,7 @@
           steps.forEach((step, index) => step.classList.toggle("active", index === current));
           previous.disabled = current === 0;
           next.hidden = current === steps.length - 1;
+          next.style.display = current === steps.length - 1 ? "none" : "inline-flex";
           submit.hidden = current !== steps.length - 1;
           submit.style.display = current === steps.length - 1 ? "inline-flex" : "none";
           autosaveNote.hidden = current === steps.length - 1;
@@ -569,7 +570,7 @@
         if (!target) return;
         const value = button.textContent.trim();
         const current = target.value.trim();
-        const separator = current ? "\n" : "";
+        const separator = current.endsWith("\n") || !current ? "" : "\n";
         if (!current.toLowerCase().includes(value.toLowerCase())) {
           target.value = `${current}${separator}${value}`;
         }

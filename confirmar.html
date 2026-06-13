@@ -32,7 +32,7 @@
                 <input type="text" name="discount" placeholder="Opcional" />
               </label>
             </details>
-            <button class="button primary" type="submit">Continuar al pago</button>
+            <button class="button primary" type="submit" id="checkout-submit">Continuar al pago</button>
             <div class="payment-trust">
               <p>Pago procesado por Mercado Pago · Tus datos están protegidos</p>
               <div class="card-brands" aria-label="Medios de pago">
@@ -48,8 +48,15 @@
     <script>
       const planId = CVListo.getParam("plan") || "basic";
       CVListo.renderPlanSummary(document.querySelector("#plan-summary"), planId);
+      const checkoutForm = document.querySelector("#checkout-form");
+      const submitButton = document.querySelector("#checkout-submit");
 
-      document.querySelector("#checkout-form").addEventListener("submit", async (event) => {
+      checkoutForm.discount?.addEventListener("input", (event) => {
+        const code = event.currentTarget.value.trim().toUpperCase();
+        submitButton.textContent = code === "TEST" ? "Continuar gratis (modo prueba)" : "Continuar al pago";
+      });
+
+      checkoutForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const data = CVListo.collectFormData(event.currentTarget);
         const code = (data.discount || "").trim().toUpperCase();

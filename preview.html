@@ -59,6 +59,11 @@
           }
         }
 
+        if (order?.status === "generated") {
+          document.body.innerHTML = `<main class='app-shell'><h1>Este CV ya fue generado</h1><p>La generación final es única. Podés volver a la pantalla de descarga para guardarlo nuevamente.</p><a class='button primary' href='./descargar.html?order=${order.id}&token=${order.token}'>Ir a descargar</a></main>`;
+          return;
+        }
+
         if (!order || order.token !== token || order.status !== "preview_ready") {
           document.body.innerHTML = "<main class='app-shell'><h1>Vista previa no disponible</h1><p>Completá el formulario para generar la vista previa.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
           return;
