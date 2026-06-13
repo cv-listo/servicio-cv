@@ -112,7 +112,10 @@
           document.querySelector("#cv-preview").innerHTML = CVListo.buildResumeHtml(order.data);
         };
         document.querySelector("#quick-summary").value = order.data.summary || "";
-        document.querySelector("#quick-experience").value = order.data.experiences?.[0]?.tasks || order.data.experience || "";
+        const usesInformalExperience = order.data.experienceType !== "formal" && order.data.informalExperience;
+        document.querySelector("#quick-experience").value = usesInformalExperience
+          ? order.data.informalExperience
+          : order.data.experiences?.[0]?.tasks || order.data.experience || "";
         document.querySelector("#quick-skills").value = order.data.skills || "";
         render();
         const list = document.querySelector("#audit-list");
@@ -137,8 +140,13 @@
 
         document.querySelector("#refresh-preview").addEventListener("click", async () => {
           order.data.summary = document.querySelector("#quick-summary").value;
-          order.data.experience = document.querySelector("#quick-experience").value;
-          if (order.data.experiences?.length) {
+          const quickExperience = document.querySelector("#quick-experience").value;
+          if (order.data.experienceType !== "formal" && order.data.informalExperience !== undefined) {
+            order.data.informalExperience = quickExperience;
+          } else {
+            order.data.experience = quickExperience;
+          }
+          if (order.data.experienceType === "formal" && order.data.experiences?.length) {
             order.data.experiences[0].tasks = order.data.experience;
           }
           order.data.skills = document.querySelector("#quick-skills").value;
