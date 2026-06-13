@@ -1,4 +1,5 @@
 import { json } from "./_utils.js";
+import { sendEmail } from "./_email.js";
 
 export async function onRequestGet({ request, env }) {
   if (env.RECOVERY_BY_EMAIL_ENABLED !== "true") {
@@ -29,13 +30,27 @@ export async function onRequestGet({ request, env }) {
     return json({ ok: false, error: "No se encontró un pedido activo para ese email" }, { status: 404 });
   }
 
-  return json({
-    ok: true,
-    order: {
-      ...order,
-      data_json: order.data_json ? JSON.parse(order.data_json) : {},
-      cv_json: order.cv_json ? JSON.parse(order.cv_json) : {},
-      display_flags: order.display_flags ? JSON.parse(order.display_flags) : {},
-    },
+  const origin = new URL(request.url).origin;
+  const path = order.status === "generated"
+    ? `/descargar.html?order=${order.id}&token=${order.token}`
+    : order.status === "preview_ready"
+      ? `/preview.html?order=${order.id}&token=${order.token}`
+      : `/formulario.html?order=${order.id}&token=${order.token}`;
+  const link = `${origin}${path}`;
+
+  const email = await sendEmail(env, {
+    to: normalizedEmail,
+    subject: "Retomar pedido en CV Listo",
+    html: `
+      <p>Recibimos una solicitud para retomar un pedido en CV Listo.</p>
+      <p><a href="${link}">Continuar pedido</a></p>
+      <p>Si no solicitaste este enlace, podés ignorar este mensaje.</p>
+    `,
   });
+
+  if (!email.ok) {
+    return json({ ok: false, error: "No se pudo enviar el email de recuperación", detail: email }, { status: 500 });
+  }
+
+  return json({ ok: true, message: "Si existe un pedido activo, se envió un enlace de recuperación al email indicado." });
 }

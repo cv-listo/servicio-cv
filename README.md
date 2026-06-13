@@ -47,6 +47,9 @@ Variables de entorno necesarias en Cloudflare Pages:
 ```text
 TEST_DISCOUNT_CODE = TEST
 MP_ACCESS_TOKEN = (Access Token de Mercado Pago)
+RESEND_API_KEY = (API Key de Resend, opcional)
+EMAIL_FROM = CV Listo <no-reply@tu-dominio.com>
+RECOVERY_BY_EMAIL_ENABLED = true
 ```
 
 No guardar credenciales de Mercado Pago en el repositorio.

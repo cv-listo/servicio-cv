@@ -1,4 +1,5 @@
 import { json, nowIso, randomId, readJson } from "./_utils.js";
+import { sendEmail } from "./_email.js";
 
 export async function onRequestPost({ request, env }) {
   const body = await readJson(request);
@@ -34,6 +35,19 @@ export async function onRequestPost({ request, env }) {
   )
     .bind(randomId("doc"), orderId, contentHash, now)
     .run();
+
+  if (order.email) {
+    const origin = new URL(request.url).origin;
+    await sendEmail(env, {
+      to: order.email,
+      subject: "Tu CV fue generado",
+      html: `
+        <p>Tu CV fue generado correctamente.</p>
+        <p>Podés volver a descargarlo desde este enlace:</p>
+        <p><a href="${origin}/descargar.html?order=${orderId}&token=${token}">Descargar CV</a></p>
+      `,
+    });
+  }
 
   return json({ ok: true, status: "generated", generatedAt: now });
 }
