@@ -9,11 +9,12 @@ export async function onRequestGet({ request, params, env }) {
   if (!order) {
     return json({ ok: false, error: "Orden no encontrada" }, { status: 404 });
   }
+  const { token: _token, ...safeOrder } = order;
 
   return json({
     ok: true,
     order: {
-      ...order,
+      ...safeOrder,
       data_json: order.data_json ? JSON.parse(order.data_json) : {},
       cv_json: order.cv_json ? JSON.parse(order.cv_json) : {},
       display_flags: order.display_flags ? JSON.parse(order.display_flags) : {},

@@ -1213,6 +1213,15 @@ h3 {
   color: var(--warning);
 }
 
+.a4-status.critical {
+  background: #ffecec;
+  color: #b42318;
+}
+
+.payment-status-card {
+  max-width: 720px;
+}
+
 .quick-edit {
   display: grid;
   gap: 10px;

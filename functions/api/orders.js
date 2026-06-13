@@ -59,9 +59,9 @@ export async function onRequestPost({ request, env }) {
       external_reference: id,
       notification_url: `${origin}/api/webhook-mp`,
       back_urls: {
-        success: `${origin}/formulario.html?order=${id}&token=${token}`,
+        success: `${origin}/pago.html?order=${id}&token=${token}`,
         failure: `${origin}/confirmar.html?plan=${plan.id}`,
-        pending: `${origin}/confirmar.html?plan=${plan.id}`,
+        pending: `${origin}/pago.html?order=${id}&token=${token}`,
       },
       auto_return: "approved",
       metadata: {

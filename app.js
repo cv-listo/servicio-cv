@@ -85,7 +85,7 @@ async function fetchBackendOrder(id, token) {
   const response = await fetch(`/api/orders/${id}?token=${encodeURIComponent(token)}`);
   if (!response.ok) throw new Error("Backend order unavailable");
   const result = await response.json();
-  return result.order;
+  return { ...result.order, token };
 }
 
 async function recoverBackendOrder(email) {

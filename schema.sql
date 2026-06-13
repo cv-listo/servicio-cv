@@ -9,6 +9,10 @@ CREATE TABLE IF NOT EXISTS orders (
   discount_code TEXT,
   mp_preference_id TEXT,
   mp_payment_id TEXT,
+  mp_status TEXT,
+  mp_currency TEXT,
+  paid_at TEXT,
+  last_payment_checked_at TEXT,
   external_reference TEXT NOT NULL,
   data_json TEXT DEFAULT '{}',
   cv_json TEXT DEFAULT '{}',
@@ -39,3 +43,21 @@ CREATE TABLE IF NOT EXISTS final_documents (
   created_at TEXT NOT NULL,
   FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS ai_generations (
+  id TEXT PRIMARY KEY,
+  order_id TEXT NOT NULL,
+  provider TEXT NOT NULL,
+  model TEXT NOT NULL,
+  input_hash TEXT NOT NULL,
+  output_json TEXT,
+  warnings_json TEXT,
+  audit_json TEXT,
+  used_fallback INTEGER NOT NULL DEFAULT 0,
+  error TEXT,
+  created_at TEXT NOT NULL,
+  FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_ai_generations_order ON ai_generations(order_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_ai_generations_order_hash ON ai_generations(order_id, input_hash);

@@ -1,23 +1,28 @@
 # CV Listo
 
-Landing y base visual para una app de generación automática de CVs.
+Generador automático de CVs con landing comercial, checkout, formulario guiado, asistencia IA, vista previa editable y generación final única.
 
 ## Publicación
 
-Este sitio está preparado para GitHub Pages desde `main / root`.
+El proyecto está desplegado en Cloudflare Pages:
+
+```text
+https://servicio-cv.pages.dev/
+```
 
 ## Estado actual
 
-- Landing estática publicada en GitHub Pages.
-- Flujo estático navegable con código `TEST` usando `localStorage`.
-- Páginas incluidas: `confirmar.html`, `formulario.html`, `preview.html`, `descargar.html`, `retomar.html`.
-- Sin backend todavía.
-- Sin validación automática de pagos.
-- Sin OCR ni LLM todavía.
-- Generación A4 básica simulada en navegador.
-- Planes visibles: $10.000, $20.000 y $30.000 ARS.
+- Frontend HTML/CSS/JS puro, sin framework ni build step.
+- Cloudflare Pages Functions en `/functions/api`.
+- Cloudflare D1 para órdenes, perfiles, auditorías y documentos finales.
+- Flujo `TEST` para QA sin pago real.
+- Mercado Pago Checkout Pro preparado con webhook y pantalla de verificación.
+- IA server-side configurable: Groq por defecto, Gemini/OpenAI opcionales y fallback local.
+- Generación final única por pedido.
+- PDF mediante impresión/guardar como PDF del navegador.
+- Páginas incluidas: `index.html`, `confirmar.html`, `pago.html`, `formulario.html`, `preview.html`, `descargar.html`, `retomar.html`.
 
-## Probar flujo estático
+## Probar flujo TEST
 
 1. Abrir `confirmar.html?plan=basic`, `professional` o `focused`.
 2. Ingresar cualquier email.
@@ -27,9 +32,7 @@ Este sitio está preparado para GitHub Pages desde `main / root`.
 6. Confirmar generación final.
 7. Guardar como PDF desde el navegador.
 
-En GitHub Pages este flujo usa `localStorage`. En Cloudflare Pages, el endpoint `/api/orders` podrá crear órdenes reales en D1.
-
-La recuperación solo por email queda deshabilitada hasta configurar un proveedor de correo transaccional. Por ahora, el flujo de prueba usa ID + token.
+En Cloudflare Pages, el código `TEST` crea una orden `discount_test` en D1 y habilita el formulario.
 
 ## Cloudflare Pages
 
@@ -40,16 +43,29 @@ binding = "DB"
 database_name = "cv_listo"
 ```
 
-Falta aplicar `schema.sql` en la consola de D1 para crear las tablas.
+Aplicar `schema.sql` en Cloudflare D1 para crear o actualizar tablas.
 
 Variables de entorno necesarias en Cloudflare Pages:
 
 ```text
 TEST_DISCOUNT_CODE = TEST
 MP_ACCESS_TOKEN = (Access Token de Mercado Pago)
+LLM_PROVIDER = groq
+GROQ_API_KEY = (API key de Groq)
+GROQ_MODEL = llama-3.1-8b-instant
 ```
 
-No guardar credenciales de Mercado Pago en el repositorio.
+Variables opcionales:
+
+```text
+MP_WEBHOOK_SECRET = (secreto de webhook de Mercado Pago)
+AI_TIMEOUT_MS = 10000
+GEMINI_API_KEY = ...
+OPENAI_API_KEY = ...
+DEBUG_AI = false
+```
+
+No guardar credenciales en el repositorio. Usar Variables and Secrets de Cloudflare.
 
 El formulario de soporte manual usa FormSubmit hacia `mariano.pereyra.1990.1@gmail.com`. La primera vez requiere activar el formulario desde el correo recibido.
 
@@ -59,12 +75,8 @@ Ver `ARCHITECTURE.md`.
 
 ## Próxima etapa
 
-Migrar a app serverless:
-
-- Cloudflare Pages.
-- Cloudflare Workers / Pages Functions.
-- Cloudflare D1.
-- Cloudflare R2.
-- Mercado Pago Checkout Pro.
-- Generación PDF/DOCX en navegador.
-- OCR/LLM opcional por pedido.
+- Probar Mercado Pago en sandbox y producción.
+- Configurar `MP_WEBHOOK_SECRET` y validar firma de webhooks.
+- Implementar caché IA persistente con `ai_generations`.
+- Mejorar plantillas de CV y versión ATS-friendly.
+- Evaluar email automático, DOCX y OCR.

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta property="og:title" content="CV Listo | Verificando pago" />
+    <meta property="og:description" content="Estamos verificando tu pago para habilitar el formulario de CV." />
+    <meta property="og:image" content="https://servicio-cv.pages.dev/og-image.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://servicio-cv.pages.dev/" />
+    <title>Verificando pago | CV Listo</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell checkout-shell">
+      <section class="app-card payment-status-card">
+        <p class="eyebrow">Mercado Pago</p>
+        <h1>Estamos verificando tu pago</h1>
+        <p id="payment-status-text">Esto puede demorar unos segundos. No cierres esta pantalla.</p>
+        <div class="a4-status warning" id="payment-status-box">Esperando confirmación del pago...</div>
+        <div class="app-actions">
+          <a class="button secondary" href="./retomar.html">Retomar pedido</a>
+          <a class="button secondary" href="./index.html#soporte">Necesito ayuda</a>
+        </div>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+    <script>
+      const orderId = CVListo.getParam("order");
+      const token = CVListo.getParam("token");
+      const statusBox = document.querySelector("#payment-status-box");
+      const statusText = document.querySelector("#payment-status-text");
+      let attempts = 0;
+
+      async function pollPayment() {
+        attempts += 1;
+        if (!orderId || !token) {
+          statusBox.className = "a4-status critical";
+          statusBox.textContent = "Falta información para verificar el pedido.";
+          return;
+        }
+
+        try {
+          const backendOrder = await CVListo.fetchBackendOrder(orderId, token);
+          const order = CVListo.cacheOrder(backendOrder);
+          if (["paid", "form_started", "preview_ready"].includes(order.status)) {
+            statusBox.className = "a4-status ok";
+            statusBox.textContent = "Pago confirmado. Redirigiendo al formulario...";
+            window.location.href = `./formulario.html?order=${order.id}&token=${order.token || token}`;
+            return;
+          }
+          if (order.status === "generated") {
+            window.location.href = `./descargar.html?order=${order.id}&token=${order.token || token}`;
+            return;
+          }
+        } catch {
+          // Si el webhook aún no actualizó D1, seguimos esperando.
+        }
+
+        if (attempts >= 20) {
+          statusBox.className = "a4-status warning";
+          statusBox.textContent = "El pago aún figura pendiente. Si ya pagaste, esperá unos minutos o contactá soporte.";
+          statusText.textContent = "Mercado Pago puede demorar en confirmar algunas operaciones.";
+          return;
+        }
+
+        setTimeout(pollPayment, 2500);
+      }
+
+      pollPayment();
+    </script>
+  </body>
+</html>
