@@ -2,23 +2,22 @@ import { json, nowIso, readJson } from "./_utils.js";
 
 export async function onRequestPost({ request, env }) {
   const url = new URL(request.url);
-  let event = {};
+  let event = await readJson(request);
   let paymentId = url.searchParams.get("data.id") || url.searchParams.get("id") || null;
   const requestId = request.headers.get("x-request-id") || "";
   let signatureOk = false;
 
+  paymentId = paymentId || event.data?.id || event.payment_id || event.id || null;
+
   if (env.MP_WEBHOOK_SECRET) {
-    signatureOk = await verifyMercadoPagoSignature(request, url, env.MP_WEBHOOK_SECRET);
+    signatureOk = await verifyMercadoPagoSignature(request, url, env.MP_WEBHOOK_SECRET, paymentId);
     if (!signatureOk) {
       await insertMpEvent(env, { paymentId, xRequestId: requestId, signatureValid: 0, processed: 0, error: "INVALID_SIGNATURE" });
       return json({ ok: false, error: "Firma inválida" }, { status: 401 });
     }
   }
 
-  event = await readJson(request);
-
   const eventType = event.type || event.action || url.searchParams.get("topic") || url.searchParams.get("type") || "";
-  paymentId = paymentId || event.data?.id || event.payment_id || event.id || null;
 
   if (!paymentId || !String(eventType).includes("payment")) {
     await insertMpEvent(env, {
@@ -169,10 +168,10 @@ function mapPaymentStatus(mpStatus, currentStatus) {
   return currentStatus || "payment_pending";
 }
 
-async function verifyMercadoPagoSignature(request, url, secret) {
+async function verifyMercadoPagoSignature(request, url, secret, paymentId) {
   const signature = request.headers.get("x-signature") || "";
   const requestId = request.headers.get("x-request-id") || "";
-  const dataId = (url.searchParams.get("data.id") || "").toLowerCase();
+  const dataId = String(url.searchParams.get("data.id") || paymentId || "").toLowerCase();
   const parts = Object.fromEntries(signature.split(",").map((part) => part.split("=").map((value) => value.trim())));
   const ts = parts.ts;
   const v1 = parts.v1;

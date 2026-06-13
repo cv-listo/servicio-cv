@@ -33,10 +33,20 @@ export async function onRequestPost({ request, env }) {
   }
 
   const sanitized = sanitizeForLlm(input, planId);
+  const inputHash = await sha256(JSON.stringify(sanitized));
 
   try {
     const aiResult = await callLlmProvider(env, planId, sanitized);
     const audited = auditAndMerge(input, aiResult);
+    await recordAiGeneration(env, {
+      orderId,
+      provider: aiResult.provider,
+      model: aiResult.model,
+      inputHash,
+      output: audited,
+      warnings: audited.warnings,
+      usedFallback: false,
+    });
     return json({
       ok: true,
       source: "llm",
@@ -47,6 +57,16 @@ export async function onRequestPost({ request, env }) {
       questions: audited.questions,
     });
   } catch (error) {
+    await recordAiGeneration(env, {
+      orderId,
+      provider: "local",
+      model: "fallback",
+      inputHash,
+      output: localNormalize(input),
+      warnings: ["Fallback local por error del proveedor IA."],
+      usedFallback: true,
+      error: String(error?.message || error),
+    });
     return json({
       ok: true,
       source: "fallback_local",
@@ -351,6 +371,39 @@ function titleCase(value) {
 
 function normalize(value) {
   return cleanText(value).toLowerCase().replace(/\s+/g, "");
+}
+
+async function sha256(value) {
+  const buffer = new TextEncoder().encode(value);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  return [...new Uint8Array(hashBuffer)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function recordAiGeneration(env, event) {
+  try {
+    await env.DB.prepare(
+      `INSERT OR REPLACE INTO ai_generations (
+        id, order_id, provider, model, input_hash, output_json, warnings_json,
+        audit_json, used_fallback, error, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+      .bind(
+        crypto.randomUUID(),
+        event.orderId,
+        event.provider,
+        event.model,
+        event.inputHash,
+        JSON.stringify(event.output || {}),
+        JSON.stringify(event.warnings || []),
+        JSON.stringify({ source: event.provider, usedFallback: Boolean(event.usedFallback) }),
+        event.usedFallback ? 1 : 0,
+        event.error || null,
+        new Date().toISOString()
+      )
+      .run();
+  } catch {
+    // La auditoría de IA no debe impedir que el usuario vea su preview.
+  }
 }
 
 function splitLines(value) {

@@ -27,7 +27,7 @@ export async function onRequestGet({ request, env }) {
     .first();
 
   if (!order) {
-    return json({ ok: false, error: "No se encontró un pedido activo para ese email" }, { status: 404 });
+    return json({ ok: true, message: "Si existe un pedido activo, se envió un enlace de recuperación al email indicado." });
   }
 
   const origin = new URL(request.url).origin;
@@ -49,7 +49,7 @@ export async function onRequestGet({ request, env }) {
   });
 
   if (!emailResult.ok) {
-    return json({ ok: false, error: "No se pudo enviar el email de recuperación", detail: emailResult }, { status: 500 });
+    return json({ ok: true, message: "Si existe un pedido activo, se envió un enlace de recuperación al email indicado." });
   }
 
   return json({ ok: true, message: "Si existe un pedido activo, se envió un enlace de recuperación al email indicado." });
