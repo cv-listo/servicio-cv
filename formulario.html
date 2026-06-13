@@ -430,6 +430,7 @@
         if (!current.toLowerCase().includes(value.toLowerCase())) {
           target.value = `${current}${separator}${value}`;
         }
+        button.classList.add("active");
       }
 
       function restoreRepeaters(data) {

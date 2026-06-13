@@ -115,7 +115,7 @@
           }
           const contentHash = await CVListo.sha256(JSON.stringify(order.data));
           try {
-            await CVListo.finalizeBackendOrder(order.id, order.token, contentHash);
+            await CVListo.finalizeBackendOrder(order.id, order.token, contentHash, order.data);
           } catch {
             // GitHub Pages no ejecuta Functions. Sellamos local para probar UX.
           }

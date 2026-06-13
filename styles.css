@@ -590,6 +590,16 @@ h3 {
   background: var(--accent-soft);
 }
 
+.chip-row button.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: white;
+}
+
+.chip-row button.active::before {
+  content: "✓ ";
+}
+
 .consent {
   display: flex !important;
   flex-direction: row;
