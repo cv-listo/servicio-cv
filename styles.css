@@ -761,6 +761,15 @@ h3 {
   width: 100%;
 }
 
+.checkout-error {
+  border-radius: 14px;
+  margin-top: 16px;
+  padding: 11px 13px;
+  background: #ffecec;
+  color: #b42318;
+  font-weight: 800;
+}
+
 .discount-details {
   border: 1px dashed var(--line);
   border-radius: 16px;

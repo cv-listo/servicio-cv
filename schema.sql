@@ -61,3 +61,24 @@ CREATE TABLE IF NOT EXISTS ai_generations (
 
 CREATE INDEX IF NOT EXISTS idx_ai_generations_order ON ai_generations(order_id);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_ai_generations_order_hash ON ai_generations(order_id, input_hash);
+
+CREATE TABLE IF NOT EXISTS mp_events (
+  id TEXT PRIMARY KEY,
+  event_type TEXT,
+  action TEXT,
+  payment_id TEXT,
+  order_id TEXT,
+  mp_status TEXT,
+  mp_status_detail TEXT,
+  amount INTEGER,
+  currency TEXT,
+  x_request_id TEXT,
+  signature_valid INTEGER NOT NULL DEFAULT 0,
+  processed INTEGER NOT NULL DEFAULT 0,
+  error TEXT,
+  created_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_mp_events_payment_id ON mp_events(payment_id);
+CREATE INDEX IF NOT EXISTS idx_mp_events_order_id ON mp_events(order_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_mp_events_request_payment ON mp_events(x_request_id, payment_id);

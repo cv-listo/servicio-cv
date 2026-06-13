@@ -10,7 +10,7 @@ export async function onRequestPost({ request, env }) {
   const now = nowIso();
 
   const isTest = isTestCodeEnabled(env, discountCode);
-  const status = isTest ? "discount_test" : "payment_pending";
+  const status = isTest ? "discount_test" : "created";
   const amount = isTest ? 0 : plan.amount;
 
   await env.DB.prepare(
@@ -45,17 +45,21 @@ export async function onRequestPost({ request, env }) {
   }
 
   if (env.MP_ACCESS_TOKEN) {
-    const origin = new URL(request.url).origin;
+    const origin = getBaseUrl(env, request);
     const preferencePayload = {
       items: [
         {
           id: plan.id,
           title: `CV Listo - Plan ${plan.name}`,
+          description: "Generación digital de CV profesional con vista previa editable",
           quantity: 1,
           unit_price: plan.amount,
           currency_id: "ARS",
         },
       ],
+      payer: {
+        email,
+      },
       external_reference: id,
       notification_url: `${origin}/api/webhook-mp`,
       back_urls: {
@@ -64,9 +68,11 @@ export async function onRequestPost({ request, env }) {
         pending: `${origin}/pago.html?order=${id}&token=${token}`,
       },
       auto_return: "approved",
+      statement_descriptor: "CV LISTO",
       metadata: {
         order_id: id,
         plan_id: plan.id,
+        product: "cv_listo",
       },
     };
 
@@ -89,7 +95,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     await env.DB.prepare(
-      "UPDATE orders SET mp_preference_id = ?, updated_at = ? WHERE id = ?"
+      "UPDATE orders SET status = 'payment_pending', mp_preference_id = ?, updated_at = ? WHERE id = ?"
     )
       .bind(mpData.id || null, nowIso(), id)
       .run();
@@ -98,8 +104,8 @@ export async function onRequestPost({ request, env }) {
       ok: true,
       orderId: id,
       token,
-      status,
-      redirectUrl: mpData.init_point || mpData.sandbox_init_point,
+      status: "payment_pending",
+      redirectUrl: selectCheckoutUrl(env, mpData),
       preferenceId: mpData.id,
     });
   }
@@ -111,4 +117,16 @@ export async function onRequestPost({ request, env }) {
     status,
     message: "Mercado Pago Checkout Pro pendiente de configuración.",
   });
+}
+
+function getBaseUrl(env, request) {
+  return String(env.APP_BASE_URL || new URL(request.url).origin).replace(/\/$/, "");
+}
+
+function selectCheckoutUrl(env, preference) {
+  const token = String(env.MP_ACCESS_TOKEN || "");
+  if (token.startsWith("TEST-") && preference.sandbox_init_point) {
+    return preference.sandbox_init_point;
+  }
+  return preference.init_point || preference.sandbox_init_point;
 }

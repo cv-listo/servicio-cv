@@ -29,7 +29,13 @@
     <script src="./app.js"></script>
     <script>
       const orderId = CVListo.getParam("order");
-      const token = CVListo.getParam("token");
+      const tokenFromUrl = CVListo.getParam("token");
+      if (orderId && tokenFromUrl) {
+        sessionStorage.setItem(`cvListoToken:${orderId}`, tokenFromUrl);
+        localStorage.setItem(`cvListoToken:${orderId}`, tokenFromUrl);
+        window.history.replaceState(null, "", `./pago.html?order=${encodeURIComponent(orderId)}`);
+      }
+      const token = tokenFromUrl || sessionStorage.getItem(`cvListoToken:${orderId}`) || localStorage.getItem(`cvListoToken:${orderId}`);
       const statusBox = document.querySelector("#payment-status-box");
       const statusText = document.querySelector("#payment-status-text");
       let attempts = 0;
@@ -49,6 +55,12 @@
             statusBox.className = "a4-status ok";
             statusBox.textContent = "Pago confirmado. Redirigiendo al formulario...";
             window.location.href = `./formulario.html?order=${order.id}&token=${order.token || token}`;
+            return;
+          }
+          if (["payment_rejected", "payment_cancelled", "refunded", "charged_back"].includes(order.status)) {
+            statusBox.className = "a4-status critical";
+            statusBox.textContent = "El pago no quedó aprobado. Podés volver a intentar o contactar soporte.";
+            statusText.textContent = "Mercado Pago informó que esta operación no habilita el formulario.";
             return;
           }
           if (order.status === "generated") {

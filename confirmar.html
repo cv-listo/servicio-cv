@@ -20,6 +20,7 @@
           <p class="eyebrow">Confirmación</p>
           <h1>Confirmá tu plan</h1>
           <p class="lead">Revisá el plan elegido y completá el email para crear el pedido. Luego se habilitará el pago o el acceso de prueba.</p>
+          <div class="checkout-error" id="checkout-error" hidden></div>
           <form class="app-form checkout-form" id="checkout-form">
             <label>
               Email para el pedido
@@ -58,6 +59,11 @@
 
       checkoutForm.addEventListener("submit", async (event) => {
         event.preventDefault();
+        const errorBox = document.querySelector("#checkout-error");
+        errorBox.hidden = true;
+        submitButton.disabled = true;
+        const originalText = submitButton.textContent;
+        submitButton.textContent = "Preparando pedido...";
         const data = CVListo.collectFormData(event.currentTarget);
         const code = (data.discount || "").trim().toUpperCase();
 
@@ -77,10 +83,18 @@
               window.location.href = result.redirectUrl;
               return;
             }
-            alert(result.message || "Pedido creado. Falta conectar Mercado Pago Checkout Pro.");
+            throw new Error(result.message || "Pedido creado, pero no recibimos URL de pago.");
+          }
+          const failed = await response.json().catch(() => ({}));
+          throw new Error(failed.error || failed.message || "No se pudo crear el pedido.");
+        } catch (error) {
+          if (code !== "TEST") {
+            errorBox.textContent = error.message || "No se pudo iniciar el pago. Intentá nuevamente.";
+            errorBox.hidden = false;
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
             return;
           }
-        } catch {
           // GitHub Pages no ejecuta Functions. Usamos fallback local para probar UX.
         }
 
@@ -96,6 +110,8 @@
         }
 
         alert("Todavía falta configurar Mercado Pago. Para probar el flujo, usá el código de prueba.");
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
       });
     </script>
   </body>
