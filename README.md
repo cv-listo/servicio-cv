@@ -29,6 +29,21 @@ Este sitio está preparado para GitHub Pages desde `main / root`.
 
 En GitHub Pages este flujo usa `localStorage`. En Cloudflare Pages, el endpoint `/api/orders` podrá crear órdenes reales en D1.
 
+## Cloudflare Pages
+
+El `wrangler.toml` actual no incluye todavía el binding D1 para permitir desplegar la landing y las Functions sin error.
+
+Cuando exista la base D1 real, agregar:
+
+```toml
+[[d1_databases]]
+binding = "DB"
+database_name = "cv_listo"
+database_id = "ID_REAL_DE_D1"
+```
+
+Luego aplicar `schema.sql` sobre esa base.
+
 ## Arquitectura objetivo
 
 Ver `ARCHITECTURE.md`.
