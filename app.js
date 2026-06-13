@@ -340,6 +340,7 @@ function buildResumeHtml(data) {
     .map(normalizeText)
     .filter(Boolean)
     .join(" | ");
+  // Las secciones vacías no se imprimen para evitar placeholders dentro del CV final.
   const experienceHtml = renderExperiences(data);
   const educationHtml = renderEducation({ ...data, education: educationText });
   const skillsHtml = renderBullets(skills);

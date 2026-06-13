@@ -243,8 +243,13 @@
           return;
         }
         document.querySelector("#copy-recovery-link")?.addEventListener("click", async () => {
-          await navigator.clipboard?.writeText(window.location.href);
-          alert("Link copiado. Guardalo para retomar el formulario.");
+          // Reemplaza el debug de ID/token visible por una acción segura para retomar.
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(window.location.href);
+            alert("Link copiado. Guardalo para retomar el formulario.");
+            return;
+          }
+          prompt("Copiá este link para retomar el formulario:", window.location.href);
         });
 
         setupWizard(order?.planId || "basic");
@@ -280,6 +285,7 @@
       }
 
       function persistArea(value) {
+        // El select de área puede perder valor visual al ocultar/mostrar pasos; lo guardamos aparte.
         const state = getWizardState();
         state.area = value || "";
         localStorage.setItem(wizardStateKey, JSON.stringify(state));
@@ -372,6 +378,7 @@
         });
 
         next.addEventListener("click", async () => {
+          // Leemos el área directamente del DOM en el click para evitar referencias stale.
           const sel = document.getElementById("area");
           if (sel && sel.value) {
             persistArea(sel.value);
@@ -538,6 +545,7 @@
         const field = document.querySelector('[name="experienceType"]');
         const addExperience = document.querySelector("#add-experience");
         const sync = () => {
+          // Cambia entre empleo formal y alternativas sin borrar lo que el usuario ya escribió.
           const value = field?.value || "formal";
           document.querySelectorAll("[data-experience-panel]").forEach((panel) => {
             const panelType = panel.dataset.experiencePanel;
