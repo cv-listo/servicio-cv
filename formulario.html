@@ -81,7 +81,7 @@
             </div>
             <div class="suggestion-box">
               <p>Ideas para destacar</p>
-              <div class="chip-row" data-target="summary">
+              <div class="chip-row" data-target="summary" data-chip-kind="summary">
                 <button type="button">Soy puntual y responsable</button>
                 <button type="button">Aprendo rápido</button>
                 <button type="button">Me gusta trabajar en equipo</button>
@@ -116,7 +116,7 @@
                 <span class="toggle-row"><input type="checkbox" name="isCurrent" /> <span>Trabajo actualmente acá</span></span>
                 <div class="suggestion-box">
                   <p>Tareas frecuentes</p>
-                  <div class="chip-row" data-target="experience">
+                  <div class="chip-row" data-target="experience" data-chip-kind="tasks">
                     <button type="button">Atención al cliente</button>
                     <button type="button">Manejo de caja</button>
                     <button type="button">Reposición de mercadería</button>
@@ -148,7 +148,7 @@
             <button class="button secondary small-button" type="button" id="add-education">+ Agregar estudio o curso</button>
             <div class="suggestion-box">
               <p>Habilidades sugeridas</p>
-              <div class="chip-row" data-target="skills">
+              <div class="chip-row" data-target="skills" data-chip-kind="skills">
                 <button type="button">Atención al cliente</button>
                 <button type="button">Trabajo en equipo</button>
                 <button type="button">Organización</button>
@@ -253,6 +253,7 @@
         }
         setupRepeaters();
         setupSuggestionChips();
+        setupAreaSuggestions();
         const steps = Array.from(document.querySelectorAll(".wizard-step"));
         const previous = document.querySelector("#prev-step");
         const next = document.querySelector("#next-step");
@@ -287,6 +288,68 @@
         });
 
         render();
+      }
+
+      const suggestionsByArea = {
+        "Administración y oficina": {
+          summary: ["Soy organizado/a", "Tengo atención al detalle", "Me adapto a procesos administrativos", "Tengo buena comunicación"],
+          tasks: ["Carga de datos", "Archivo de documentación", "Atención telefónica", "Manejo de agenda", "Facturación", "Uso de Excel"],
+          skills: ["Excel básico", "Organización", "Carga de datos", "Comunicación escrita", "Atención telefónica", "Gestión de documentos"],
+        },
+        "Comercio y ventas": {
+          summary: ["Tengo buen trato con clientes", "Me oriento a resultados", "Aprendo rápido productos nuevos", "Soy responsable con el manejo de dinero"],
+          tasks: ["Atención al cliente", "Manejo de caja", "Reposición de mercadería", "Control de stock", "Ventas", "Cobro con tarjetas"],
+          skills: ["Atención al cliente", "Ventas", "Manejo de caja", "Comunicación", "Organización", "Resolución de consultas"],
+        },
+        "Atención al cliente": {
+          summary: ["Tengo paciencia para resolver consultas", "Me comunico con claridad", "Busco brindar buena atención", "Tengo buen trato interpersonal"],
+          tasks: ["Recepción de consultas", "Atención telefónica", "Gestión de reclamos", "Derivación de casos", "Seguimiento de pedidos", "Registro de información"],
+          skills: ["Escucha activa", "Comunicación", "Resolución de problemas", "Paciencia", "Organización", "Trato cordial"],
+        },
+        "Gastronomía": {
+          summary: ["Tengo ritmo de trabajo", "Soy ordenado/a con la limpieza", "Puedo trabajar en equipo", "Tengo disponibilidad horaria"],
+          tasks: ["Atención de mesas", "Preparación de pedidos", "Limpieza del área de trabajo", "Manejo de caja", "Reposición de insumos", "Ayuda en cocina"],
+          skills: ["Trabajo bajo presión", "Higiene y orden", "Atención al cliente", "Trabajo en equipo", "Puntualidad", "Rapidez"],
+        },
+        "Logística y depósito": {
+          summary: ["Soy responsable con el orden", "Tengo capacidad para tareas físicas", "Me adapto a rutinas operativas", "Puedo trabajar por objetivos"],
+          tasks: ["Armado de pedidos", "Control de stock", "Carga y descarga", "Orden de depósito", "Recepción de mercadería", "Preparación de envíos"],
+          skills: ["Organización", "Control de stock", "Trabajo físico", "Puntualidad", "Atención al detalle", "Uso de remitos"],
+        },
+        "Oficios y servicios": {
+          summary: ["Tengo experiencia práctica", "Soy responsable con herramientas y materiales", "Me enfoco en resolver problemas", "Trabajo con autonomía"],
+          tasks: ["Mantenimiento", "Reparaciones", "Atención a clientes", "Preparación de materiales", "Limpieza de herramientas", "Trabajo en obra o domicilio"],
+          skills: ["Responsabilidad", "Resolución de problemas", "Trabajo manual", "Autonomía", "Puntualidad", "Cuidado de herramientas"],
+        },
+        "Tecnología": {
+          summary: ["Me interesa aprender nuevas herramientas", "Tengo pensamiento lógico", "Soy detallista con procesos técnicos", "Busco mejorar continuamente"],
+          tasks: ["Soporte técnico", "Carga de datos", "Uso de herramientas digitales", "Resolución de incidencias", "Documentación de tareas", "Pruebas básicas"],
+          skills: ["Herramientas digitales", "Resolución de problemas", "Aprendizaje rápido", "Comunicación", "Organización", "Atención al detalle"],
+        },
+        "Primer empleo": {
+          summary: ["Busco mi primera experiencia laboral", "Tengo buena predisposición para aprender", "Soy responsable y puntual", "Me interesa desarrollarme laboralmente"],
+          tasks: ["Proyectos escolares", "Ayuda familiar", "Voluntariado", "Tareas de organización", "Atención a personas", "Uso de herramientas digitales"],
+          skills: ["Puntualidad", "Responsabilidad", "Aprendizaje rápido", "Trabajo en equipo", "Comunicación", "Compromiso"],
+        },
+      };
+
+      function renderChipRow(kind, items) {
+        document.querySelectorAll(`[data-chip-kind="${kind}"]`).forEach((row) => {
+          row.innerHTML = items.map((item) => `<button type="button">${item}</button>`).join("");
+          row.querySelectorAll("button").forEach((button) => button.addEventListener("click", handleChipClick));
+        });
+      }
+
+      function setupAreaSuggestions() {
+        const areaSelect = document.querySelector('[name="targetArea"]');
+        const apply = () => {
+          const selected = suggestionsByArea[areaSelect.value] || suggestionsByArea["Comercio y ventas"];
+          renderChipRow("summary", selected.summary);
+          renderChipRow("tasks", selected.tasks);
+          renderChipRow("skills", selected.skills);
+        };
+        areaSelect?.addEventListener("change", apply);
+        apply();
       }
 
       function setupRepeaters() {
