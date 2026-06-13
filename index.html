@@ -320,18 +320,15 @@
         <div class="section-heading">
           <p class="eyebrow">Soporte</p>
           <h2>¿Tuviste un problema con el pago o la descarga?</h2>
-          <p>Si algo falla, enviá el comprobante de pago y un contacto para revisar el pedido manualmente.</p>
+          <p>Tenemos una página de soporte para revisar pagos, pedidos o problemas de descarga sin llenar la landing de campos.</p>
         </div>
-        <form class="support-form" action="https://formsubmit.co/mariano.pereyra.1990.1@gmail.com" method="POST" enctype="multipart/form-data">
-          <input type="hidden" name="_subject" value="Soporte CV Listo" />
-          <input type="hidden" name="_captcha" value="false" />
-          <input type="text" name="_honey" class="hidden-field" tabindex="-1" autocomplete="off" />
-          <label>Email de contacto<input type="email" name="email" placeholder="tu@email.com" required /></label>
-          <label>ID del pedido, si lo tenés<input type="text" name="order_id" placeholder="order_..." /></label>
-          <label>Qué pasó<textarea name="detalle" rows="4" placeholder="Contá brevemente el problema" required></textarea></label>
-          <label>Comprobante de pago<input type="file" name="comprobante" accept=".pdf,.jpg,.jpeg,.png" /></label>
-          <button class="button primary" type="submit">Enviar soporte</button>
-        </form>
+        <div class="support-card">
+          <div>
+            <h3>Soporte de pedido</h3>
+            <p>Si pagaste y no podés continuar, o si necesitás recuperar una descarga, escribinos con tu email y comprobante.</p>
+          </div>
+          <a class="button primary" href="./soporte.html">Abrir soporte</a>
+        </div>
       </section>
 
       <section class="section tinted" id="privacidad">

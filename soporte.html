@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="Soporte | CV Listo" />
+    <meta property="og:description" content="Ayuda para pedidos, pagos o descarga de CV Listo." />
+    <meta property="og:image" content="https://servicio-cv.pages.dev/og-image.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://servicio-cv.pages.dev/" />
+    <title>Soporte | CV Listo</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell checkout-shell">
+      <a class="back-link" href="./index.html">← Volver al inicio</a>
+      <section class="app-layout">
+        <div>
+          <p class="eyebrow">Soporte</p>
+          <h1>¿Necesitás ayuda con tu pedido?</h1>
+          <p class="lead">Si tuviste un problema con el pago, el formulario o la descarga, enviá los datos del pedido y revisamos el caso.</p>
+          <form class="support-form" action="https://formsubmit.co/mariano.pereyra.1990.1@gmail.com" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="_subject" value="Soporte CV Listo" />
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="text" name="_honey" class="hidden-field" tabindex="-1" autocomplete="off" />
+            <label>Email de contacto<input type="email" name="email" placeholder="tu@email.com" required /></label>
+            <label>Código del pedido, si lo tenés<input type="text" name="order_id" placeholder="order_..." /></label>
+            <label>Qué pasó<textarea name="detalle" rows="5" placeholder="Contá brevemente el problema" required></textarea></label>
+            <label class="file-picker">
+              <span>Comprobante de pago</span>
+              <input id="support-file" type="file" name="comprobante" accept=".pdf,.jpg,.jpeg,.png" />
+              <span class="file-picker-ui"><strong>Seleccionar archivo</strong><em id="support-file-name">Ningún archivo seleccionado</em></span>
+            </label>
+            <button class="button primary" type="submit">Enviar solicitud de soporte</button>
+          </form>
+        </div>
+        <aside class="app-card">
+          <h2>Consejo rápido</h2>
+          <p>Si pagaste con Mercado Pago, incluí el email usado y, si podés, adjuntá el comprobante. Eso ayuda a encontrar el pedido más rápido.</p>
+          <p>Para retomar un pedido ya iniciado, también podés usar la página “Retomar pedido”.</p>
+          <a class="button secondary" href="./retomar.html">Retomar pedido</a>
+        </aside>
+      </section>
+    </main>
+    <script>
+      const fileInput = document.querySelector("#support-file");
+      const fileName = document.querySelector("#support-file-name");
+      fileInput.addEventListener("change", () => {
+        fileName.textContent = fileInput.files?.[0]?.name || "Ningún archivo seleccionado";
+      });
+    </script>
+  </body>
+</html>
