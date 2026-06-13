@@ -226,6 +226,13 @@ Reglas:
 
 ## MVP automático recomendado
 
+Etapa 0:
+
+- Landing publicada en GitHub Pages.
+- Flujo estático de prueba con `TEST` y `localStorage`.
+- Páginas: confirmar, formulario, preview y descarga.
+- Functions base preparadas para Cloudflare Pages.
+
 Etapa 1:
 
 - Cloudflare Pages + Worker + D1.

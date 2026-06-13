@@ -17,6 +17,18 @@ Este sitio está preparado para GitHub Pages desde `main / root`.
 - Generación A4 básica simulada en navegador.
 - Planes visibles: $10.000, $20.000 y $30.000 ARS.
 
+## Probar flujo estático
+
+1. Abrir `confirmar.html?plan=basic`, `professional` o `focused`.
+2. Ingresar cualquier email.
+3. Usar código `TEST`.
+4. Completar formulario.
+5. Revisar preview A4.
+6. Confirmar generación final.
+7. Guardar como PDF desde el navegador.
+
+En GitHub Pages este flujo usa `localStorage`. En Cloudflare Pages, el endpoint `/api/orders` podrá crear órdenes reales en D1.
+
 ## Arquitectura objetivo
 
 Ver `ARCHITECTURE.md`.

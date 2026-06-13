@@ -81,7 +81,13 @@ function normalizeText(value) {
 }
 
 function collectFormData(form) {
-  return Object.fromEntries(new FormData(form).entries());
+  const data = Object.fromEntries(new FormData(form).entries());
+  form.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+    if (!data[checkbox.name]) {
+      data[checkbox.name] = "";
+    }
+  });
+  return data;
 }
 
 function validateResumeData(data, planId) {
@@ -104,6 +110,19 @@ function validateResumeData(data, planId) {
   return reports;
 }
 
+function escapeHtml(value) {
+  return normalizeText(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatMultiline(value) {
+  return escapeHtml(value).replace(/\n+/g, "<br />");
+}
+
 function buildResumeHtml(data) {
   const contact = [
     data.showEmail === "on" ? data.email : "",
@@ -116,27 +135,33 @@ function buildResumeHtml(data) {
     .filter(Boolean)
     .join(" · ");
 
+  const target = normalizeText(data.targetRole);
+  const company = normalizeText(data.targetCompany);
+  const profileFallback = target
+    ? `Perfil orientado a ${target}${company ? ` en ${company}` : ""}.`
+    : "Perfil orientado a nuevas oportunidades laborales.";
+
   return `
     <article class="cv-page">
       <header class="cv-header">
-        <h1>${normalizeText(data.fullName) || "Nombre Apellido"}</h1>
-        <p>${contact || "Datos de contacto"}</p>
+        <h1>${escapeHtml(data.fullName) || "Nombre Apellido"}</h1>
+        <p>${escapeHtml(contact) || "Datos de contacto"}</p>
       </header>
       <section>
         <h2>Perfil</h2>
-        <p>${normalizeText(data.summary) || `Perfil orientado a ${normalizeText(data.targetRole) || "nuevas oportunidades laborales"}.`}</p>
+        <p>${formatMultiline(data.summary) || escapeHtml(profileFallback)}</p>
       </section>
       <section>
         <h2>Experiencia</h2>
-        <p>${normalizeText(data.experience) || "Experiencia a completar."}</p>
+        <p>${formatMultiline(data.experience) || "Experiencia a completar."}</p>
       </section>
       <section>
         <h2>Educación</h2>
-        <p>${normalizeText(data.education) || "Educación a completar."}</p>
+        <p>${formatMultiline(data.education) || "Educación a completar."}</p>
       </section>
       <section>
         <h2>Habilidades</h2>
-        <p>${normalizeText(data.skills) || "Habilidades a completar."}</p>
+        <p>${formatMultiline(data.skills) || "Habilidades a completar."}</p>
       </section>
     </article>
   `;
@@ -152,4 +177,5 @@ window.CVListo = {
   collectFormData,
   validateResumeData,
   buildResumeHtml,
+  escapeHtml,
 };
