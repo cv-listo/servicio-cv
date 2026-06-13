@@ -82,3 +82,27 @@ Ver `ARCHITECTURE.md`.
 - Implementar caché IA persistente con `ai_generations`.
 - Mejorar plantillas de CV y versión ATS-friendly.
 - Evaluar email automático, DOCX y OCR.
+
+## Checklist Mercado Pago
+
+1. Crear una orden sin código `TEST`.
+2. Confirmar que `/api/orders` devuelve una URL de checkout.
+3. Completar pago en Mercado Pago sandbox.
+4. Verificar que el usuario vuelve a `pago.html`.
+5. Confirmar que el webhook actualiza la orden a `paid`.
+6. Confirmar que `pago.html` redirige a `formulario.html`.
+7. Completar formulario, preview y generación final.
+
+Consultas útiles en D1:
+
+```sql
+SELECT id, email, plan_id, amount, status, mp_preference_id, mp_payment_id, mp_status, paid_at, updated_at
+FROM orders
+ORDER BY created_at DESC
+LIMIT 20;
+
+SELECT payment_id, order_id, mp_status, amount, currency, signature_valid, processed, error, created_at
+FROM mp_events
+ORDER BY created_at DESC
+LIMIT 20;
+```
