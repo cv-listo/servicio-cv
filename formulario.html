@@ -14,6 +14,7 @@
           <p class="eyebrow">Formulario guiado</p>
           <h1>Completá tus datos</h1>
           <p class="lead">Estos datos se usan para armar la vista previa. Los campos como DNI, teléfono o dirección son opcionales y podés elegir si se muestran en el CV.</p>
+          <div class="recovery-box" id="recovery-box"></div>
         </div>
 
         <form class="app-form wide wizard" id="resume-form">
@@ -211,6 +212,11 @@
           document.body.innerHTML = "<main class='app-shell'><h1>Pedido no habilitado</h1><p>Para completar el formulario, primero debe existir un pago confirmado o un código de prueba válido.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
           return;
         }
+        document.querySelector("#recovery-box").innerHTML = `
+          <strong>Datos para retomar:</strong>
+          <span>ID: ${order.id}</span>
+          <span>Token: ${order.token}</span>
+        `;
 
         setupWizard(order?.planId || "basic");
 

@@ -10,7 +10,7 @@ Este sitio está preparado para GitHub Pages desde `main / root`.
 
 - Landing estática publicada en GitHub Pages.
 - Flujo estático navegable con código `TEST` usando `localStorage`.
-- Páginas incluidas: `confirmar.html`, `formulario.html`, `preview.html`, `descargar.html`.
+- Páginas incluidas: `confirmar.html`, `formulario.html`, `preview.html`, `descargar.html`, `retomar.html`.
 - Sin backend todavía.
 - Sin validación automática de pagos.
 - Sin OCR ni LLM todavía.
