@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Confirmar plan | CV Listo</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <a class="back-link" href="./index.html#planes">← Volver a planes</a>
+      <section class="app-layout">
+        <div>
+          <p class="eyebrow">Confirmación</p>
+          <h1>Confirmá tu plan</h1>
+          <p class="lead">Revisá el plan elegido. En producción, el pago se validará con Mercado Pago Checkout Pro. Para pruebas, el código <strong>TEST</strong> habilita el formulario.</p>
+          <form class="app-form" id="checkout-form">
+            <label>
+              Email para el pedido
+              <input type="email" name="email" placeholder="tu@email.com" required />
+            </label>
+            <label>
+              Código de descuento
+              <input type="text" name="discount" placeholder="Opcional" />
+            </label>
+            <button type="submit">Continuar</button>
+            <p class="form-note">Código de prueba disponible: TEST. En producción se reemplaza por validación server-side.</p>
+          </form>
+        </div>
+        <div id="plan-summary"></div>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+    <script>
+      const planId = CVListo.getParam("plan") || "basic";
+      CVListo.renderPlanSummary(document.querySelector("#plan-summary"), planId);
+
+      document.querySelector("#checkout-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = CVListo.collectFormData(event.currentTarget);
+        const code = (data.discount || "").trim().toUpperCase();
+
+        try {
+          const response = await fetch("./api/orders", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              planId,
+              email: data.email,
+              discountCode: code,
+            }),
+          });
+          if (response.ok) {
+            const result = await response.json();
+            if (result.redirectUrl) {
+              window.location.href = result.redirectUrl;
+              return;
+            }
+            alert(result.message || "Pedido creado. Falta conectar Mercado Pago Checkout Pro.");
+            return;
+          }
+        } catch {
+          // GitHub Pages no ejecuta Functions. Usamos fallback local para probar UX.
+        }
+
+        const order = CVListo.createOrder(planId, code === "TEST" ? "discount_test" : "payment_pending");
+        CVListo.updateOrder(order.id, {
+          email: data.email,
+          discountCode: code || null,
+        });
+
+        if (code === "TEST") {
+          window.location.href = `./formulario.html?order=${order.id}&token=${order.token}`;
+          return;
+        }
+
+        alert("Placeholder: acá se redirige a Mercado Pago Checkout Pro cuando esté configurado.");
+      });
+    </script>
+  </body>
+</html>

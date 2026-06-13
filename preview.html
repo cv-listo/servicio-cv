@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vista previa | CV Listo</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="preview-layout">
+        <aside class="audit-panel">
+          <p class="eyebrow">Vista previa</p>
+          <h1>Revisá antes de generar</h1>
+          <p>La generación final es única. Si hay advertencias, volvé al formulario y corregí antes de confirmar.</p>
+          <div id="audit-list"></div>
+          <div class="app-actions">
+            <a class="button secondary" id="edit-link" href="#">Editar datos</a>
+            <button class="button primary" id="generate-btn">Generar CV final</button>
+          </div>
+        </aside>
+        <section id="cv-preview" class="cv-preview"></section>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+    <script>
+      const orderId = CVListo.getParam("order");
+      const token = CVListo.getParam("token");
+      const order = CVListo.getOrder(orderId);
+
+      if (!order || order.token !== token || order.status !== "preview_ready") {
+        document.body.innerHTML = "<main class='app-shell'><h1>Vista previa no disponible</h1><p>Completá el formulario para generar la vista previa.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
+      } else {
+        document.querySelector("#edit-link").href = `./formulario.html?order=${order.id}&token=${order.token}`;
+        document.querySelector("#cv-preview").innerHTML = CVListo.buildResumeHtml(order.data);
+        const list = document.querySelector("#audit-list");
+        const reports = order.reports || [];
+        list.innerHTML = reports.length
+          ? reports.map((report) => `<p class="audit ${report.severity}">${report.message}</p>`).join("")
+          : "<p class='audit ok'>Sin errores bloqueantes detectados.</p>";
+
+        document.querySelector("#generate-btn").addEventListener("click", () => {
+          const hasCritical = (order.reports || []).some((report) => report.severity === "critical");
+          if (hasCritical) {
+            alert("Hay errores obligatorios. Corregilos antes de generar.");
+            return;
+          }
+          if (!confirm("La generación final se puede hacer una sola vez. ¿Confirmás que revisaste los datos?")) {
+            return;
+          }
+          CVListo.updateOrder(order.id, {
+            status: "generated",
+            generated: true,
+            generatedAt: new Date().toISOString(),
+          });
+          window.location.href = `./descargar.html?order=${order.id}&token=${order.token}`;
+        });
+      }
+    </script>
+  </body>
+</html>

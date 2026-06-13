@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Descargar CV | CV Listo</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="download-card">
+        <p class="eyebrow">CV generado</p>
+        <h1>Tu CV está listo</h1>
+        <p>El CV final quedó generado para este pedido. Podés imprimirlo o guardarlo como PDF desde el navegador.</p>
+        <div id="final-cv"></div>
+        <div class="app-actions">
+          <button class="button primary" onclick="window.print()">Guardar como PDF</button>
+          <a class="button secondary" href="./index.html">Volver al inicio</a>
+        </div>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+    <script>
+      const orderId = CVListo.getParam("order");
+      const token = CVListo.getParam("token");
+      const order = CVListo.getOrder(orderId);
+
+      if (!order || order.token !== token || order.status !== "generated") {
+        document.body.innerHTML = "<main class='app-shell'><h1>Descarga no disponible</h1><p>El CV final todavía no fue generado para este pedido.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
+      } else {
+        document.querySelector("#final-cv").innerHTML = CVListo.buildResumeHtml(order.data);
+      }
+    </script>
+  </body>
+</html>
