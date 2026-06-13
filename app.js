@@ -135,6 +135,16 @@ async function validateBackendProfile(planId, data) {
   return response.json();
 }
 
+async function processBackendAiDraft(id, token, data) {
+  const response = await fetch("/api/ai/process-cv", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ orderId: id, token, data }),
+  });
+  if (!response.ok) throw new Error("AI draft unavailable");
+  return response.json();
+}
+
 async function sha256(value) {
   const buffer = new TextEncoder().encode(value);
   const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
@@ -386,6 +396,7 @@ window.CVListo = {
   saveBackendDraft,
   finalizeBackendOrder,
   validateBackendProfile,
+  processBackendAiDraft,
   renderPlanSummary,
   collectFormData,
   validateResumeData,

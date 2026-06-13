@@ -25,6 +25,7 @@
           <p class="eyebrow">Vista previa</p>
           <h1>Revisá antes de generar</h1>
           <p>La generación final es única. Si hay advertencias, volvé al formulario y corregí antes de confirmar.</p>
+          <div id="ai-status" class="ai-status">Preparando vista previa...</div>
           <div id="a4-status" class="a4-status">Verificando formato A4...</div>
           <div id="audit-list"></div>
           <div class="quick-edit">
@@ -64,6 +65,49 @@
         }
 
         document.querySelector("#edit-link").href = `./formulario.html?order=${order.id}&token=${order.token}`;
+        const aiStatus = document.querySelector("#ai-status");
+        const aiWarnings = [];
+        const aiQuestions = [];
+
+        async function improveDraftWithAi() {
+          if (!["professional", "focused"].includes(order.planId) || order.aiProcessed) {
+            aiStatus.className = "ai-status ok";
+            aiStatus.textContent = order.planId === "basic" ? "Plan Básico: vista organizada sin IA." : "Vista previa lista.";
+            return;
+          }
+          aiStatus.className = "ai-status loading";
+          aiStatus.textContent = "Mejorando redacción con IA...";
+          try {
+            const result = await CVListo.processBackendAiDraft(order.id, order.token, order.data);
+            if (result?.ok && result.data) {
+              order.data = result.data;
+              aiWarnings.push(...(result.warnings || []));
+              aiQuestions.push(...(result.questions || []));
+              CVListo.updateOrder(order.id, {
+                data: order.data,
+                aiProcessed: true,
+                aiSource: result.source,
+                aiWarnings,
+                aiQuestions,
+              });
+              try {
+                await CVListo.saveBackendProfile(order.id, order.token, order.data, order.reports || []);
+              } catch {
+                // Si falla el backend, la preview sigue con el borrador local.
+              }
+              aiStatus.className = result.source === "llm" ? "ai-status ok" : "ai-status warning";
+              aiStatus.textContent = result.source === "llm"
+                ? "Redacción mejorada con IA. Revisá antes de generar."
+                : "IA no disponible: usamos organización local segura.";
+            }
+          } catch {
+            aiStatus.className = "ai-status warning";
+            aiStatus.textContent = "No pudimos usar IA. Mostramos tus datos organizados localmente.";
+            CVListo.updateOrder(order.id, { aiProcessed: true, aiSource: "frontend_fallback" });
+          }
+        }
+
+        await improveDraftWithAi();
         const render = () => {
           document.querySelector("#cv-preview").innerHTML = CVListo.buildResumeHtml(order.data);
         };
@@ -72,7 +116,9 @@
         document.querySelector("#quick-skills").value = order.data.skills || "";
         render();
         const list = document.querySelector("#audit-list");
-        const reports = order.reports || [];
+        const reports = [...(order.reports || [])];
+        aiWarnings.forEach((message) => reports.push({ severity: "warning", message }));
+        aiQuestions.forEach((message) => reports.push({ severity: "warning", message: `Sugerencia: ${message}` }));
         const updateA4Status = () => {
           const cvPage = document.querySelector(".cv-page");
           const status = document.querySelector("#a4-status");

@@ -629,7 +629,7 @@
         } catch {
           // GitHub Pages no ejecuta Functions. Guardamos local para probar UX.
         }
-        CVListo.updateOrder(order.id, { status: "preview_ready", data, reports });
+        CVListo.updateOrder(order.id, { status: "preview_ready", data, reports, aiProcessed: false });
         window.location.href = `./preview.html?order=${order.id}&token=${order.token}`;
       });
     </script>
