@@ -94,16 +94,21 @@
                 <option value="none">No tengo experiencia previa</option>
               </select>
             </label>
-            <div class="form-grid">
+            <div id="experience-list">
+              <div class="repeat-card" data-repeat="experience">
+                <div class="form-grid">
               <label>Empresa, lugar o actividad<input type="text" name="experiencePlace" placeholder="Ej: Supermercado Sol / Manicuría a domicilio" /></label>
               <label>Puesto o tarea<input type="text" name="experienceRole" placeholder="Ej: Cajera y reposición / Atención a clientes" /></label>
               <label>Mes inicio<select name="startMonth"><option value="">Mes</option></select></label>
               <label>Año inicio<select name="startYear"><option value="">Año</option></select></label>
               <label>Mes fin<select name="endMonth"><option value="">Mes</option></select></label>
               <label>Año fin<select name="endYear"><option value="">Año</option></select></label>
+                </div>
+                <span class="toggle-row"><input type="checkbox" name="isCurrent" /> <span>Trabajo actualmente acá</span></span>
+                <label>Tareas principales<textarea name="experience" rows="4" placeholder="Ej: atención al cliente, cobro con tarjeta y efectivo, reposición de mercadería."></textarea></label>
+              </div>
             </div>
-            <span class="toggle-row"><input type="checkbox" name="isCurrent" /> <span>Trabajo actualmente acá</span></span>
-            <label>Tareas principales<textarea name="experience" rows="4" placeholder="Ej: atención al cliente, cobro con tarjeta y efectivo, reposición de mercadería."></textarea></label>
+            <button class="button secondary small-button" type="button" id="add-experience">+ Agregar otra experiencia</button>
           </section>
 
           <section class="wizard-step" data-step="3">
@@ -115,7 +120,12 @@
               <label>Nivel educativo<select name="educationLevel"><option>Secundario</option><option>Terciario</option><option>Universitario</option><option>Curso / oficio</option><option>Otro</option></select></label>
               <label>Estado<select name="educationStatus"><option>Completo</option><option>En curso</option><option>Incompleto / pausado</option></select></label>
             </div>
-            <label>Educación y cursos<textarea name="education" rows="3" placeholder="Ej: Secundario completo, curso de Excel básico, manipulación de alimentos."></textarea></label>
+            <div id="education-list">
+              <div class="repeat-card" data-repeat="education">
+                <label>Educación y cursos<textarea name="education" rows="3" placeholder="Ej: Secundario completo, curso de Excel básico, manipulación de alimentos."></textarea></label>
+              </div>
+            </div>
+            <button class="button secondary small-button" type="button" id="add-education">+ Agregar estudio o curso</button>
             <label>Habilidades<textarea name="skills" rows="3" placeholder="Ej: atención al cliente, manejo de caja, Excel, trabajo en equipo, puntualidad."></textarea></label>
           </section>
 
@@ -175,6 +185,7 @@
 
         if (order?.data) {
         const form = document.querySelector("#resume-form");
+        restoreRepeaters(order.data);
         Object.entries(order.data).forEach(([key, value]) => {
           const field = form?.elements[key];
           if (!field) return;
@@ -209,6 +220,7 @@
         if (planId !== "focused") {
           document.querySelectorAll(".focused-only").forEach((element) => element.remove());
         }
+        setupRepeaters();
         const steps = Array.from(document.querySelectorAll(".wizard-step"));
         const previous = document.querySelector("#prev-step");
         const next = document.querySelector("#next-step");
@@ -243,6 +255,85 @@
         });
 
         render();
+      }
+
+      function setupRepeaters() {
+        const addExperience = document.querySelector("#add-experience");
+        const experienceList = document.querySelector("#experience-list");
+        addExperience?.addEventListener("click", () => {
+          const count = experienceList.querySelectorAll("[data-repeat='experience']").length;
+          if (count >= 3) {
+            alert("Por ahora podés cargar hasta 3 experiencias.");
+            return;
+          }
+          const clone = experienceList.querySelector("[data-repeat='experience']").cloneNode(true);
+          clone.querySelectorAll("input, textarea, select").forEach((field) => {
+            if (field.type === "checkbox") field.checked = false;
+            else field.value = "";
+          });
+          clone.insertAdjacentHTML("beforeend", "<button class='button secondary small-button remove-repeat' type='button'>Eliminar experiencia</button>");
+          clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
+          experienceList.appendChild(clone);
+        });
+
+        const addEducation = document.querySelector("#add-education");
+        const educationList = document.querySelector("#education-list");
+        addEducation?.addEventListener("click", () => {
+          const count = educationList.querySelectorAll("[data-repeat='education']").length;
+          if (count >= 3) {
+            alert("Por ahora podés cargar hasta 3 estudios o cursos.");
+            return;
+          }
+          const clone = educationList.querySelector("[data-repeat='education']").cloneNode(true);
+          clone.querySelectorAll("textarea").forEach((field) => {
+            field.value = "";
+          });
+          clone.insertAdjacentHTML("beforeend", "<button class='button secondary small-button remove-repeat' type='button'>Eliminar</button>");
+          clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
+          educationList.appendChild(clone);
+        });
+      }
+
+      function restoreRepeaters(data) {
+        const experienceList = document.querySelector("#experience-list");
+        const experienceTemplate = experienceList?.querySelector("[data-repeat='experience']");
+        (data.experiences || []).slice(1).forEach(() => {
+          const clone = experienceTemplate.cloneNode(true);
+          clone.querySelectorAll("input, textarea, select").forEach((field) => {
+            if (field.type === "checkbox") field.checked = false;
+            else field.value = "";
+          });
+          clone.insertAdjacentHTML("beforeend", "<button class='button secondary small-button remove-repeat' type='button'>Eliminar experiencia</button>");
+          clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
+          experienceList.appendChild(clone);
+        });
+        (data.experiences || []).forEach((item, index) => {
+          const card = experienceList?.querySelectorAll("[data-repeat='experience']")[index];
+          if (!card) return;
+          card.querySelector('[name="experiencePlace"]').value = item.place || "";
+          card.querySelector('[name="experienceRole"]').value = item.role || "";
+          card.querySelector('[name="startMonth"]').value = item.startMonth || "";
+          card.querySelector('[name="startYear"]').value = item.startYear || "";
+          card.querySelector('[name="endMonth"]').value = item.endMonth || "";
+          card.querySelector('[name="endYear"]').value = item.endYear || "";
+          card.querySelector('[name="isCurrent"]').checked = item.isCurrent === "on";
+          card.querySelector('[name="experience"]').value = item.tasks || "";
+        });
+
+        const educationList = document.querySelector("#education-list");
+        const educationTemplate = educationList?.querySelector("[data-repeat='education']");
+        (data.educationItems || []).slice(1).forEach(() => {
+          const clone = educationTemplate.cloneNode(true);
+          clone.querySelectorAll("textarea").forEach((field) => { field.value = ""; });
+          clone.insertAdjacentHTML("beforeend", "<button class='button secondary small-button remove-repeat' type='button'>Eliminar</button>");
+          clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
+          educationList.appendChild(clone);
+        });
+        (data.educationItems || []).forEach((item, index) => {
+          const card = educationList?.querySelectorAll("[data-repeat='education']")[index];
+          if (!card) return;
+          card.querySelector('[name="education"]').value = item.text || "";
+        });
       }
 
       loadOrder();

@@ -140,6 +140,19 @@ function collectFormData(form) {
       data[checkbox.name] = "";
     }
   });
+  data.experiences = Array.from(form.querySelectorAll('[data-repeat="experience"]')).map((card) => ({
+    place: normalizeText(card.querySelector('[name="experiencePlace"]')?.value),
+    role: normalizeText(card.querySelector('[name="experienceRole"]')?.value),
+    startMonth: normalizeText(card.querySelector('[name="startMonth"]')?.value),
+    startYear: normalizeText(card.querySelector('[name="startYear"]')?.value),
+    endMonth: normalizeText(card.querySelector('[name="endMonth"]')?.value),
+    endYear: normalizeText(card.querySelector('[name="endYear"]')?.value),
+    isCurrent: card.querySelector('[name="isCurrent"]')?.checked ? "on" : "",
+    tasks: normalizeText(card.querySelector('[name="experience"]')?.value),
+  })).filter((item) => item.place || item.role || item.tasks);
+  data.educationItems = Array.from(form.querySelectorAll('[data-repeat="education"]')).map((card) => ({
+    text: normalizeText(card.querySelector('[name="education"]')?.value),
+  })).filter((item) => item.text);
   return data;
 }
 
@@ -154,7 +167,9 @@ function validateResumeData(data, planId) {
   if (!normalizeText(data.targetRole)) {
     reports.push({ severity: "warning", message: "Conviene indicar el puesto o rubro objetivo." });
   }
-  if (!normalizeText(data.experience) && !normalizeText(data.education) && !normalizeText(data.skills)) {
+  const hasExperience = normalizeText(data.experience) || (data.experiences || []).some((item) => item.tasks || item.role || item.place);
+  const hasEducation = normalizeText(data.education) || (data.educationItems || []).some((item) => item.text);
+  if (!hasExperience && !hasEducation && !normalizeText(data.skills)) {
     reports.push({ severity: "critical", message: "Cargá experiencia, estudios o habilidades para generar el CV." });
   }
   if (normalizeText(data.startYear) && normalizeText(data.endYear) && !data.isCurrent) {
@@ -164,7 +179,7 @@ function validateResumeData(data, planId) {
       reports.push({ severity: "critical", message: "La fecha de inicio de la experiencia no puede ser posterior a la fecha de fin." });
     }
   }
-  if (!normalizeText(data.experience) && data.experienceType !== "none") {
+  if (!hasExperience && data.experienceType !== "none") {
     reports.push({ severity: "warning", message: "La experiencia quedó breve. Agregar tareas ayuda a mejorar el CV." });
   }
   if (!normalizeText(data.skills)) {
@@ -209,6 +224,48 @@ function formatDateRange(data) {
   return [start, end].filter(Boolean).join(" - ");
 }
 
+function formatExperienceDateRange(item) {
+  const start = [item.startMonth, item.startYear].map(normalizeText).filter(Boolean).join("/");
+  const end = item.isCurrent === "on" ? "Actualidad" : [item.endMonth, item.endYear].map(normalizeText).filter(Boolean).join("/");
+  return [start, end].filter(Boolean).join(" - ");
+}
+
+function renderExperiences(data) {
+  const items = data.experiences?.length ? data.experiences : [{
+    place: data.experiencePlace,
+    role: data.experienceRole,
+    startMonth: data.startMonth,
+    startYear: data.startYear,
+    endMonth: data.endMonth,
+    endYear: data.endYear,
+    isCurrent: data.isCurrent,
+    tasks: data.experience,
+  }];
+  const rendered = items
+    .filter((item) => normalizeText(item.place) || normalizeText(item.role) || normalizeText(item.tasks))
+    .map((item) => {
+      const title = [item.role, item.place].map(normalizeText).filter(Boolean).join(" · ");
+      const range = formatExperienceDateRange(item);
+      return `
+        <div class="cv-entry">
+          ${title ? `<p><strong>${escapeHtml(title)}</strong>${range ? ` · ${escapeHtml(range)}` : ""}</p>` : ""}
+          ${renderBullets(splitItems(item.tasks)) || ""}
+        </div>
+      `;
+    })
+    .join("");
+  return rendered || "<p>Experiencia a completar.</p>";
+}
+
+function renderEducation(data) {
+  const items = data.educationItems?.length ? data.educationItems : [{ text: data.education }];
+  const rendered = items
+    .filter((item) => normalizeText(item.text))
+    .map((item) => `<p>${formatMultiline(item.text)}</p>`)
+    .join("");
+  return rendered || "<p>Educación a completar.</p>";
+}
+
 function buildResumeHtml(data) {
   const contact = [
     data.showEmail === "on" ? data.email : "",
@@ -223,15 +280,11 @@ function buildResumeHtml(data) {
 
   const target = normalizeText(data.targetRole);
   const company = normalizeText(data.targetCompany);
-  const experienceTitle = [data.experienceRole, data.experiencePlace].map(normalizeText).filter(Boolean).join(" · ");
-  const experienceText = normalizeText(data.experience);
   const educationText = normalizeText(data.education) || [data.educationLevel, data.educationStatus]
     .map(normalizeText)
     .filter(Boolean)
     .join(" - ");
   const skills = splitItems(data.skills);
-  const experienceBullets = splitItems(experienceText);
-  const dateRange = formatDateRange(data);
   const profileFallback = target
     ? `Perfil orientado a ${target}${company ? ` en ${company}` : ""}.`
     : "Perfil orientado a nuevas oportunidades laborales.";
@@ -253,12 +306,11 @@ function buildResumeHtml(data) {
       ${objectiveDetails ? `<section><h2>Objetivo</h2><p>${escapeHtml(objectiveDetails)}</p></section>` : ""}
       <section>
         <h2>Experiencia</h2>
-        ${experienceTitle ? `<p><strong>${escapeHtml(experienceTitle)}</strong>${dateRange ? ` · ${escapeHtml(dateRange)}` : ""}</p>` : ""}
-        ${renderBullets(experienceBullets) || "<p>Experiencia a completar.</p>"}
+        ${renderExperiences(data)}
       </section>
       <section>
         <h2>Educación</h2>
-        <p>${formatMultiline(educationText) || "Educación a completar."}</p>
+        ${renderEducation({ ...data, education: educationText })}
       </section>
       <section>
         <h2>Habilidades</h2>
