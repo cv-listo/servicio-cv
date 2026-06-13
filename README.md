@@ -51,7 +51,7 @@ MP_ACCESS_TOKEN = (Access Token de Mercado Pago)
 
 No guardar credenciales de Mercado Pago en el repositorio.
 
-El formulario de soporte manual usa FormSubmit hacia `lic.poletti@gmail.com`. La primera vez requiere activar el formulario desde el correo recibido.
+El formulario de soporte manual usa FormSubmit hacia `mariano.pereyra.1990.1@gmail.com`. La primera vez requiere activar el formulario desde el correo recibido.
 
 ## Arquitectura objetivo
 
