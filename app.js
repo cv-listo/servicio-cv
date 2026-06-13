@@ -375,7 +375,7 @@ function buildResumeHtml(data) {
   const skillsHtml = renderBullets(skills);
 
   return `
-    <article class="cv-page cv-page-polished">
+    <article class="cv-page cv-page-polished cv-page-ats">
       <header class="cv-header">
         <h1>${escapeHtml(data.fullName) || "Nombre Apellido"}</h1>
         ${target ? `<p class="cv-headline">${escapeHtml(sentenceCase(target))}</p>` : ""}
