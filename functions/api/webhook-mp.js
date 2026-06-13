@@ -17,7 +17,7 @@ export async function onRequestPost({ request, env }) {
 
   event = await readJson(request);
 
-  const eventType = event.type || event.action || "";
+  const eventType = event.type || event.action || url.searchParams.get("topic") || url.searchParams.get("type") || "";
   paymentId = paymentId || event.data?.id || event.payment_id || event.id || null;
 
   if (!paymentId || !String(eventType).includes("payment")) {

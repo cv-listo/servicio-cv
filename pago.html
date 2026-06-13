@@ -19,8 +19,15 @@
         <p class="eyebrow">Mercado Pago</p>
         <h1>Estamos verificando tu pago</h1>
         <p id="payment-status-text">Esto puede demorar unos segundos. No cierres esta pantalla.</p>
+        <div class="payment-brand-row" aria-label="Pago seguro">
+          <span class="mp-brand">Mercado Pago</span>
+          <span>Visa</span>
+          <span>Mastercard</span>
+          <span>Débito</span>
+        </div>
         <div class="a4-status warning" id="payment-status-box">Esperando confirmación del pago...</div>
         <div class="app-actions">
+          <button class="button primary" type="button" id="retry-payment-check">Ya pagué, verificar de nuevo</button>
           <a class="button secondary" href="./retomar.html">Retomar pedido</a>
           <a class="button secondary" href="./index.html#soporte">Necesito ayuda</a>
         </div>
@@ -39,6 +46,7 @@
       const statusBox = document.querySelector("#payment-status-box");
       const statusText = document.querySelector("#payment-status-text");
       let attempts = 0;
+      const retryButton = document.querySelector("#retry-payment-check");
 
       async function pollPayment() {
         attempts += 1;
@@ -82,6 +90,12 @@
       }
 
       pollPayment();
+      retryButton.addEventListener("click", () => {
+        attempts = 0;
+        statusBox.className = "a4-status warning";
+        statusBox.textContent = "Consultando nuevamente con el servidor...";
+        pollPayment();
+      });
     </script>
   </body>
 </html>

@@ -817,6 +817,11 @@ h3 {
   font-weight: 900;
 }
 
+.card-brands .mp-brand {
+  border-color: #009ee3;
+  color: #007eb5;
+}
+
 .app-layout.single {
   grid-template-columns: 1fr;
 }
@@ -1229,6 +1234,29 @@ h3 {
 
 .payment-status-card {
   max-width: 720px;
+}
+
+.payment-brand-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+
+.payment-brand-row span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.payment-brand-row .mp-brand {
+  border-color: #009ee3;
+  background: #e5f6ff;
+  color: #007eb5;
 }
 
 .quick-edit {

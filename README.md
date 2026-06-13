@@ -50,6 +50,8 @@ Variables de entorno necesarias en Cloudflare Pages:
 ```text
 TEST_DISCOUNT_CODE = TEST
 MP_ACCESS_TOKEN = (Access Token de Mercado Pago)
+MP_WEBHOOK_SECRET = (Secret de webhook de Mercado Pago)
+APP_BASE_URL = https://servicio-cv.pages.dev
 LLM_PROVIDER = groq
 GROQ_API_KEY = (API key de Groq)
 GROQ_MODEL = llama-3.1-8b-instant
@@ -58,7 +60,6 @@ GROQ_MODEL = llama-3.1-8b-instant
 Variables opcionales:
 
 ```text
-MP_WEBHOOK_SECRET = (secreto de webhook de Mercado Pago)
 AI_TIMEOUT_MS = 10000
 GEMINI_API_KEY = ...
 OPENAI_API_KEY = ...
@@ -77,6 +78,7 @@ Ver `ARCHITECTURE.md`.
 
 - Probar Mercado Pago en sandbox y producción.
 - Configurar `MP_WEBHOOK_SECRET` y validar firma de webhooks.
+- En producción, dejar `TEST_DISCOUNT_CODE` vacío o usar un código no público.
 - Implementar caché IA persistente con `ai_generations`.
 - Mejorar plantillas de CV y versión ATS-friendly.
 - Evaluar email automático, DOCX y OCR.
