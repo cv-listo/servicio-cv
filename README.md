@@ -1,26 +1,31 @@
 # CV Listo
 
-Landing estática para un servicio de armado de CVs.
+Landing y base visual para una app de generación automática de CVs.
 
 ## Publicación
 
 Este sitio está preparado para GitHub Pages desde `main / root`.
 
-## Reemplazar antes de lanzar
+## Estado actual
 
-En `index.html`, cambiar estos placeholders:
+- Landing estática publicada en GitHub Pages.
+- Sin backend todavía.
+- Sin validación automática de pagos.
+- Sin OCR ni LLM todavía.
+- Sin generación automática todavía.
 
-- `LINK_MERCADO_PAGO_CV_BASICO`
-- `LINK_MERCADO_PAGO_CV_PROFESIONAL`
-- `LINK_MERCADO_PAGO_CV_CARTA`
-- `LINK_TALLY_FORMULARIO`
+## Arquitectura objetivo
 
-## Stack MVP
+Ver `ARCHITECTURE.md`.
 
-- Hosting: GitHub Pages.
-- Formulario: Tally.
-- Archivos: Tally uploads.
-- Cobro: Mercado Pago links.
-- Operación: Google Sheets / Gmail.
+## Próxima etapa
 
-Costo fijo: `$0`.
+Migrar a app serverless:
+
+- Cloudflare Pages.
+- Cloudflare Workers / Pages Functions.
+- Cloudflare D1.
+- Cloudflare R2.
+- Mercado Pago Checkout Pro.
+- Generación PDF/DOCX en navegador.
+- OCR/LLM opcional por pedido.
