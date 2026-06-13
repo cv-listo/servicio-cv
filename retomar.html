@@ -15,96 +15,15 @@
   <body>
     <main class="app-shell checkout-shell">
       <a class="back-link" href="./index.html">← Volver al inicio</a>
-      <section class="app-layout">
-        <div>
-          <p class="eyebrow">Retomar pedido</p>
-          <h1>Continuá donde quedaste</h1>
-          <p class="lead">Si cerraste la pestaña, podés volver al formulario con el enlace que guardaste o con los datos de acceso del pedido.</p>
-          <div class="app-card last-order-card" id="last-order-card" hidden>
-            <strong>Encontramos un pedido reciente en este dispositivo</strong>
-            <p>Podés continuar sin volver a copiar datos de acceso.</p>
-            <button class="button primary" type="button" id="resume-last-order">Continuar con mi último pedido</button>
-          </div>
-          <details class="manual-recovery-details">
-            <summary>Ingresar datos de acceso manualmente</summary>
-          <form class="app-form checkout-form" id="resume-order-form">
-            <label>
-              Email del pedido
-              <input type="email" name="email" placeholder="tu@email.com" />
-            </label>
-            <p class="form-note">Por seguridad, necesitamos validar el pedido antes de mostrar tus datos.</p>
-            <label>
-              Código del pedido
-              <input type="text" name="orderId" placeholder="order_..." />
-            </label>
-            <label>
-              Código de acceso
-              <input type="text" name="token" placeholder="token_..." />
-            </label>
-            <button class="button primary" type="submit">Retomar</button>
-          </form>
-          </details>
-        </div>
-        <div class="app-card">
-          <h2>¿Dónde encuentro el enlace?</h2>
-          <p>En el formulario podés usar “Guardar link para retomar”. Si pagaste con Mercado Pago, también podés volver desde la pantalla de verificación o escribir a soporte con el comprobante.</p>
-        </div>
+      <section class="app-card">
+        <p class="eyebrow">Retomar pedido</p>
+        <h1>Ahora está dentro de Soporte</h1>
+        <p>Unificamos recuperación de pedidos, pagos y problemas de descarga en una sola página para que sea más claro.</p>
+        <a class="button primary" href="./soporte.html#retomar">Ir a soporte y retomar pedido</a>
       </section>
     </main>
-    <script src="./app.js"></script>
     <script>
-      const savedOrders = Object.values(CVListo.getOrders?.() || {});
-      const latestOrder = savedOrders.sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))[0];
-      if (latestOrder?.id && latestOrder?.token) {
-        document.querySelector("#last-order-card").hidden = false;
-        document.querySelector("#resume-last-order").addEventListener("click", () => {
-          if (latestOrder.status === "generated") {
-            window.location.href = `./descargar.html?order=${latestOrder.id}&token=${latestOrder.token}`;
-            return;
-          }
-          if (latestOrder.status === "preview_ready") {
-            window.location.href = `./preview.html?order=${latestOrder.id}&token=${latestOrder.token}`;
-            return;
-          }
-          window.location.href = `./formulario.html?order=${latestOrder.id}&token=${latestOrder.token}`;
-        });
-      }
-
-      document.querySelector("#resume-order-form").addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const data = CVListo.collectFormData(event.currentTarget);
-        let order = data.orderId ? CVListo.getOrder(data.orderId) : null;
-        if (!order && data.orderId && data.token) {
-          try {
-            const backendOrder = await CVListo.fetchBackendOrder(data.orderId, data.token);
-            order = CVListo.cacheOrder(backendOrder);
-          } catch {
-            // Sin backend disponible.
-          }
-        }
-        if (!order && data.email) {
-          try {
-            await CVListo.recoverBackendOrder(data.email);
-            alert("Si existe un pedido activo, se envió un enlace de recuperación al email indicado.");
-            return;
-          } catch {
-            // Sin backend disponible.
-          }
-        }
-        if (!order || (data.token && order.token !== data.token)) {
-          alert("No se encontró un pedido activo con esos datos.");
-          return;
-        }
-        if (order.status === "generated") {
-          window.location.href = `./descargar.html?order=${order.id}&token=${order.token}`;
-          return;
-        }
-        if (order.status === "preview_ready") {
-          window.location.href = `./preview.html?order=${order.id}&token=${order.token}`;
-          return;
-        }
-        window.location.href = `./formulario.html?order=${order.id}&token=${order.token}`;
-      });
+      window.location.replace("./soporte.html#retomar");
     </script>
   </body>
 </html>

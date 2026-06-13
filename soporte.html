@@ -20,6 +20,25 @@
           <p class="eyebrow">Soporte</p>
           <h1>¿Necesitás ayuda con tu pedido?</h1>
           <p class="lead">Si tuviste un problema con el pago, el formulario o la descarga, enviá los datos del pedido y revisamos el caso.</p>
+          <section class="app-card last-order-card" id="retomar">
+            <h2>Retomar pedido</h2>
+            <p>Si cerraste la pestaña, podés continuar desde el último pedido guardado en este dispositivo o ingresar tus datos de acceso.</p>
+            <div id="last-order-card" hidden>
+              <strong>Encontramos un pedido reciente</strong>
+              <p>Podés continuar sin volver a copiar datos.</p>
+              <button class="button primary" type="button" id="resume-last-order">Continuar con mi último pedido</button>
+            </div>
+            <details class="manual-recovery-details">
+              <summary>Ingresar datos de acceso manualmente</summary>
+              <form class="app-form checkout-form" id="resume-order-form">
+                <label>Email del pedido<input type="email" name="email" placeholder="tu@email.com" /></label>
+                <p class="form-note">Por seguridad, necesitamos validar el pedido antes de mostrar tus datos.</p>
+                <label>Código del pedido<input type="text" name="orderId" placeholder="order_..." /></label>
+                <label>Código de acceso<input type="text" name="token" placeholder="token_..." /></label>
+                <button class="button primary" type="submit">Retomar pedido</button>
+              </form>
+            </details>
+          </section>
           <form class="support-form" action="https://formsubmit.co/mariano.pereyra.1990.1@gmail.com" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="_subject" value="Soporte CV Listo" />
             <input type="hidden" name="_captcha" value="false" />
@@ -38,12 +57,66 @@
         <aside class="app-card">
           <h2>Consejo rápido</h2>
           <p>Si pagaste con Mercado Pago, incluí el email usado y, si podés, adjuntá el comprobante. Eso ayuda a encontrar el pedido más rápido.</p>
-          <p>Para retomar un pedido ya iniciado, también podés usar la página “Retomar pedido”.</p>
-          <a class="button secondary" href="./retomar.html">Retomar pedido</a>
+          <p>Si solo querés continuar donde quedaste, usá el bloque “Retomar pedido” de esta misma página.</p>
+          <a class="button secondary" href="#retomar">Ir a retomar pedido</a>
         </aside>
       </section>
     </main>
+    <script src="./app.js"></script>
     <script>
+      const savedOrders = Object.values(CVListo.getOrders?.() || {});
+      const latestOrder = savedOrders.sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0))[0];
+      if (latestOrder?.id && latestOrder?.token) {
+        document.querySelector("#last-order-card").hidden = false;
+        document.querySelector("#resume-last-order").addEventListener("click", () => {
+          if (latestOrder.status === "generated") {
+            window.location.href = `./descargar.html?order=${latestOrder.id}&token=${latestOrder.token}`;
+            return;
+          }
+          if (latestOrder.status === "preview_ready") {
+            window.location.href = `./preview.html?order=${latestOrder.id}&token=${latestOrder.token}`;
+            return;
+          }
+          window.location.href = `./formulario.html?order=${latestOrder.id}&token=${latestOrder.token}`;
+        });
+      }
+
+      document.querySelector("#resume-order-form").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = CVListo.collectFormData(event.currentTarget);
+        let order = data.orderId ? CVListo.getOrder(data.orderId) : null;
+        if (!order && data.orderId && data.token) {
+          try {
+            const backendOrder = await CVListo.fetchBackendOrder(data.orderId, data.token);
+            order = CVListo.cacheOrder(backendOrder);
+          } catch {
+            // Sin backend disponible.
+          }
+        }
+        if (!order && data.email) {
+          try {
+            await CVListo.recoverBackendOrder(data.email);
+            alert("Si existe un pedido activo, se envió un enlace de recuperación al email indicado.");
+            return;
+          } catch {
+            // Sin backend disponible.
+          }
+        }
+        if (!order || (data.token && order.token !== data.token)) {
+          alert("No se encontró un pedido activo con esos datos.");
+          return;
+        }
+        if (order.status === "generated") {
+          window.location.href = `./descargar.html?order=${order.id}&token=${order.token}`;
+          return;
+        }
+        if (order.status === "preview_ready") {
+          window.location.href = `./preview.html?order=${order.id}&token=${order.token}`;
+          return;
+        }
+        window.location.href = `./formulario.html?order=${order.id}&token=${order.token}`;
+      });
+
       const fileInput = document.querySelector("#support-file");
       const fileName = document.querySelector("#support-file-name");
       fileInput.addEventListener("change", () => {
