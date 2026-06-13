@@ -38,7 +38,7 @@ export async function onRequestGet({ request, env }) {
       : `/formulario.html?order=${order.id}&token=${order.token}`;
   const link = `${origin}${path}`;
 
-  const email = await sendEmail(env, {
+  const emailResult = await sendEmail(env, {
     to: normalizedEmail,
     subject: "Retomar pedido en CV Listo",
     html: `
@@ -48,8 +48,8 @@ export async function onRequestGet({ request, env }) {
     `,
   });
 
-  if (!email.ok) {
-    return json({ ok: false, error: "No se pudo enviar el email de recuperación", detail: email }, { status: 500 });
+  if (!emailResult.ok) {
+    return json({ ok: false, error: "No se pudo enviar el email de recuperación", detail: emailResult }, { status: 500 });
   }
 
   return json({ ok: true, message: "Si existe un pedido activo, se envió un enlace de recuperación al email indicado." });
