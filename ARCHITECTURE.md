@@ -17,6 +17,29 @@ Arquitectura principal:
 - LLM opcional: Gemini Flash / Flash-Lite u otro proveedor con costo variable bajo.
 - PDF/DOCX: generación client-side con HTML/CSS imprimible y `docx.js`.
 
+## Planes comerciales
+
+```text
+Básico - $10.000 ARS
+  Sin LLM.
+  Datos estructurados + plantilla limpia.
+  PDF.
+  1 generación.
+
+Profesional - $20.000 ARS
+  LLM económico para mejorar redacción.
+  Perfil profesional y experiencia mejor redactados.
+  PDF + DOCX.
+  Hasta 2 generaciones.
+
+Enfocado - $30.000 ARS
+  LLM obligatorio.
+  Adaptación a puesto, empresa y aviso laboral.
+  Versión ATS-friendly.
+  PDF + DOCX.
+  Hasta 3 generaciones.
+```
+
 ## Flujo técnico
 
 ```text
@@ -129,6 +152,19 @@ R2 privado. Links temporales. Borrado programado.
 
 El LLM debe editar, ordenar y mejorar redacción. No debe inventar datos.
 
+Proveedor principal recomendado:
+
+- Gemini Flash-Lite / Gemini Flash en modo pago de bajo costo para producción.
+
+Fallbacks posibles:
+
+- DeepSeek / Qwen vía proveedor compatible con OpenAI.
+- Mistral Small.
+- OpenAI mini/nano.
+- Cloudflare Workers AI como fallback simple.
+
+Evitar depender de free tiers como única base productiva. Usarlos para pruebas o bajo volumen.
+
 Reglas:
 
 - no inventar empleos;
@@ -137,6 +173,8 @@ Reglas:
 - no inventar certificaciones;
 - devolver JSON;
 - validar entidades antes de generar CV.
+- salida JSON estructurada.
+- preview editable antes de descarga.
 
 ## MVP automático recomendado
 
@@ -148,15 +186,28 @@ Etapa 1:
 - Plantilla HTML A4.
 - Descarga por impresión a PDF.
 - Sin LLM.
+- Publicar solo Plan Básico o permitir planes altos como "próximamente".
 
 Etapa 2:
+
+- Adaptador LLM.
+- Plan Profesional.
+- Prompts JSON con reglas anti-invención.
+
+Etapa 3:
+
+- Plan Enfocado.
+- Puesto objetivo, empresa y texto del aviso.
+- ATS-friendly.
+
+Etapa 4:
 
 - R2 para archivos.
 - Extracción DOCX/PDF/imágenes.
 - OCR/LLM opcional.
 - Preview editable.
 
-Etapa 3:
+Etapa 5:
 
 - DOCX con `docx.js`.
 - Más plantillas.

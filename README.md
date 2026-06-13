@@ -13,6 +13,7 @@ Este sitio está preparado para GitHub Pages desde `main / root`.
 - Sin validación automática de pagos.
 - Sin OCR ni LLM todavía.
 - Sin generación automática todavía.
+- Planes visibles: $10.000, $20.000 y $30.000 ARS.
 
 ## Arquitectura objetivo
 
