@@ -139,6 +139,17 @@ a {
   text-transform: uppercase;
 }
 
+.hero-ai-badge {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 7px 11px;
+  background: linear-gradient(135deg, #6366f1, var(--ai), #ec4899);
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 900;
+  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.18);
+}
+
 h1,
 h2,
 h3 {
@@ -1340,6 +1351,55 @@ h3 {
 .ai-status.loading {
   background: var(--ai-soft);
   color: var(--ai);
+}
+
+.a4-meter {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin: 12px 0;
+  padding: 12px;
+  background: #fbfcff;
+}
+
+.a4-meter-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 850;
+}
+
+.a4-meter-row strong {
+  color: var(--ink);
+}
+
+.a4-meter-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e5eaf3;
+}
+
+.a4-meter-track span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.a4-meter-track .ok {
+  background: var(--ok);
+}
+
+.a4-meter-track .warn {
+  background: #d97706;
+}
+
+.a4-meter-track .risk {
+  background: #dc2626;
 }
 
 .quality-list {
