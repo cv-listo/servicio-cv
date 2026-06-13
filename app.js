@@ -146,12 +146,14 @@ async function sha256(value) {
 function renderPlanSummary(container, planId) {
   const plan = PLANS[planId] || PLANS.basic;
   container.innerHTML = `
-    <div class="app-card">
+    <div class="app-card plan-summary-card">
       <p class="plan-label">${plan.name}</p>
       <h2>${plan.price}</h2>
       <ul class="check-list">
         ${plan.includes.map((item) => `<li>${item}</li>`).join("")}
       </ul>
+      <div class="plan-summary-note">Una única generación · Revisá antes de descargar</div>
+      <div class="guarantee-badge">Arrepentimiento: si no empezamos, te devolvemos el pago</div>
     </div>
   `;
 }

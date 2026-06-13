@@ -3,6 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="CV Listo | Generá tu CV profesional en minutos" />
+    <meta property="og:description" content="Pagás, cargás tus datos y descargás tu CV A4 al instante. Desde $10.000." />
+    <meta property="og:image" content="https://servicio-cv.pages.dev/og-image.png" />
+    <meta property="og:url" content="https://servicio-cv.pages.dev/" />
     <title>Confirmar plan | CV Listo</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="stylesheet" href="./styles.css" />
@@ -20,11 +24,20 @@
               Email para el pedido
               <input type="email" name="email" placeholder="tu@email.com" required />
             </label>
-            <label>
-              Código de descuento
-              <input type="text" name="discount" placeholder="Opcional" />
-            </label>
+            <details class="discount-details">
+              <summary>¿Tenés un código de descuento?</summary>
+              <label>
+                Código
+                <input type="text" name="discount" placeholder="Opcional" />
+              </label>
+            </details>
             <button class="button primary" type="submit">Continuar al pago</button>
+            <div class="payment-trust">
+              <p>Pago procesado por Mercado Pago · Tus datos están protegidos</p>
+              <div class="card-brands" aria-label="Medios de pago">
+                <span>Visa</span><span>Mastercard</span><span>Mercado Pago</span>
+              </div>
+            </div>
           </form>
         </div>
         <div id="plan-summary"></div>

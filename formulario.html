@@ -3,6 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="CV Listo | Generá tu CV profesional en minutos" />
+    <meta property="og:description" content="Pagás, cargás tus datos y descargás tu CV A4 al instante. Desde $10.000." />
+    <meta property="og:image" content="https://servicio-cv.pages.dev/og-image.png" />
+    <meta property="og:url" content="https://servicio-cv.pages.dev/" />
     <title>Formulario | CV Listo</title>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="stylesheet" href="./styles.css" />
@@ -19,6 +23,9 @@
 
         <form class="app-form wide wizard" id="resume-form">
           <div class="wizard-progress">
+            <div class="progress-track" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
             <span id="step-label">Paso 1 de 6</span>
             <div><strong id="step-title">Contacto</strong></div>
           </div>
@@ -46,8 +53,8 @@
             </div>
             <div class="form-grid">
               <label>Área buscada *
-                <select name="targetArea" required>
-                  <option value="">Elegí una opción</option>
+                <select id="area" name="targetArea" required>
+                  <option value="" disabled selected>Elegí una opción</option>
                   <option>Administración y oficina</option>
                   <option>Comercio y ventas</option>
                   <option>Atención al cliente</option>
@@ -59,6 +66,7 @@
                   <option>Primer empleo</option>
                   <option>Otro</option>
                 </select>
+                <span class="error-msg" id="area-error">Por favor elegí un área laboral</span>
               </label>
               <label>Puesto o rubro objetivo *<input type="text" name="targetRole" placeholder="Ej: cajera, vendedor, administrativo" required /></label>
               <label>Modalidad
@@ -186,6 +194,7 @@
 
           <div class="wizard-actions">
             <button class="button secondary" type="button" id="prev-step">Volver</button>
+            <span class="form-note" id="autosave-note">Los datos se guardan automáticamente</span>
             <button class="button primary" type="button" id="next-step">Siguiente</button>
             <button class="button primary" type="submit" id="submit-form">Ver vista previa</button>
           </div>
@@ -232,6 +241,7 @@
             field.value = value;
           }
         });
+        document.querySelector('[name="targetArea"]')?.dispatchEvent(new Event("change"));
       }
       }
 
@@ -264,6 +274,7 @@
         const previous = document.querySelector("#prev-step");
         const next = document.querySelector("#next-step");
         const submit = document.querySelector("#submit-form");
+        const autosaveNote = document.querySelector("#autosave-note");
         const label = document.querySelector("#step-label");
         const title = document.querySelector("#step-title");
         let current = 0;
@@ -284,8 +295,13 @@
           previous.disabled = current === 0;
           next.hidden = current === steps.length - 1;
           submit.hidden = current !== steps.length - 1;
+          autosaveNote.hidden = current === steps.length - 1;
           label.textContent = `Paso ${current + 1} de ${steps.length}`;
           title.textContent = steps[current].querySelector("h2")?.textContent || "Formulario";
+          document.documentElement.style.setProperty("--step", current + 1);
+          document.querySelectorAll(".progress-track span").forEach((dot, index) => {
+            dot.classList.toggle("done", index <= current);
+          });
         };
 
         previous.addEventListener("click", async () => {
@@ -295,6 +311,14 @@
         });
 
         next.addEventListener("click", async () => {
+          const areaSelect = steps[current].querySelector('[name="targetArea"]');
+          const areaError = steps[current].querySelector("#area-error");
+          if (areaSelect && !areaSelect.value) {
+            areaSelect.classList.add("is-invalid");
+            if (areaError) areaError.style.display = "block";
+            areaSelect.focus();
+            return;
+          }
           const requiredFields = Array.from(steps[current].querySelectorAll("[required]"));
           const invalid = requiredFields.find((field) => !field.checkValidity());
           if (invalid) {
@@ -362,6 +386,9 @@
       function setupAreaSuggestions() {
         const areaSelect = document.querySelector('[name="targetArea"]');
         const apply = () => {
+          areaSelect?.classList.remove("is-invalid");
+          const error = document.querySelector("#area-error");
+          if (error) error.style.display = "none";
           const selected = suggestionsByArea[areaSelect.value] || suggestionsByArea["Comercio y ventas"];
           renderChipRow("summary", selected.summary);
           renderChipRow("tasks", selected.tasks);
