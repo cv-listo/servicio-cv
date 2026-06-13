@@ -108,6 +108,16 @@ async function finalizeBackendOrder(id, token, contentHash) {
   return response.json();
 }
 
+async function validateBackendProfile(planId, data) {
+  const response = await fetch("/api/validate", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ planId, data }),
+  });
+  if (!response.ok) throw new Error("Backend validation unavailable");
+  return response.json();
+}
+
 async function sha256(value) {
   const buffer = new TextEncoder().encode(value);
   const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
@@ -331,6 +341,7 @@ window.CVListo = {
   fetchBackendOrder,
   saveBackendProfile,
   finalizeBackendOrder,
+  validateBackendProfile,
   renderPlanSummary,
   collectFormData,
   validateResumeData,

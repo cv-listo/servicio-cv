@@ -96,9 +96,18 @@
         });
 
         document.querySelector("#generate-btn").addEventListener("click", async () => {
+          try {
+            const validation = await CVListo.validateBackendProfile(order.planId, order.data);
+            order.reports = validation.reports || [];
+            CVListo.updateOrder(order.id, { reports: order.reports });
+          } catch {
+            // Sin backend disponible: usamos validaciones locales existentes.
+          }
+
           const hasCritical = (order.reports || []).some((report) => report.severity === "critical");
           if (hasCritical) {
             alert("Hay errores obligatorios. Corregilos antes de generar.");
+            window.location.reload();
             return;
           }
           if (!confirm("La generación final se puede hacer una sola vez. ¿Confirmás que revisaste los datos?")) {
