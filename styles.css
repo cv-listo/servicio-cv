@@ -505,6 +505,42 @@ h3 {
   color: var(--muted);
 }
 
+.suggestion-box {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px;
+  background: #f8faff;
+}
+
+.suggestion-box p {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.chip-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip-row button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: var(--paper);
+  color: var(--accent-dark);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.chip-row button:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
 .consent {
   display: flex !important;
   flex-direction: row;

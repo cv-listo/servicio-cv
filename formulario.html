@@ -79,6 +79,15 @@
                 </select>
               </label>
             </div>
+            <div class="suggestion-box">
+              <p>Ideas para destacar</p>
+              <div class="chip-row" data-target="summary">
+                <button type="button">Soy puntual y responsable</button>
+                <button type="button">Aprendo rápido</button>
+                <button type="button">Me gusta trabajar en equipo</button>
+                <button type="button">Tengo buen trato con el público</button>
+              </div>
+            </div>
             <label>¿Qué te gustaría destacar?<textarea name="summary" rows="3" placeholder="Ej: Tengo facilidad para tratar con el público, soy puntual y aprendo rápido."></textarea></label>
           </section>
 
@@ -105,6 +114,17 @@
               <label>Año fin<select name="endYear"><option value="">Año</option></select></label>
                 </div>
                 <span class="toggle-row"><input type="checkbox" name="isCurrent" /> <span>Trabajo actualmente acá</span></span>
+                <div class="suggestion-box">
+                  <p>Tareas frecuentes</p>
+                  <div class="chip-row" data-target="experience">
+                    <button type="button">Atención al cliente</button>
+                    <button type="button">Manejo de caja</button>
+                    <button type="button">Reposición de mercadería</button>
+                    <button type="button">Control de stock</button>
+                    <button type="button">Carga de datos</button>
+                    <button type="button">Organización de pedidos</button>
+                  </div>
+                </div>
                 <label>Tareas principales<textarea name="experience" rows="4" placeholder="Ej: atención al cliente, cobro con tarjeta y efectivo, reposición de mercadería."></textarea></label>
               </div>
             </div>
@@ -126,6 +146,17 @@
               </div>
             </div>
             <button class="button secondary small-button" type="button" id="add-education">+ Agregar estudio o curso</button>
+            <div class="suggestion-box">
+              <p>Habilidades sugeridas</p>
+              <div class="chip-row" data-target="skills">
+                <button type="button">Atención al cliente</button>
+                <button type="button">Trabajo en equipo</button>
+                <button type="button">Organización</button>
+                <button type="button">Excel básico</button>
+                <button type="button">Manejo de caja</button>
+                <button type="button">Comunicación</button>
+              </div>
+            </div>
             <label>Habilidades<textarea name="skills" rows="3" placeholder="Ej: atención al cliente, manejo de caja, Excel, trabajo en equipo, puntualidad."></textarea></label>
           </section>
 
@@ -221,6 +252,7 @@
           document.querySelectorAll(".focused-only").forEach((element) => element.remove());
         }
         setupRepeaters();
+        setupSuggestionChips();
         const steps = Array.from(document.querySelectorAll(".wizard-step"));
         const previous = document.querySelector("#prev-step");
         const next = document.querySelector("#next-step");
@@ -274,6 +306,9 @@
           clone.insertAdjacentHTML("beforeend", "<button class='button secondary small-button remove-repeat' type='button'>Eliminar experiencia</button>");
           clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
           experienceList.appendChild(clone);
+          clone.querySelectorAll(".chip-row button").forEach((button) => {
+            button.addEventListener("click", handleChipClick);
+          });
         });
 
         const addEducation = document.querySelector("#add-education");
@@ -292,6 +327,27 @@
           clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
           educationList.appendChild(clone);
         });
+      }
+
+      function setupSuggestionChips() {
+        document.querySelectorAll(".chip-row button").forEach((button) => {
+          button.addEventListener("click", handleChipClick);
+        });
+      }
+
+      function handleChipClick(event) {
+        const button = event.currentTarget;
+        const row = button.closest(".chip-row");
+        const targetName = row?.dataset.target;
+        const scope = button.closest(".repeat-card") || document;
+        const target = scope.querySelector(`[name="${targetName}"]`) || document.querySelector(`[name="${targetName}"]`);
+        if (!target) return;
+        const value = button.textContent.trim();
+        const current = target.value.trim();
+        const separator = current ? "\n" : "";
+        if (!current.toLowerCase().includes(value.toLowerCase())) {
+          target.value = `${current}${separator}${value}`;
+        }
       }
 
       function restoreRepeaters(data) {
