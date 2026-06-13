@@ -1,4 +1,4 @@
-import { json, nowIso, randomId, readJson } from "./_utils";
+import { json, nowIso, randomId, readJson } from "./_utils.js";
 
 export async function onRequestPost({ request, env }) {
   const body = await readJson(request);
@@ -14,7 +14,7 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "Orden no encontrada" }, { status: 404 });
   }
 
-  if (!["paid", "discount_test", "preview_ready"].includes(order.status)) {
+  if (order.status !== "preview_ready") {
     return json({ ok: false, error: "Orden no habilitada para generación" }, { status: 403 });
   }
 

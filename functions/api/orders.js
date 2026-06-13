@@ -1,4 +1,4 @@
-import { PLANS, isTestCodeEnabled, json, nowIso, randomId, readJson } from "./_utils";
+import { PLANS, isTestCodeEnabled, json, nowIso, randomId, readJson } from "./_utils.js";
 
 export async function onRequestPost({ request, env }) {
   const body = await readJson(request);

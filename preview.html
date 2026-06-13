@@ -36,6 +36,10 @@
         document.querySelector("#cv-preview").innerHTML = CVListo.buildResumeHtml(order.data);
         const list = document.querySelector("#audit-list");
         const reports = order.reports || [];
+        const cvPage = document.querySelector(".cv-page");
+        if (cvPage && cvPage.scrollHeight > cvPage.clientHeight + 8) {
+          reports.push({ severity: "warning", message: "La vista previa podría exceder una página A4. Revisá longitud de textos antes de generar." });
+        }
         list.innerHTML = reports.length
           ? reports.map((report) => `<p class="audit ${report.severity}">${report.message}</p>`).join("")
           : "<p class='audit ok'>Sin errores bloqueantes detectados.</p>";

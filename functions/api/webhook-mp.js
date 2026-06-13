@@ -1,4 +1,4 @@
-import { json, nowIso, readJson } from "./_utils";
+import { json, nowIso, readJson } from "./_utils.js";
 
 export async function onRequestPost({ request, env }) {
   const event = await readJson(request);

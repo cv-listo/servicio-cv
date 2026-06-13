@@ -90,8 +90,25 @@
       const token = CVListo.getParam("token");
       const order = CVListo.getOrder(orderId);
 
-      if (!order || order.token !== token || !["discount_test", "paid"].includes(order.status)) {
+      if (!order || order.token !== token || !["discount_test", "paid", "preview_ready"].includes(order.status)) {
         document.body.innerHTML = "<main class='app-shell'><h1>Pedido no habilitado</h1><p>Para completar el formulario, primero debe existir un pago confirmado o un código de prueba válido.</p><a class='button primary' href='./index.html#planes'>Volver</a></main>";
+      }
+
+      if (order?.planId !== "focused") {
+        document.querySelector(".focused-only")?.remove();
+      }
+
+      if (order?.data) {
+        const form = document.querySelector("#resume-form");
+        Object.entries(order.data).forEach(([key, value]) => {
+          const field = form?.elements[key];
+          if (!field) return;
+          if (field.type === "checkbox") {
+            field.checked = value === "on";
+          } else {
+            field.value = value;
+          }
+        });
       }
 
       document.querySelector("#resume-form")?.addEventListener("submit", (event) => {
