@@ -51,7 +51,7 @@
     </main>
 
     <script>
-      let adminUser = localStorage.getItem("cvListoAdminUser") || "";
+      let adminUser = "";
       let adminPassword = "";
 
       const authForm = document.querySelector("#admin-auth");
@@ -62,15 +62,10 @@
       const planFilter = document.querySelector("#filter-plan");
       const emailFilter = document.querySelector("#filter-email");
 
-      if (adminUser) {
-        authForm.user.value = adminUser;
-      }
-
       authForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         adminUser = authForm.user.value.trim();
         adminPassword = authForm.password.value;
-        localStorage.setItem("cvListoAdminUser", adminUser);
         const ok = await loadOrders();
         if (ok) {
           document.querySelector("#admin-login-card").hidden = true;

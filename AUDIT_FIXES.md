@@ -88,7 +88,7 @@ Estados:
 - [x] Descarga celebratoria con proximos pasos.
 - [x] Preview con checklist visual y telemetria A4.
 - [x] Wizard con iconos/microcopy por paso.
-- [ ] Revisar toda la web para eliminar restos de promesas no implementadas.
+- [x] Revisar toda la web para eliminar restos de promesas no implementadas.
 - [ ] Revisar mobile completo en Android Chrome e iOS Safari.
 - [x] Mejorar `pago.html` con estados mas claros para pendiente/rechazado/reintento.
 - [x] Agregar aviso en descarga sobre guardar PDF desde navegador/mobile.
@@ -102,7 +102,7 @@ Estados:
 - [x] Agregar base `cv-page-ats`.
 - [x] Evitar secciones vacias y placeholders falsos.
 - [ ] Crear selector real de plantilla: visual vs ATS-friendly.
-- [ ] Mejorar control de overflow A4 y sugerencias automaticas para reducir texto.
+- [x] Mejorar control de overflow A4 y sugerencias automaticas para reducir texto.
 - [ ] Validar impresion/PDF en Chrome, Edge, Firefox y mobile.
 - [ ] Evaluar generacion PDF real en una fase posterior.
 

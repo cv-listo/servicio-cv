@@ -16,7 +16,7 @@
     <div class="print-overlay" id="print-overlay" hidden>
       <div>
         <strong>Preparando tu CV para descargar...</strong>
-        <p>En unos segundos se abrirá el diálogo para guardar o imprimir.</p>
+        <p>En unos segundos vas a pasar a la pantalla de descarga.</p>
       </div>
     </div>
     <main class="app-shell">
@@ -204,7 +204,7 @@
           if (!confirm("La generación final se puede hacer una sola vez. ¿Confirmás que revisaste los datos?")) {
             return;
           }
-          // Primero sellamos el pedido; recién después abrimos print de forma diferida.
+          // Primero sellamos el pedido; la descarga/impresión se abre desde descargar.html.
           const overlay = document.querySelector("#print-overlay");
           overlay.hidden = false;
           const contentHash = await CVListo.sha256(JSON.stringify(order.data));
@@ -222,12 +222,7 @@
           const redirectToDownload = () => {
             window.location.href = `./descargar.html?order=${order.id}&token=${order.token}`;
           };
-          window.onafterprint = redirectToDownload;
-          setTimeout(() => {
-            // Delay mínimo para que el overlay renderice antes del diálogo bloqueante del sistema.
-            window.print();
-            setTimeout(redirectToDownload, 1200);
-          }, 500);
+          setTimeout(redirectToDownload, 500);
         });
       }
 

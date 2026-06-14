@@ -165,7 +165,7 @@ function renderPlanSummary(container, planId) {
         ${plan.includes.map((item) => `<li>${item}</li>`).join("")}
       </ul>
       <div class="plan-summary-note">Una única generación · Revisá antes de descargar</div>
-      <div class="guarantee-badge">Arrepentimiento: si no empezamos, te devolvemos el pago</div>
+      <div class="guarantee-badge">Si no generaste el CV todavía, podés solicitar reembolso por soporte</div>
     </div>
   `;
 }
