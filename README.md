@@ -69,6 +69,9 @@ Variables opcionales:
 AI_TIMEOUT_MS = 10000
 GEMINI_API_KEY = ...
 OPENAI_API_KEY = ...
+RESEND_API_KEY = ...
+EMAIL_FROM = CV Listo <soporte@cvlisto.com.ar>
+SUPPORT_EMAIL = soporte@cvlisto.com.ar
 DEBUG_AI = false
 ```
 
@@ -80,7 +83,7 @@ El código literal `TEST` solo funciona si `ALLOW_TEST_CODE=true`. No activar `A
 
 No guardar credenciales en el repositorio. Usar Variables and Secrets de Cloudflare.
 
-El formulario de soporte manual usa FormSubmit hacia `soporte@cvlisto.com.ar`. La primera vez requiere activar el formulario desde el correo recibido.
+El formulario de soporte usa `/api/support` y envía correo con Resend si `RESEND_API_KEY`, `EMAIL_FROM` y `SUPPORT_EMAIL` están configuradas.
 
 ## Arquitectura objetivo
 
