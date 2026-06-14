@@ -55,9 +55,19 @@
     <script src="./app.js"></script>
     <script>
       const planId = CVListo.getParam("plan") || "basic";
-      CVListo.renderPlanSummary(document.querySelector("#plan-summary"), planId);
       const checkoutForm = document.querySelector("#checkout-form");
       const submitButton = document.querySelector("#checkout-submit");
+
+      async function renderCurrentPlan() {
+        try {
+          await CVListo.loadBackendPlans();
+        } catch {
+          // Si el backend no responde, usamos los precios fallback del frontend.
+        }
+        CVListo.renderPlanSummary(document.querySelector("#plan-summary"), planId);
+      }
+
+      renderCurrentPlan();
 
       checkoutForm.discount?.addEventListener("input", (event) => {
         const code = event.currentTarget.value.trim().toUpperCase();

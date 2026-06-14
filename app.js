@@ -168,6 +168,28 @@ function renderPlanSummary(container, planId) {
   `;
 }
 
+async function loadBackendPlans() {
+  const response = await fetch("/api/plans");
+  if (!response.ok) throw new Error("Plans unavailable");
+  const result = await response.json();
+  if (!result.ok || !result.plans) throw new Error("Invalid plans response");
+  Object.entries(result.plans).forEach(([key, plan]) => {
+    PLANS[key] = { ...PLANS[key], ...plan };
+  });
+  return PLANS;
+}
+
+function hydratePlanPrices(root = document) {
+  root.querySelectorAll("[data-plan-price]").forEach((element) => {
+    const plan = PLANS[element.dataset.planPrice];
+    if (plan?.price) element.textContent = plan.price;
+  });
+  root.querySelectorAll("[data-plan-amount]").forEach((element) => {
+    const plan = PLANS[element.dataset.planAmount];
+    if (plan?.amount) element.textContent = plan.amount;
+  });
+}
+
 function normalizeText(value) {
   return (value || "").trim();
 }
@@ -418,6 +440,8 @@ window.CVListo = {
   finalizeBackendOrder,
   validateBackendProfile,
   processBackendAiDraft,
+  loadBackendPlans,
+  hydratePlanPrices,
   renderPlanSummary,
   collectFormData,
   validateResumeData,

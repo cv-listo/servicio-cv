@@ -1,8 +1,8 @@
-import { PLANS, isTestCodeEnabled, json, nowIso, randomId, readJson } from "./_utils.js";
+import { getPlan, isTestCodeEnabled, json, nowIso, randomId, readJson } from "./_utils.js";
 
 export async function onRequestPost({ request, env }) {
   const body = await readJson(request);
-  const plan = PLANS[body.planId] || PLANS.basic;
+  const plan = getPlan(env, body.planId);
   const email = String(body.email || "").trim();
   const discountCode = String(body.discountCode || "").trim();
   const id = randomId("order");

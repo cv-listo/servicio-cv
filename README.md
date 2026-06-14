@@ -55,6 +55,9 @@ APP_BASE_URL = https://servicio-cv.pages.dev
 LLM_PROVIDER = groq
 GROQ_API_KEY = (API key de Groq)
 GROQ_MODEL = llama-3.1-8b-instant
+PLAN_BASIC_AMOUNT = 9999
+PLAN_PROFESSIONAL_AMOUNT = 19999
+PLAN_FOCUSED_AMOUNT = 29999
 ```
 
 Variables opcionales:
@@ -65,6 +68,8 @@ GEMINI_API_KEY = ...
 OPENAI_API_KEY = ...
 DEBUG_AI = false
 ```
+
+Los valores `PLAN_*_AMOUNT` controlan los precios que se muestran en la web y los montos enviados a Mercado Pago. Si no están configurados, se usan los valores por defecto del repositorio.
 
 No guardar credenciales en el repositorio. Usar Variables and Secrets de Cloudflare.
 
