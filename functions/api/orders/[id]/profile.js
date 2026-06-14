@@ -7,6 +7,10 @@ export async function onRequestPost({ request, params, env }) {
   const reports = body.reports || [];
   const isDraft = Boolean(body.draft);
 
+  if (JSON.stringify(data).length > 60000) {
+    return json({ ok: false, error: "El formulario es demasiado extenso" }, { status: 413 });
+  }
+
   const order = await env.DB.prepare("SELECT * FROM orders WHERE id = ? AND token = ?")
     .bind(params.id, token)
     .first();

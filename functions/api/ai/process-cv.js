@@ -13,6 +13,10 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "Datos insuficientes para procesar el CV." }, { status: 400 });
   }
 
+  if (JSON.stringify(input).length > 70000) {
+    return json({ ok: false, error: "Los datos del CV son demasiado extensos para procesar con IA." }, { status: 413 });
+  }
+
   const order = await env.DB.prepare("SELECT * FROM orders WHERE id = ? AND token = ?")
     .bind(orderId, token)
     .first();
