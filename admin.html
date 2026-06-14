@@ -10,10 +10,11 @@
   </head>
   <body>
     <main class="app-shell admin-shell">
-      <section class="app-card">
+      <section class="app-card admin-login-card" id="admin-login-card">
         <p class="eyebrow">Admin</p>
         <h1>Pedidos CV Listo</h1>
-        <p>Consultá pagos, formularios parciales, CV final, eventos Mercado Pago y uso de IA.</p>
+        <p>Ingresá con tu usuario y contraseña para acceder al panel de pedidos.</p>
+        <div class="checkout-error" id="admin-login-error" hidden></div>
         <form class="admin-login" id="admin-auth">
           <label>Usuario<input type="text" name="user" autocomplete="username" required /></label>
           <label>Contraseña<input type="password" name="password" autocomplete="current-password" required /></label>
@@ -60,21 +61,21 @@
       const planFilter = document.querySelector("#filter-plan");
       const emailFilter = document.querySelector("#filter-email");
 
-      if (adminUser && adminPassword) {
+      if (adminUser) {
         authForm.user.value = adminUser;
-        authForm.password.value = adminPassword;
-        content.hidden = false;
-        loadOrders();
       }
 
-      authForm.addEventListener("submit", (event) => {
+      authForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         adminUser = authForm.user.value.trim();
         adminPassword = authForm.password.value;
         localStorage.setItem("cvListoAdminUser", adminUser);
         sessionStorage.setItem("cvListoAdminPassword", adminPassword);
-        content.hidden = false;
-        loadOrders();
+        const ok = await loadOrders();
+        if (ok) {
+          document.querySelector("#admin-login-card").hidden = true;
+          content.hidden = false;
+        }
       });
 
       statusFilter.addEventListener("change", loadOrders);
@@ -105,8 +106,16 @@
           ordersList.querySelectorAll("button[data-order]").forEach((button) => {
             button.addEventListener("click", () => loadOrder(button.dataset.order));
           });
+          return true;
         } catch (error) {
+          if (error.message === "No autorizado") {
+            const loginError = document.querySelector("#admin-login-error");
+            loginError.textContent = "Usuario o contraseña incorrectos.";
+            loginError.hidden = false;
+            content.hidden = true;
+          }
           ordersList.innerHTML = `<p class="audit critical">${escapeHtml(error.message)}</p>`;
+          return false;
         }
       }
 
