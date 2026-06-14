@@ -51,14 +51,15 @@
       const orderId = CVListo.getParam("order");
       const token = CVListo.getParam("token");
       let order = CVListo.getOrder(orderId);
+      const isLocalDev = ["localhost", "127.0.0.1"].includes(window.location.hostname);
 
       async function loadDownload() {
-        if (!order && orderId && token) {
+        if ((isLocalDev ? !order : true) && orderId && token) {
           try {
             const backendOrder = await CVListo.fetchBackendOrder(orderId, token);
             order = CVListo.cacheOrder(backendOrder);
           } catch {
-            // Sin backend disponible.
+            if (!isLocalDev) order = null;
           }
         }
 
