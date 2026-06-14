@@ -19,7 +19,7 @@
         <div class="checkout-copy checkout-panel">
           <p class="eyebrow">Confirmación</p>
           <h1>Confirmá tu plan</h1>
-          <p class="lead">Revisá el plan elegido y completá el email para crear el pedido. Luego se habilitará el pago o el acceso de prueba.</p>
+          <p class="lead">Revisá el plan elegido y completá el email para crear el pedido. Luego continuás al pago seguro o al acceso interno si tenés un código válido.</p>
           <div class="checkout-error" id="checkout-error" hidden></div>
           <form class="app-form checkout-form" id="checkout-form">
             <label>
@@ -71,7 +71,7 @@
 
       checkoutForm.discount?.addEventListener("input", (event) => {
         const code = event.currentTarget.value.trim().toUpperCase();
-        submitButton.textContent = code === "TEST" ? "Continuar gratis (modo prueba)" : "Continuar al pago";
+        submitButton.textContent = "Continuar al pago";
       });
 
       checkoutForm.addEventListener("submit", async (event) => {
@@ -105,7 +105,7 @@
           const failed = await response.json().catch(() => ({}));
           throw new Error(failed.error || failed.message || "No se pudo crear el pedido.");
         } catch (error) {
-          if (code !== "TEST") {
+          if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
             errorBox.textContent = error.message || "No se pudo iniciar el pago. Intentá nuevamente.";
             errorBox.hidden = false;
             submitButton.disabled = false;
