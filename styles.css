@@ -2118,6 +2118,30 @@ h3 {
   background: #f8faff;
 }
 
+.order-row.status-paid {
+  border-left: 5px solid var(--ok);
+}
+
+.order-row.status-generated {
+  border-left: 5px solid var(--accent);
+}
+
+.order-row.status-payment_pending,
+.order-row.status-created {
+  border-left: 5px solid var(--warning);
+}
+
+.order-row.status-payment_rejected,
+.order-row.status-payment_cancelled,
+.order-row.status-refunded,
+.order-row.status-charged_back {
+  border-left: 5px solid #b42318;
+}
+
+.order-row.status-discount_test {
+  border-left: 5px solid var(--ai);
+}
+
 .order-row span,
 .order-row small,
 .admin-detail-head p {

@@ -53,7 +53,7 @@ Estados:
 - [x] Admin oculto hasta login correcto.
 - [x] Admin con `ADMIN_USER` y `ADMIN_PASSWORD`.
 - [x] Recuperacion por email sin enumerar emails.
-- [ ] Quitar autenticacion alternativa por `ADMIN_TOKEN` si ya no se usa en codigo/documentacion.
+- [x] Quitar autenticacion alternativa por `ADMIN_TOKEN` si ya no se usa en codigo/documentacion.
 - [ ] Evitar guardar password admin en `sessionStorage`; evaluar sesion temporal o Cloudflare Access.
 - [x] Agregar CSP en `_headers`.
 - [x] Aplicar expiracion real usando `orders.expires_at` en endpoints sensibles.
@@ -72,7 +72,7 @@ Estados:
 - [x] File picker custom en soporte.
 - [x] Validar adjuntos de soporte: PDF/JPG/PNG hasta 2 MB.
 - [ ] Agregar paginacion real al admin.
-- [ ] Agregar colores por estado en filas del admin: `paid`, `generated`, `pending`, `rejected`.
+- [x] Agregar colores por estado en filas del admin: `paid`, `generated`, `pending`, `rejected`.
 - [ ] Agregar notas internas de soporte por pedido.
 - [ ] Agregar accion admin para reenviar/copiar link de recuperacion con texto listo.
 

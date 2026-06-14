@@ -131,7 +131,7 @@
 
       function renderOrderRow(order) {
         return `
-          <button class="order-row" type="button" data-order="${escapeHtml(order.id)}">
+          <button class="order-row status-${escapeHtml(order.status || "unknown")}" type="button" data-order="${escapeHtml(order.id)}">
             <strong>${escapeHtml(order.email || "Sin email")}</strong>
             <span>${escapeHtml(order.plan_id)} · ${escapeHtml(order.status)} · $${escapeHtml(order.amount)}</span>
             <small>${escapeHtml(order.created_at || "")}</small>
