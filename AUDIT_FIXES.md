@@ -14,7 +14,7 @@ Estados:
 - [x] Implementar `/api/payments/check` para conciliacion manual con Mercado Pago desde `pago.html`.
 - [x] Conectar `pago.html` al endpoint `/api/payments/check` cuando el webhook tarde o falle.
 - [ ] Revisar y eliminar fallback local de produccion en `formulario.html`, `preview.html` y `descargar.html` si permite continuar sin backend.
-- [ ] Validar que `generate-final` no marque localmente como generado si falla el backend en produccion.
+- [x] Validar que `generate-final` no marque localmente como generado si falla el backend en produccion.
 - [ ] Probar un flujo completo de pago real con precios finales `9999`, `19999`, `29999`.
 
 ## Mercado Pago
@@ -90,7 +90,7 @@ Estados:
 - [x] Wizard con iconos/microcopy por paso.
 - [ ] Revisar toda la web para eliminar restos de promesas no implementadas.
 - [ ] Revisar mobile completo en Android Chrome e iOS Safari.
-- [ ] Mejorar `pago.html` con estados mas claros para pendiente/rechazado/reintento.
+- [x] Mejorar `pago.html` con estados mas claros para pendiente/rechazado/reintento.
 - [ ] Agregar aviso en descarga sobre guardar PDF desde navegador/mobile.
 - [ ] Optimizar `og-image.png` si sigue pesando demasiado.
 - [ ] Mejorar favicon/logo final.

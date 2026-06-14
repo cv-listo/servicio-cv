@@ -68,6 +68,7 @@ function cacheOrder(order) {
   const cached = {
     id: order.id,
     token: order.token,
+    email: order.email || null,
     planId: order.planId || order.plan_id,
     status: order.status,
     generated: Boolean(order.generated || order.generated_at),

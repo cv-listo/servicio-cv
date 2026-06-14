@@ -275,6 +275,9 @@
             field.value = value;
           }
         });
+        if (order.email && form?.elements.email && !form.elements.email.value) {
+          form.elements.email.value = order.email;
+        }
         form?.elements.experienceType?.dispatchEvent(new Event("change", { bubbles: true }));
         document.querySelectorAll("[data-choice-for='experienceType'] button").forEach((button) => {
           button.classList.toggle("active", button.dataset.value === form?.elements.experienceType?.value);
@@ -282,6 +285,9 @@
         persistArea(order.data.targetArea || "");
         restoreSavedArea();
         document.querySelector('[name="targetArea"]')?.dispatchEvent(new Event("change", { bubbles: true }));
+      } else if (order?.email) {
+        const emailField = document.querySelector('#resume-form [name="email"]');
+        if (emailField && !emailField.value) emailField.value = order.email;
       }
       }
 
@@ -412,6 +418,9 @@
           const requiredFields = Array.from(steps[current].querySelectorAll("[required]"));
           const invalid = requiredFields.find((field) => !field.checkValidity());
           if (invalid) {
+            const form = document.querySelector("#resume-form");
+            const data = CVListo.collectFormData(form);
+            CVListo.updateOrder(order.id, { data });
             invalid.reportValidity();
             return;
           }

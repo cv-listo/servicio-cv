@@ -143,7 +143,9 @@
           const overflow = cvPage.scrollHeight > cvPage.clientHeight + 8 || cvPage.scrollWidth > cvPage.clientWidth + 8;
           const usage = Math.min(100, Math.round((cvPage.scrollHeight / Math.max(cvPage.clientHeight, 1)) * 100));
           status.className = `a4-status ${overflow ? "warning" : "ok"}`;
-          status.textContent = overflow ? "Puede exceder una página A4. Revisá textos largos." : "Formato A4 correcto en la vista previa.";
+          status.textContent = overflow
+            ? "Tu CV puede superar una página A4. Reducí el perfil, experiencias o habilidades antes de generar."
+            : "Formato A4 correcto en la vista previa.";
           if (percent && fill) {
             percent.textContent = `${usage}%`;
             fill.style.width = `${usage}%`;
@@ -152,7 +154,7 @@
           return overflow;
         };
         if (updateA4Status()) {
-          reports.push({ severity: "warning", message: "La vista previa podría exceder una página A4. Revisá longitud de textos antes de generar." });
+          reports.push({ severity: "warning", message: "La vista previa podría exceder una página A4. Volvé al formulario o usá edición rápida para reducir textos largos." });
         }
         list.innerHTML = `
           <ul class="quality-list">
@@ -208,8 +210,13 @@
           const contentHash = await CVListo.sha256(JSON.stringify(order.data));
           try {
             await CVListo.finalizeBackendOrder(order.id, order.token, contentHash, order.data);
-          } catch {
-            // GitHub Pages no ejecuta Functions. Sellamos local para probar UX.
+          } catch (error) {
+            if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+              overlay.hidden = true;
+              alert("No pudimos sellar el CV final. Intentá nuevamente o contactá soporte.");
+              return;
+            }
+            // En desarrollo local sin Functions permitimos seguir probando UX.
           }
           CVListo.updateOrder(order.id, { status: "generated", generated: true, generatedAt: new Date().toISOString() });
           const redirectToDownload = () => {
