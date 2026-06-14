@@ -113,7 +113,7 @@ Estados:
 - [x] Agregar `ai_generations`.
 - [x] Agregar indices utiles: `orders(token)`, `orders(external_reference)`, `orders(mp_payment_id)`.
 - [x] Agregar limpieza/expiracion de ordenes `payment_pending` viejas.
-- [ ] Agregar limpieza de registros IA antiguos si crecen demasiado.
+- [x] Agregar limpieza de registros IA antiguos si crecen demasiado.
 - [ ] Resolver ruido de line endings que deja archivos como modificados sin diff real.
 
 ## Checklist de pruebas finales

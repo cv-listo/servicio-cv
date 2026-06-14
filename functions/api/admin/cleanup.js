@@ -7,10 +7,12 @@ export async function onRequestPost({ request, env }) {
 
   const url = new URL(request.url);
   const days = Math.max(1, Math.min(Number(url.searchParams.get("days") || 7), 90));
+  const aiDays = Math.max(7, Math.min(Number(url.searchParams.get("aiDays") || 30), 365));
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  const aiCutoff = new Date(Date.now() - aiDays * 24 * 60 * 60 * 1000).toISOString();
   const now = nowIso();
 
-  const result = await env.DB.prepare(
+  const ordersResult = await env.DB.prepare(
     `UPDATE orders
      SET status = 'payment_cancelled', updated_at = ?
      WHERE status = 'payment_pending'
@@ -20,11 +22,19 @@ export async function onRequestPost({ request, env }) {
     .bind(now, cutoff)
     .run();
 
+  const aiResult = await env.DB.prepare(
+    "DELETE FROM ai_generations WHERE created_at < ?"
+  )
+    .bind(aiCutoff)
+    .run();
+
   return json({
     ok: true,
     status: "payment_cancelled",
     cutoff,
-    changed: result.meta?.changes || 0,
+    aiCutoff,
+    changed: ordersResult.meta?.changes || 0,
+    aiDeleted: aiResult.meta?.changes || 0,
   });
 }
 

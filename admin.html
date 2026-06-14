@@ -128,8 +128,8 @@
       async function runCleanup() {
         if (!confirm("Esto marcará como cancelados los pedidos pendientes de pago de más de 7 días. ¿Continuar?")) return;
         try {
-          const result = await adminPost("/api/admin/cleanup?days=7");
-          alert(`Pedidos actualizados: ${result.changed}`);
+          const result = await adminPost("/api/admin/cleanup?days=7&aiDays=30");
+          alert(`Pedidos actualizados: ${result.changed}. Registros IA eliminados: ${result.aiDeleted}.`);
           loadOrders();
         } catch (error) {
           alert(error.message || "No se pudo limpiar pedidos pendientes.");
