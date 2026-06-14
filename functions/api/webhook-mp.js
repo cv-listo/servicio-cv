@@ -99,6 +99,32 @@ export async function onRequestPost({ request, env }) {
   }
 
   if (order.status === "generated") {
+    const reversedStatus = ["refunded", "charged_back", "cancelled", "rejected"].includes(payment.status)
+      ? mapPaymentStatus(payment.status, order.status)
+      : null;
+    if (reversedStatus && reversedStatus !== "generated") {
+      const now = nowIso();
+      await env.DB.prepare(
+        "UPDATE orders SET status = ?, mp_payment_id = ?, mp_status = ?, mp_currency = ?, last_payment_checked_at = ?, updated_at = ? WHERE id = ?"
+      )
+        .bind(reversedStatus, String(paymentId), payment.status || null, payment.currency_id || null, now, now, orderId)
+        .run();
+      await insertMpEvent(env, {
+        eventType,
+        action: event.action,
+        paymentId,
+        orderId,
+        mpStatus: payment.status,
+        mpStatusDetail: payment.status_detail,
+        amount: payment.transaction_amount,
+        currency: payment.currency_id,
+        xRequestId: requestId,
+        signatureValid: signatureOk ? 1 : 0,
+        processed: 1,
+        error: "POST_GENERATION_FINANCIAL_UPDATE",
+      });
+      return json({ ok: true, status: reversedStatus });
+    }
     await insertMpEvent(env, {
       eventType,
       action: event.action,

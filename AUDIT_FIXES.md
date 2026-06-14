@@ -28,7 +28,7 @@ Estados:
 - [x] Agregar `source_news=webhooks` a `notification_url`.
 - [x] Agregar endpoint de conciliacion manual `/api/payments/check`.
 - [ ] Probar estados reales/sandbox: `approved`, `pending`, `rejected`, `cancelled`, `refunded`, `charged_back`.
-- [ ] Registrar mejor reversas posteriores a `generated` sin reabrir el CV.
+- [x] Registrar mejor reversas posteriores a `generated` sin reabrir el CV.
 - [ ] Limpiar o expirar ordenes viejas `payment_pending` de pruebas.
 
 ## IA / Groq
@@ -118,23 +118,23 @@ Estados:
 
 ## Checklist de pruebas finales
 
-- [ ] Flujo `TEST` interno con codigo privado.
-- [ ] Pago real Basico.
+- [x] Flujo `TEST` interno con codigo privado.
+- [x] Pago real Basico.
 - [ ] Pago real Profesional.
 - [ ] Pago real Enfocado.
 - [ ] Pago pendiente.
 - [ ] Pago rechazado.
 - [ ] Webhook duplicado.
-- [ ] Webhook con firma valida.
+- [x] Webhook con firma valida.
 - [ ] Webhook con firma invalida.
-- [ ] Fallback IPN controlado.
-- [ ] Formulario parcial y retomar.
-- [ ] IA Groq OK.
+- [x] Fallback IPN controlado.
+- [~] Formulario parcial y retomar.
+- [x] IA Groq OK.
 - [ ] IA Groq timeout/rate limit.
-- [ ] Generacion final unica.
-- [ ] Reintento de `generate-final`.
+- [x] Generacion final unica.
+- [x] Reintento de `generate-final`.
 - [ ] Descarga desde link admin.
 - [ ] Soporte con adjunto valido.
 - [ ] Soporte con adjunto invalido.
-- [ ] Admin login incorrecto/correcto.
+- [x] Admin login incorrecto/correcto.
 
