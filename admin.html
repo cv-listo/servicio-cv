@@ -150,18 +150,31 @@
             </div>
             <strong>$${escapeHtml(order.amount)} · ${escapeHtml(order.plan_id)}</strong>
           </div>
-          <div class="admin-links">
-            <a class="button secondary" href="${data.links.formulario}" target="_blank">Formulario</a>
-            <a class="button secondary" href="${data.links.preview}" target="_blank">Preview</a>
-            <a class="button secondary" href="${data.links.descarga}" target="_blank">Descarga</a>
-          </div>
+          ${renderLinkTools(data.links, order)}
           ${renderSummary(order)}
+          ${renderHumanProfile(order.data_json)}
           ${renderJsonBlock("Datos cargados", order.data_json)}
           ${renderJsonBlock("CV final", order.cv_json)}
           ${renderTable("Eventos Mercado Pago", data.mp_events)}
           ${renderTable("Auditorías", data.audits)}
           ${renderTable("IA", data.ai_generations)}
           ${renderTable("Documentos finales", data.final_documents)}
+        `;
+      }
+
+      function renderLinkTools(links, order) {
+        const primary = order.status === "generated"
+          ? { label: "Copiar link de descarga", url: links.descarga }
+          : order.status === "preview_ready"
+            ? { label: "Copiar link de vista previa", url: links.preview }
+            : { label: "Copiar link para continuar", url: links.formulario };
+        return `
+          <div class="admin-link-tools">
+            <a class="button secondary" href="${links.formulario}" target="_blank">Formulario</a>
+            <a class="button secondary" href="${links.preview}" target="_blank">Preview</a>
+            <a class="button secondary" href="${links.descarga}" target="_blank">Descarga</a>
+            <button class="button primary" type="button" onclick="copyAdminLink('${escapeJs(primary.url)}')">${escapeHtml(primary.label)}</button>
+          </div>
         `;
       }
 
@@ -172,6 +185,73 @@
             <span>Pago: ${escapeHtml(order.mp_payment_id || "-")}</span>
             <span>Pagado: ${escapeHtml(order.paid_at || "-")}</span>
             <span>Generado: ${escapeHtml(order.generated_at || "-")}</span>
+          </div>
+        `;
+      }
+
+      function renderHumanProfile(data) {
+        const experiences = data.experiences?.length ? data.experiences : [{
+          place: data.experiencePlace,
+          role: data.experienceRole,
+          startMonth: data.startMonth,
+          startYear: data.startYear,
+          endMonth: data.endMonth,
+          endYear: data.endYear,
+          isCurrent: data.isCurrent,
+          tasks: data.experience,
+        }].filter((item) => item.place || item.role || item.tasks);
+        return `
+          <section class="admin-readable">
+            <h3>Formulario cargado</h3>
+            <div class="readable-grid">
+              ${readableCard("Datos personales", [
+                ["Nombre", data.fullName],
+                ["Email", data.email],
+                ["Teléfono", data.phone],
+                ["DNI", data.dni],
+                ["Dirección", data.address],
+                ["Localidad", data.location],
+                ["LinkedIn/portfolio", data.linkedin],
+              ])}
+              ${readableCard("Objetivo laboral", [
+                ["Área", data.targetArea],
+                ["Puesto objetivo", data.targetRole],
+                ["Modalidad", data.modality],
+                ["Disponibilidad", data.availability],
+                ["Resumen", data.summary],
+              ])}
+              ${readableCard("Educación y habilidades", [
+                ["Nivel educativo", data.educationLevel],
+                ["Estado", data.educationStatus],
+                ["Educación/cursos", data.education || (data.educationItems || []).map((item) => item.text).join("\\n")],
+                ["Habilidades", data.skills],
+              ])}
+            </div>
+            <div class="readable-card full">
+              <h4>Experiencia</h4>
+              ${experiences.length
+                ? experiences.map((item, index) => `
+                  <article class="readable-experience">
+                    <strong>${index + 1}. ${escapeHtml([item.role, item.place].filter(Boolean).join(" · ") || "Experiencia")}</strong>
+                    <span>${escapeHtml([item.startMonth, item.startYear].filter(Boolean).join("/") || "Inicio sin fecha")} - ${escapeHtml(item.isCurrent === "on" ? "Actualidad" : [item.endMonth, item.endYear].filter(Boolean).join("/") || "Sin fecha de fin")}</span>
+                    ${item.tasks ? `<p>${escapeHtml(item.tasks).replaceAll("\\n", "<br />")}</p>` : ""}
+                  </article>
+                `).join("")
+                : `<p class="muted">No hay experiencia cargada.</p>`}
+              ${data.informalExperience ? `<article class="readable-experience"><strong>Experiencia práctica</strong><p>${escapeHtml(data.informalExperience).replaceAll("\\n", "<br />")}</p></article>` : ""}
+            </div>
+          </section>
+        `;
+      }
+
+      function readableCard(title, rows) {
+        const visibleRows = rows.filter(([, value]) => String(value || "").trim());
+        return `
+          <div class="readable-card">
+            <h4>${escapeHtml(title)}</h4>
+            ${visibleRows.length
+              ? visibleRows.map(([label, value]) => `<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value).replaceAll("\\n", "<br />")}</p>`).join("")
+              : `<p class="muted">Sin datos cargados.</p>`}
           </div>
         `;
       }
@@ -199,6 +279,15 @@
           .replaceAll(">", "&gt;")
           .replaceAll('"', "&quot;")
           .replaceAll("'", "&#039;");
+      }
+
+      function escapeJs(value) {
+        return String(value || "").replaceAll("\\", "\\\\").replaceAll("'", "\\'");
+      }
+
+      async function copyAdminLink(url) {
+        await navigator.clipboard?.writeText(url);
+        alert("Link copiado.");
       }
     </script>
   </body>
