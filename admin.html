@@ -51,7 +51,7 @@
 
     <script>
       let adminUser = localStorage.getItem("cvListoAdminUser") || "";
-      let adminPassword = sessionStorage.getItem("cvListoAdminPassword") || "";
+      let adminPassword = "";
 
       const authForm = document.querySelector("#admin-auth");
       const content = document.querySelector("#admin-content");
@@ -70,7 +70,6 @@
         adminUser = authForm.user.value.trim();
         adminPassword = authForm.password.value;
         localStorage.setItem("cvListoAdminUser", adminUser);
-        sessionStorage.setItem("cvListoAdminPassword", adminPassword);
         const ok = await loadOrders();
         if (ok) {
           document.querySelector("#admin-login-card").hidden = true;

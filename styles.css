@@ -2283,6 +2283,22 @@ h3 {
   margin-top: 24px;
 }
 
+.download-tip {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin-top: 18px;
+  padding: 12px 14px;
+  background: #f8faff;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+.download-tip strong {
+  color: var(--ink);
+}
+
 .next-steps article {
   border: 1px solid var(--line);
   border-radius: 18px;

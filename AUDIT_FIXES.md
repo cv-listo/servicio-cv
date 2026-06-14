@@ -54,7 +54,7 @@ Estados:
 - [x] Admin con `ADMIN_USER` y `ADMIN_PASSWORD`.
 - [x] Recuperacion por email sin enumerar emails.
 - [x] Quitar autenticacion alternativa por `ADMIN_TOKEN` si ya no se usa en codigo/documentacion.
-- [ ] Evitar guardar password admin en `sessionStorage`; evaluar sesion temporal o Cloudflare Access.
+- [x] Evitar guardar password admin en `sessionStorage`; evaluar sesion temporal o Cloudflare Access.
 - [x] Agregar CSP en `_headers`.
 - [x] Aplicar expiracion real usando `orders.expires_at` en endpoints sensibles.
 - [ ] Agregar rate limit basico por email/order/IP para endpoints criticos.
@@ -91,7 +91,7 @@ Estados:
 - [ ] Revisar toda la web para eliminar restos de promesas no implementadas.
 - [ ] Revisar mobile completo en Android Chrome e iOS Safari.
 - [x] Mejorar `pago.html` con estados mas claros para pendiente/rechazado/reintento.
-- [ ] Agregar aviso en descarga sobre guardar PDF desde navegador/mobile.
+- [x] Agregar aviso en descarga sobre guardar PDF desde navegador/mobile.
 - [ ] Optimizar `og-image.png` si sigue pesando demasiado.
 - [ ] Mejorar favicon/logo final.
 
