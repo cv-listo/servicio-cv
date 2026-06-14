@@ -1418,6 +1418,20 @@ h3 {
   color: #fff;
 }
 
+.example-hint {
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.example-hint strong {
+  color: var(--ink);
+}
+
 .suggestion-box p {
   margin: 0 0 10px;
   color: var(--muted);
@@ -1672,6 +1686,49 @@ h3 {
 
 .payment-status-card {
   max-width: 720px;
+}
+
+.payment-status-orb {
+  display: grid;
+  width: 68px;
+  height: 68px;
+  place-items: center;
+  border-radius: 24px;
+  margin-bottom: 18px;
+  background: #e5f6ff;
+  color: #007eb5;
+  font-size: 2rem;
+  font-weight: 950;
+}
+
+.payment-status-orb span {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(0, 158, 227, 0.22);
+  border-top-color: #009ee3;
+  border-radius: 50%;
+  animation: spin 0.85s linear infinite;
+}
+
+.payment-status-orb.success {
+  background: #e8f7f4;
+  color: var(--ok);
+}
+
+.payment-status-orb.warning {
+  background: #fff7e6;
+  color: var(--warning);
+}
+
+.payment-status-orb.error {
+  background: #ffecec;
+  color: #b42318;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .payment-brand-row {

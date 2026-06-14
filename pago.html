@@ -17,6 +17,7 @@
     <main class="app-shell checkout-shell">
       <section class="app-card payment-status-card">
         <p class="eyebrow">Mercado Pago</p>
+        <div class="payment-status-orb" id="payment-status-orb"><span></span></div>
         <h1>Estamos verificando tu pago</h1>
         <p id="payment-status-text">Esto puede demorar unos segundos. No cierres esta pantalla.</p>
         <div class="payment-brand-row" aria-label="Pago seguro">
@@ -51,6 +52,7 @@
       async function pollPayment() {
         attempts += 1;
         if (!orderId || !token) {
+          setPaymentOrb("error");
           statusBox.className = "a4-status critical";
           statusBox.textContent = "Falta información para verificar el pedido.";
           return;
@@ -60,12 +62,14 @@
           const backendOrder = await CVListo.fetchBackendOrder(orderId, token);
           const order = CVListo.cacheOrder(backendOrder);
           if (["paid", "form_started", "preview_ready"].includes(order.status)) {
+            setPaymentOrb("success");
             statusBox.className = "a4-status ok";
             statusBox.textContent = "Pago confirmado. Redirigiendo al formulario...";
             window.location.href = `./formulario.html?order=${order.id}&token=${order.token || token}`;
             return;
           }
           if (["payment_rejected", "payment_cancelled", "refunded", "charged_back"].includes(order.status)) {
+            setPaymentOrb("error");
             statusBox.className = "a4-status critical";
             statusBox.textContent = "El pago no quedó aprobado. Podés volver a intentar o contactar soporte.";
             statusText.textContent = "Mercado Pago informó que esta operación no habilita el formulario.";
@@ -80,6 +84,7 @@
         }
 
         if (attempts >= 20) {
+          setPaymentOrb("warning");
           statusBox.className = "a4-status warning";
           statusBox.textContent = "El pago aún figura pendiente. Si ya pagaste, esperá unos minutos o contactá soporte.";
           statusText.textContent = "Mercado Pago puede demorar en confirmar algunas operaciones.";
@@ -92,10 +97,17 @@
       pollPayment();
       retryButton.addEventListener("click", () => {
         attempts = 0;
+        setPaymentOrb("loading");
         statusBox.className = "a4-status warning";
         statusBox.textContent = "Consultando nuevamente con el servidor...";
         pollPayment();
       });
+
+      function setPaymentOrb(state) {
+        const orb = document.querySelector("#payment-status-orb");
+        orb.className = `payment-status-orb ${state}`;
+        orb.innerHTML = state === "success" ? "✓" : state === "error" ? "!" : state === "warning" ? "…" : "<span></span>";
+      }
     </script>
   </body>
 </html>
