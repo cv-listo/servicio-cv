@@ -58,7 +58,6 @@ GROQ_MODEL = llama-3.1-8b-instant
 PLAN_BASIC_AMOUNT = 9999
 PLAN_PROFESSIONAL_AMOUNT = 19999
 PLAN_FOCUSED_AMOUNT = 29999
-ADMIN_TOKEN = (clave privada para /admin.html)
 ADMIN_USER = (usuario para /admin.html)
 ADMIN_PASSWORD = (contraseña para /admin.html)
 ```
@@ -74,11 +73,11 @@ DEBUG_AI = false
 
 Los valores `PLAN_*_AMOUNT` controlan los precios que se muestran en la web y los montos enviados a Mercado Pago. Si no están configurados, se usan los valores por defecto del repositorio.
 
-`admin.html` permite revisar pedidos, datos cargados, pagos, eventos e IA. Protegelo con `ADMIN_USER` y `ADMIN_PASSWORD`; `ADMIN_TOKEN` queda como alternativa técnica.
+`admin.html` permite revisar pedidos, datos cargados, pagos, eventos e IA. Protegelo con `ADMIN_USER` y `ADMIN_PASSWORD`.
 
 No guardar credenciales en el repositorio. Usar Variables and Secrets de Cloudflare.
 
-El formulario de soporte manual usa FormSubmit hacia `mariano.pereyra.1990.1@gmail.com`. La primera vez requiere activar el formulario desde el correo recibido.
+El formulario de soporte manual usa FormSubmit hacia `soporte@cvlisto.com.ar`. La primera vez requiere activar el formulario desde el correo recibido.
 
 ## Arquitectura objetivo
 
@@ -91,7 +90,7 @@ Ver `ARCHITECTURE.md`.
 - En producción, dejar `TEST_DISCOUNT_CODE` vacío o usar un código no público.
 - Implementar caché IA persistente con `ai_generations`.
 - Mejorar plantillas de CV y versión ATS-friendly.
-- Evaluar email automático, DOCX y OCR.
+- Evaluar email automático, versión editable real y OCR.
 
 ## Checklist Mercado Pago
 

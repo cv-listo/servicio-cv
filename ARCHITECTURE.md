@@ -15,7 +15,7 @@ Arquitectura principal:
 - Pagos: Mercado Pago Checkout Pro.
 - OCR inicial: cliente/browser o LLM multimodal.
 - LLM opcional: Gemini Flash / Flash-Lite u otro proveedor con costo variable bajo.
-- PDF/DOCX: generación client-side con HTML/CSS imprimible y `docx.js`.
+- PDF: generación client-side con HTML/CSS imprimible. DOCX queda como mejora futura.
 
 ## Planes comerciales
 
@@ -29,14 +29,14 @@ Básico - $9.999 ARS
 Profesional - $19.999 ARS
   LLM económico para mejorar redacción.
   Perfil profesional y experiencia mejor redactados.
-  PDF + DOCX.
+  PDF A4.
   Preview editable y una única generación final.
 
 Enfocado - $29.999 ARS
   LLM obligatorio.
   Adaptación a puesto, empresa y aviso laboral.
   Versión ATS-friendly.
-  PDF + DOCX.
+  PDF A4.
   Preview editable y una única generación final.
 ```
 
@@ -54,7 +54,7 @@ Usuario elige plan
   -> Upload opcional a R2
   -> OCR/LLM si hace falta
   -> Preview editable
-  -> Generación PDF/DOCX
+  -> Generación PDF
   -> Descarga
 ```
 
@@ -192,7 +192,7 @@ Límites sugeridos:
 
 - máximo 5 archivos;
 - 8 a 10 MB por archivo;
-- PDF, DOCX, JPG, PNG, WEBP.
+- PDF, JPG, PNG, WEBP.
 
 R2 privado. Links temporales. Borrado programado.
 
@@ -258,13 +258,13 @@ Etapa 3:
 Etapa 4:
 
 - R2 para archivos.
-- Extracción DOCX/PDF/imágenes.
+- Extracción PDF/imágenes.
 - OCR/LLM opcional.
 - Preview editable.
 
 Etapa 5:
 
-- DOCX con `docx.js`.
+- Versión editable real o DOCX como mejora futura.
 - Más plantillas.
 - Emails automáticos.
 - Links temporales de descarga.

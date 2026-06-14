@@ -4,7 +4,7 @@ function clean(value) {
   return String(value || "").trim();
 }
 
-function validateData(data, planId) {
+export function validateData(data, planId) {
   const reports = [];
 
   if (!clean(data.fullName)) {
@@ -19,7 +19,7 @@ function validateData(data, planId) {
     reports.push({ severity: "warning", message: "Conviene indicar el puesto o rubro objetivo." });
   }
 
-  const hasExperience = (data.experiences || []).some((item) => clean(item.tasks) || clean(item.role) || clean(item.place));
+  const hasExperience = clean(data.informalExperience) || (data.experiences || []).some((item) => clean(item.tasks) || clean(item.role) || clean(item.place));
   const hasEducation = (data.educationItems || []).some((item) => clean(item.text));
   const hasSkills = clean(data.skills);
 

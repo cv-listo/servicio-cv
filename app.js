@@ -11,7 +11,7 @@ const PLANS = {
     name: "Profesional",
     price: "$19.999",
     amount: 19999,
-    includes: ["Mejora de redacción", "PDF + DOCX", "Vista previa editable", "Una generación final"],
+    includes: ["Mejora de redacción", "PDF A4", "Vista previa editable", "Una generación final"],
   },
   focused: {
     id: "focused",
@@ -74,6 +74,7 @@ function cacheOrder(order) {
     createdAt: order.createdAt || order.created_at,
     generatedAt: order.generatedAt || order.generated_at || null,
     data: order.data || order.data_json || {},
+    cvData: order.cvData || order.cv_json || {},
     reports: order.reports || [],
   };
   orders[cached.id] = cached;

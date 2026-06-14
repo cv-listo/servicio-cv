@@ -1,4 +1,5 @@
 import { json, nowIso, randomId, readJson } from "./_utils.js";
+import { validateData } from "./validate.js";
 
 export async function onRequestPost({ request, env }) {
   const body = await readJson(request);
@@ -30,10 +31,16 @@ export async function onRequestPost({ request, env }) {
   }
 
   const now = nowIso();
+  const finalData = cvData || JSON.parse(order.data_json || "{}");
+  const reports = validateData(finalData, order.plan_id);
+  const hasCritical = reports.some((report) => report.severity === "critical");
+  if (hasCritical) {
+    return json({ ok: false, error: "El CV tiene errores obligatorios.", reports }, { status: 422 });
+  }
   const update = await env.DB.prepare(
     "UPDATE orders SET status = 'generated', cv_json = ?, generated_at = ?, updated_at = ? WHERE id = ? AND token = ? AND status = 'preview_ready' AND generated_at IS NULL"
   )
-    .bind(cvData ? JSON.stringify(cvData) : order.data_json || "{}", now, now, orderId, token)
+    .bind(JSON.stringify(finalData), now, now, orderId, token)
     .run();
 
   if (!update.meta || update.meta.changes !== 1) {
