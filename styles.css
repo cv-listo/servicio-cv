@@ -2101,6 +2101,21 @@ h3 {
   overflow: auto;
 }
 
+.admin-pagination {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.admin-pagination span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-align: center;
+}
+
 .order-row {
   display: grid;
   gap: 4px;

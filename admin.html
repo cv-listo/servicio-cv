@@ -43,6 +43,11 @@
             <button class="button secondary" type="button" id="cleanup-pending">Cancelar pendientes viejos</button>
           </div>
           <div id="orders-list" class="orders-list"></div>
+          <div class="admin-pagination">
+            <button class="button secondary" type="button" id="admin-prev">Anterior</button>
+            <span id="admin-page-info">Página 1</span>
+            <button class="button secondary" type="button" id="admin-next">Siguiente</button>
+          </div>
         </aside>
         <section class="app-card admin-detail" id="order-detail">
           <p>Seleccioná un pedido para ver el detalle.</p>
@@ -61,6 +66,12 @@
       const statusFilter = document.querySelector("#filter-status");
       const planFilter = document.querySelector("#filter-plan");
       const emailFilter = document.querySelector("#filter-email");
+      const prevButton = document.querySelector("#admin-prev");
+      const nextButton = document.querySelector("#admin-next");
+      const pageInfo = document.querySelector("#admin-page-info");
+      const pageSize = 50;
+      let currentOffset = 0;
+      let currentTotal = 0;
 
       authForm.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -75,8 +86,19 @@
 
       statusFilter.addEventListener("change", loadOrders);
       planFilter.addEventListener("change", loadOrders);
-      emailFilter.addEventListener("input", debounce(loadOrders, 350));
+      emailFilter.addEventListener("input", debounce(() => {
+        currentOffset = 0;
+        loadOrders();
+      }, 350));
       document.querySelector("#cleanup-pending").addEventListener("click", runCleanup);
+      prevButton.addEventListener("click", () => {
+        currentOffset = Math.max(0, currentOffset - pageSize);
+        loadOrders();
+      });
+      nextButton.addEventListener("click", () => {
+        currentOffset += pageSize;
+        loadOrders();
+      });
 
       async function adminFetch(path) {
         const url = new URL(path, window.location.origin);
@@ -121,8 +143,12 @@
           if (statusFilter.value) params.set("status", statusFilter.value);
           if (planFilter.value) params.set("plan", planFilter.value);
           if (emailFilter.value) params.set("email", emailFilter.value);
+          params.set("limit", pageSize);
+          params.set("offset", currentOffset);
           const data = await adminFetch(`/api/admin/orders?${params.toString()}`);
+          currentTotal = data.total || 0;
           ordersList.innerHTML = data.orders.map(renderOrderRow).join("") || "<p>No hay pedidos.</p>";
+          renderPagination();
           ordersList.querySelectorAll("button[data-order]").forEach((button) => {
             button.addEventListener("click", () => loadOrder(button.dataset.order));
           });
@@ -137,6 +163,14 @@
           ordersList.innerHTML = `<p class="audit critical">${escapeHtml(error.message)}</p>`;
           return false;
         }
+      }
+
+      function renderPagination() {
+        const currentPage = Math.floor(currentOffset / pageSize) + 1;
+        const totalPages = Math.max(1, Math.ceil(currentTotal / pageSize));
+        pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+        prevButton.disabled = currentOffset === 0;
+        nextButton.disabled = currentOffset + pageSize >= currentTotal;
       }
 
       async function loadOrder(id) {
@@ -194,6 +228,7 @@
             <a class="button secondary" href="${links.preview}" target="_blank">Preview</a>
             <a class="button secondary" href="${links.descarga}" target="_blank">Descarga</a>
             <button class="button primary" type="button" onclick="copyAdminLink('${escapeJs(primary.url)}')">${escapeHtml(primary.label)}</button>
+            <button class="button secondary" type="button" onclick="copyClientMessage('${escapeJs(order.email || "")}', '${escapeJs(primary.url)}')">Copiar mensaje para cliente</button>
           </div>
         `;
       }
@@ -308,6 +343,12 @@
       async function copyAdminLink(url) {
         await navigator.clipboard?.writeText(url);
         alert("Link copiado.");
+      }
+
+      async function copyClientMessage(email, url) {
+        const message = `Hola${email ? ` ${email}` : ""}, te compartimos el enlace para continuar o recuperar tu pedido de CV Listo:\n\n${url}\n\nSi tenés algún problema, escribinos a soporte@cvlisto.com.ar.`;
+        await navigator.clipboard?.writeText(message);
+        alert("Mensaje copiado.");
       }
     </script>
   </body>

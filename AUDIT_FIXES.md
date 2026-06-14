@@ -71,10 +71,10 @@ Estados:
 - [x] Unificar soporte y retomar pedido en `soporte.html`.
 - [x] File picker custom en soporte.
 - [x] Validar adjuntos de soporte: PDF/JPG/PNG hasta 2 MB.
-- [ ] Agregar paginacion real al admin.
+- [x] Agregar paginacion real al admin.
 - [x] Agregar colores por estado en filas del admin: `paid`, `generated`, `pending`, `rejected`.
 - [ ] Agregar notas internas de soporte por pedido.
-- [ ] Agregar accion admin para reenviar/copiar link de recuperacion con texto listo.
+- [x] Agregar accion admin para reenviar/copiar link de recuperacion con texto listo.
 
 ## UX/UI y contenido
 
