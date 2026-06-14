@@ -1,4 +1,4 @@
-export async function sendEmail(env, { to, subject, html, attachments = [] }) {
+export async function sendEmail(env, { to, subject, html }) {
   if (!env.RESEND_API_KEY || !env.EMAIL_FROM) {
     return { ok: false, skipped: true, reason: "Email provider not configured" };
   }
@@ -14,7 +14,6 @@ export async function sendEmail(env, { to, subject, html, attachments = [] }) {
       to: [to],
       subject,
       html,
-      attachments,
     }),
   });
 

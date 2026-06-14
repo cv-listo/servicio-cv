@@ -59,7 +59,7 @@ Estados:
 - [x] Aplicar expiracion real usando `orders.expires_at` en endpoints sensibles.
 - [ ] Agregar rate limit basico por email/order/IP para endpoints criticos.
 - [x] Revisar soporte con FormSubmit y documentar tratamiento de adjuntos/PII.
-- [x] Migrar soporte a endpoint propio `/api/support` con Resend o proveedor transaccional.
+- [ ] Migrar soporte a endpoint propio `/api/support` con Resend o proveedor transaccional.
 
 ## Admin y soporte
 

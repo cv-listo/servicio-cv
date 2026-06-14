@@ -49,8 +49,7 @@
             <h2>Enviar solicitud de soporte</h2>
             <p>Usá este formulario solo si pagaste y no podés continuar, o si tuviste problemas con la descarga.</p>
             </div>
-          <div class="checkout-error" id="support-result" hidden></div>
-          <form class="support-form" id="support-form" action="/api/support" method="POST" enctype="multipart/form-data">
+          <form class="support-form" action="https://formsubmit.co/mariano.pereyra.1990.1@gmail.com" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="_subject" value="Soporte CV Listo" />
             <input type="hidden" name="_captcha" value="false" />
             <input type="text" name="_honey" class="hidden-field" tabindex="-1" autocomplete="off" />
@@ -125,8 +124,6 @@
 
       const fileInput = document.querySelector("#support-file");
       const fileName = document.querySelector("#support-file-name");
-      const supportForm = document.querySelector("#support-form");
-      const supportResult = document.querySelector("#support-result");
       fileInput.addEventListener("change", () => {
         const file = fileInput.files?.[0];
         if (!file) {
@@ -141,35 +138,6 @@
           return;
         }
         fileName.textContent = file.name;
-      });
-
-      supportForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        supportResult.hidden = true;
-        const submit = supportForm.querySelector("button[type='submit']");
-        submit.disabled = true;
-        const original = submit.textContent;
-        submit.textContent = "Enviando...";
-        try {
-          const response = await fetch("/api/support", {
-            method: "POST",
-            body: new FormData(supportForm),
-          });
-          const result = await response.json();
-          if (!response.ok || !result.ok) throw new Error(result.error || "No se pudo enviar.");
-          supportResult.className = "audit ok";
-          supportResult.textContent = "Solicitud enviada. Te responderemos por email.";
-          supportResult.hidden = false;
-          supportForm.reset();
-          fileName.textContent = "Ningún archivo seleccionado";
-        } catch (error) {
-          supportResult.className = "checkout-error";
-          supportResult.textContent = error.message || "No se pudo enviar el soporte.";
-          supportResult.hidden = false;
-        } finally {
-          submit.disabled = false;
-          submit.textContent = original;
-        }
       });
     </script>
   </body>

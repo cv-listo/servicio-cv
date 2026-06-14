@@ -8,7 +8,6 @@ OPENAI_MODEL=gpt-4o-mini
 AI_TIMEOUT_MS=10000
 RESEND_API_KEY=
 EMAIL_FROM=CV Listo <soporte@cvlisto.com.ar>
-SUPPORT_EMAIL=soporte@cvlisto.com.ar
 TEST_DISCOUNT_CODE=TEST
 ALLOW_TEST_CODE=true
 MP_ACCESS_TOKEN=
