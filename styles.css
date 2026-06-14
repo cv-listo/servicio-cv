@@ -1929,6 +1929,21 @@ h3 {
   margin-top: 18px;
 }
 
+.admin-login {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-top: 18px;
+}
+
+.admin-login label {
+  display: grid;
+  gap: 8px;
+  color: var(--ink);
+  font-weight: 850;
+}
+
 .admin-auth label,
 .admin-filters {
   display: grid;
@@ -2202,7 +2217,8 @@ h3 {
   }
 
   .admin-grid,
-  .admin-auth {
+  .admin-auth,
+  .admin-login {
     grid-template-columns: 1fr;
   }
 

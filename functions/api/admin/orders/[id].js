@@ -78,5 +78,17 @@ function isAdmin(request, env) {
   const token = new URL(request.url).searchParams.get("token") || "";
   const auth = request.headers.get("authorization") || "";
   const bearer = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-  return Boolean(env.ADMIN_TOKEN && (token === env.ADMIN_TOKEN || bearer === env.ADMIN_TOKEN));
+  const basic = auth.startsWith("Basic ") ? decodeBasic(auth.slice(6)) : null;
+  const tokenOk = Boolean(env.ADMIN_TOKEN && (token === env.ADMIN_TOKEN || bearer === env.ADMIN_TOKEN));
+  const passwordOk = Boolean(env.ADMIN_USER && env.ADMIN_PASSWORD && basic?.user === env.ADMIN_USER && basic?.password === env.ADMIN_PASSWORD);
+  return tokenOk || passwordOk;
+}
+
+function decodeBasic(value) {
+  try {
+    const [user, ...passwordParts] = atob(value).split(":");
+    return { user, password: passwordParts.join(":") };
+  } catch {
+    return null;
+  }
 }
