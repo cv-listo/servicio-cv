@@ -45,7 +45,16 @@ export async function onRequestPost({ request, env }) {
   const payment = await paymentResponse.json();
 
   if (!paymentResponse.ok) {
-    return json({ ok: false, error: "No se pudo consultar el pago", detail: payment }, { status: 502 });
+    await insertMpEvent(env, {
+      eventType,
+      action: event.action,
+      paymentId,
+      xRequestId: requestId,
+      signatureValid: signatureOk ? 1 : 0,
+      processed: 0,
+      error: `PAYMENT_LOOKUP_FAILED_${paymentResponse.status}`,
+    });
+    return json({ ok: true, ignored: "payment_lookup_failed" }, { status: 202 });
   }
 
   const orderId = payment.external_reference || payment.metadata?.order_id;
