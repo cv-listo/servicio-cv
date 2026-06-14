@@ -180,13 +180,13 @@ function mapPaymentStatus(mpStatus, currentStatus) {
 async function verifyMercadoPagoSignature(request, url, secret, paymentId) {
   const signature = request.headers.get("x-signature") || "";
   const requestId = request.headers.get("x-request-id") || "";
-  const dataId = String(url.searchParams.get("data.id") || paymentId || "").toLowerCase();
+  const dataId = String(url.searchParams.get("data.id") || "").toLowerCase();
   const parts = Object.fromEntries(signature.split(",").map((part) => part.split("=").map((value) => value.trim())));
   const ts = parts.ts;
   const v1 = parts.v1;
-  if (!ts || !v1 || !requestId || !dataId) return false;
+  if (!ts || !v1 || !requestId) return false;
 
-  const manifest = `id:${dataId};request-id:${requestId};ts:${ts};`;
+  const manifest = `${dataId ? `id:${dataId};` : ""}request-id:${requestId};ts:${ts};`;
   const key = await crypto.subtle.importKey(
     "raw",
     new TextEncoder().encode(secret),
