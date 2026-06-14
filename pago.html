@@ -100,8 +100,30 @@
         setPaymentOrb("loading");
         statusBox.className = "a4-status warning";
         statusBox.textContent = "Consultando nuevamente con el servidor...";
-        pollPayment();
+        checkPaymentNow();
       });
+
+      async function checkPaymentNow() {
+        try {
+          const response = await fetch("/api/payments/check", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ orderId, token }),
+          });
+          const result = await response.json();
+          if (result.status === "paid" || result.alreadyEnabled) {
+            setPaymentOrb("success");
+            statusBox.className = "a4-status ok";
+            statusBox.textContent = "Pago confirmado. Redirigiendo al formulario...";
+            window.location.href = `./formulario.html?order=${orderId}&token=${token}`;
+            return;
+          }
+          statusBox.textContent = result.message || "Todavía no vemos el pago aprobado. Volvé a intentar en unos segundos.";
+        } catch {
+          statusBox.textContent = "No pudimos consultar el pago en este momento. Intentá nuevamente.";
+        }
+        pollPayment();
+      }
 
       function setPaymentOrb(state) {
         const orb = document.querySelector("#payment-status-orb");

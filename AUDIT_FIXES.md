@@ -11,8 +11,8 @@ Estados:
 ## Critico antes de lanzamiento abierto
 
 - [ ] Desactivar o cambiar `TEST_DISCOUNT_CODE` en produccion para que no exista un bypass publico de pago.
-- [ ] Implementar `/api/payments/check` para conciliacion manual con Mercado Pago desde `pago.html`.
-- [ ] Conectar `pago.html` al endpoint `/api/payments/check` cuando el webhook tarde o falle.
+- [x] Implementar `/api/payments/check` para conciliacion manual con Mercado Pago desde `pago.html`.
+- [x] Conectar `pago.html` al endpoint `/api/payments/check` cuando el webhook tarde o falle.
 - [ ] Revisar y eliminar fallback local de produccion en `formulario.html`, `preview.html` y `descargar.html` si permite continuar sin backend.
 - [ ] Validar que `generate-final` no marque localmente como generado si falla el backend en produccion.
 - [ ] Probar un flujo completo de pago real con precios finales `9999`, `19999`, `29999`.
@@ -26,7 +26,7 @@ Estados:
 - [x] Registrar eventos en `mp_events`.
 - [x] Soportar webhook firmado y fallback IPN controlado.
 - [x] Agregar `source_news=webhooks` a `notification_url`.
-- [ ] Agregar endpoint de conciliacion manual `/api/payments/check`.
+- [x] Agregar endpoint de conciliacion manual `/api/payments/check`.
 - [ ] Probar estados reales/sandbox: `approved`, `pending`, `rejected`, `cancelled`, `refunded`, `charged_back`.
 - [ ] Registrar mejor reversas posteriores a `generated` sin reabrir el CV.
 - [ ] Limpiar o expirar ordenes viejas `payment_pending` de pruebas.
