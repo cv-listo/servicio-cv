@@ -125,6 +125,12 @@ a {
   filter: drop-shadow(0 24px 44px rgba(23, 32, 51, 0.16));
 }
 
+.btn-lg {
+  min-height: 54px;
+  padding-inline: 24px;
+  font-size: 1.02rem;
+}
+
 .hero-mockup {
   position: relative;
 }
@@ -163,6 +169,30 @@ a {
   font-size: 0.9rem;
 }
 
+.floating-check-card {
+  position: absolute;
+  left: -16px;
+  top: 72px;
+  max-width: 220px;
+  border: 1px solid rgba(52, 87, 213, 0.18);
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+}
+
+.floating-check-card strong {
+  display: block;
+  color: var(--accent-dark);
+}
+
+.floating-check-card p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
 .section.tinted {
   max-width: none;
   margin: 0;
@@ -170,6 +200,32 @@ a {
   padding-right: max(20px, calc((100vw - 1120px) / 2 + 20px));
   background: rgba(255, 255, 255, 0.68);
   border-block: 1px solid var(--line);
+}
+
+.trust-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 1120px;
+  margin: -28px auto 0;
+  border-radius: 24px;
+  padding: 16px;
+  background: #101828;
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow);
+}
+
+.trust-strip span {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 850;
+}
+
+.trust-strip span::before {
+  content: "✓";
+  color: #22c55e;
+  font-weight: 950;
 }
 
 .eyebrow {
@@ -190,6 +246,13 @@ a {
   font-size: 0.86rem;
   font-weight: 900;
   box-shadow: 0 12px 28px rgba(124, 58, 237, 0.18);
+}
+
+.hero-accent {
+  background: linear-gradient(135deg, var(--accent), var(--ai));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 h1,
@@ -843,7 +906,7 @@ h3 {
 }
 
 .good-cv aside,
-.good-cv main {
+.good-cv-main {
   display: grid;
   align-content: start;
   gap: 8px;
@@ -890,6 +953,30 @@ h3 {
 .support-card p {
   margin: 8px 0 0;
   color: var(--muted);
+}
+
+.security-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.security-item {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 18px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.security-item strong {
+  color: var(--accent-dark);
+}
+
+.security-item p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
 }
 
 .support-form label {
@@ -955,6 +1042,11 @@ h3 {
   background: var(--ink);
   color: rgba(255, 255, 255, 0.84);
   text-align: center;
+}
+
+.footer-inner {
+  max-width: 960px;
+  margin: 0 auto;
 }
 
 .footer p {
@@ -2223,6 +2315,8 @@ h3 {
   .pricing-grid,
   .mockup-compare,
   .transform-grid,
+  .trust-strip,
+  .security-grid,
   .faq {
     grid-template-columns: 1fr;
   }
@@ -2241,6 +2335,13 @@ h3 {
     right: auto;
     bottom: auto;
     margin: -36px auto 0;
+  }
+
+  .floating-check-card {
+    position: relative;
+    left: auto;
+    top: auto;
+    margin: 12px auto 0;
   }
 
   .transform-arrow {

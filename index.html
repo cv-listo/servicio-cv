@@ -32,12 +32,12 @@
         <div>
           <p class="eyebrow">Generador automático de CV</p>
           <span class="hero-ai-badge">Asistente IA para ordenar tu redacción</span>
-          <h1>Generá tu CV profesional en minutos</h1>
+          <h1>Generá tu CV <span class="hero-accent">profesional</span> en minutos</h1>
           <p class="lead">
             Pagás una vez, completás tus datos y el sistema genera un currículum prolijo para enviar por email, WhatsApp o portales de empleo. Podés revisar y editar antes de descargar.
           </p>
           <div class="hero-actions">
-            <a class="button primary" href="#planes">Quiero mi CV</a>
+            <a class="button primary btn-lg" href="#planes">Quiero mi CV</a>
             <a class="button secondary" href="#como-funciona">Ver cómo funciona</a>
           </div>
           <div class="trust-row" aria-label="Características del servicio">
@@ -48,7 +48,7 @@
           </div>
         </div>
         <div class="hero-mockup" aria-hidden="true">
-          <svg viewBox="0 0 360 460" role="img">
+          <svg class="cv-mockup-svg" viewBox="0 0 360 460" role="img">
             <rect x="48" y="18" width="250" height="400" rx="18" fill="#fff" />
             <rect x="76" y="52" width="112" height="16" rx="8" fill="#172033" />
             <rect x="76" y="82" width="160" height="8" rx="4" fill="#d9e0ea" />
@@ -70,11 +70,22 @@
             <strong>Redacción mejorada</strong>
             <p>“atendía gente y cobraba” se convierte en tareas claras para tu CV.</p>
           </div>
+          <div class="floating-check-card">
+            <strong>Vista previa lista</strong>
+            <p>Revisás, editás y recién después generás el CV final.</p>
+          </div>
         </div>
       </section>
     </header>
 
     <main>
+      <section class="trust-strip" aria-label="Garantías principales">
+        <span>Pago seguro con Mercado Pago</span>
+        <span>IA que no inventa datos</span>
+        <span>Vista previa editable</span>
+        <span>Formato A4 profesional</span>
+      </section>
+
       <section class="section">
         <div class="section-heading">
           <p class="eyebrow">Para qué sirve</p>
@@ -188,7 +199,7 @@
                 <em>Manejo de caja</em>
                 <em>Control de stock</em>
               </aside>
-              <main>
+              <div class="good-cv-main">
                 <h3>Perfil</h3>
                 <p>Perfil orientado a comercio, ventas y tareas operativas.</p>
                 <h3>Experiencia</h3>
@@ -197,7 +208,7 @@
                   <li>Atención al cliente y asesoramiento en salón.</li>
                   <li>Manejo de caja, cobros y reposición de mercadería.</li>
                 </ul>
-              </main>
+              </div>
             </div>
           </article>
         </div>
@@ -352,6 +363,32 @@
         </div>
       </section>
 
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Seguridad y control</p>
+          <h2>Tu CV se genera con revisión previa</h2>
+          <p>El flujo está pensado para que puedas pagar, cargar datos, revisar el resultado y confirmar recién cuando esté listo.</p>
+        </div>
+        <div class="security-grid">
+          <article class="security-item">
+            <strong>Mercado Pago</strong>
+            <p>El pago se procesa fuera de CV Listo y no guardamos datos de tarjeta.</p>
+          </article>
+          <article class="security-item">
+            <strong>Datos protegidos</strong>
+            <p>Usamos la información solo para gestionar tu pedido y generar el CV.</p>
+          </article>
+          <article class="security-item">
+            <strong>Preview editable</strong>
+            <p>Podés corregir perfil, experiencia y habilidades antes de generar.</p>
+          </article>
+          <article class="security-item">
+            <strong>IA con control</strong>
+            <p>La IA mejora redacción, pero el usuario confirma el contenido final.</p>
+          </article>
+        </div>
+      </section>
+
       <section class="section tinted" id="soporte">
         <div class="section-heading">
           <p class="eyebrow">Soporte</p>
@@ -384,9 +421,11 @@
     </main>
 
     <footer class="footer">
-      <p>CV Listo · Generador digital de currículums.</p>
-      <p>Contacto: <a href="mailto:soporte@cvlisto.com.ar">soporte@cvlisto.com.ar</a> · © 2025 CV Listo</p>
-      <p><a href="#privacidad">Privacidad</a></p>
+      <div class="footer-inner">
+        <p><strong>CV Listo</strong> · Generador digital de currículums.</p>
+        <p>Contacto: <a href="mailto:soporte@cvlisto.com.ar">soporte@cvlisto.com.ar</a> · © 2025 CV Listo</p>
+        <p><a href="#privacidad">Privacidad</a> · <a href="./soporte.html">Soporte</a></p>
+      </div>
     </footer>
     <div class="mobile-sticky-cta">
       <span>Generá tu CV · desde <strong data-plan-price="basic">$9.999</strong></span>
