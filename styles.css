@@ -964,6 +964,33 @@ h3 {
   color: var(--muted);
 }
 
+.support-hub-layout {
+  display: grid;
+  gap: 22px;
+}
+
+.support-hub-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.support-section-card {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 24px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.support-section-card .support-form {
+  margin-top: 0;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
 .security-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2371,6 +2398,10 @@ h3 {
   }
 
   .support-card {
+    grid-template-columns: 1fr;
+  }
+
+  .support-hub-grid {
     grid-template-columns: 1fr;
   }
 

@@ -15,12 +15,15 @@
   <body>
     <main class="app-shell checkout-shell">
       <a class="back-link" href="./index.html">← Volver al inicio</a>
-      <section class="app-layout">
+      <section class="support-hub-layout">
         <div>
           <p class="eyebrow">Soporte</p>
           <h1>¿Necesitás ayuda con tu pedido?</h1>
-          <p class="lead">Si tuviste un problema con el pago, el formulario o la descarga, enviá los datos del pedido y revisamos el caso.</p>
-          <section class="app-card last-order-card" id="retomar">
+          <p class="lead">Desde esta página podés continuar un pedido iniciado o avisarnos si tuviste un problema con el pago, el formulario o la descarga.</p>
+        </div>
+
+        <section class="support-hub-grid">
+          <article class="app-card last-order-card support-section-card" id="retomar">
             <h2>Retomar pedido</h2>
             <p>Si cerraste la pestaña, podés continuar desde el último pedido guardado en este dispositivo o ingresar tus datos de acceso.</p>
             <div id="last-order-card" hidden>
@@ -38,12 +41,14 @@
                 <button class="button primary" type="submit">Retomar pedido</button>
               </form>
             </details>
-          </section>
-          <div class="section-heading compact-heading">
+          </article>
+
+          <article class="support-section-card">
+            <div class="section-heading compact-heading">
             <p class="eyebrow">Problemas con pago o descarga</p>
             <h2>Enviar solicitud de soporte</h2>
             <p>Usá este formulario solo si pagaste y no podés continuar, o si tuviste problemas con la descarga.</p>
-          </div>
+            </div>
           <form class="support-form" action="https://formsubmit.co/soporte@cvlisto.com.ar" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="_subject" value="Soporte CV Listo" />
             <input type="hidden" name="_captcha" value="false" />
@@ -58,13 +63,8 @@
             </label>
             <button class="button primary" type="submit">Enviar solicitud de soporte</button>
           </form>
-        </div>
-        <aside class="app-card">
-          <h2>Consejo rápido</h2>
-          <p>Si pagaste con Mercado Pago, incluí el email usado y, si podés, adjuntá el comprobante. Eso ayuda a encontrar el pedido más rápido.</p>
-          <p>Si solo querés continuar donde quedaste, usá el bloque “Retomar pedido” de esta misma página.</p>
-          <a class="button secondary" href="#retomar">Ir a retomar pedido</a>
-        </aside>
+          </article>
+        </section>
       </section>
     </main>
     <script src="./app.js"></script>
