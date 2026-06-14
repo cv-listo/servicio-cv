@@ -61,7 +61,7 @@ export async function onRequestPost({ request, env }) {
         email,
       },
       external_reference: id,
-      notification_url: `${origin}/api/webhook-mp`,
+      notification_url: `${origin}/api/webhook-mp?source_news=webhooks`,
       back_urls: {
         success: `${origin}/pago.html?order=${id}&token=${token}`,
         failure: `${origin}/confirmar.html?plan=${plan.id}`,

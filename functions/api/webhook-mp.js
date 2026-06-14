@@ -11,7 +11,7 @@ export async function onRequestPost({ request, env }) {
 
   if (env.MP_WEBHOOK_SECRET) {
     signatureOk = await verifyMercadoPagoSignature(request, url, env.MP_WEBHOOK_SECRET, paymentId);
-    if (!signatureOk) {
+    if (!signatureOk && !paymentId) {
       await insertMpEvent(env, { paymentId, xRequestId: requestId, signatureValid: 0, processed: 0, error: "INVALID_SIGNATURE" });
       return json({ ok: false, error: "Firma inválida" }, { status: 401 });
     }
@@ -139,7 +139,7 @@ export async function onRequestPost({ request, env }) {
       xRequestId: requestId,
       signatureValid: signatureOk ? 1 : 0,
       processed: 0,
-      error: !amountOk || !currencyOk ? "VALIDATION_FAILED" : null,
+      error: !amountOk || !currencyOk ? "VALIDATION_FAILED" : !signatureOk ? "IPN_UNSIGNED_FALLBACK" : null,
     });
     return json({ ok: true, status: payment.status, ignored: true });
   }
@@ -162,6 +162,7 @@ export async function onRequestPost({ request, env }) {
     xRequestId: requestId,
     signatureValid: signatureOk ? 1 : 0,
     processed: 1,
+    error: signatureOk ? null : "IPN_UNSIGNED_FALLBACK_PROCESSED",
   });
 
   return json({ ok: true });
