@@ -34,6 +34,30 @@ export async function onRequestPost({ request, env }) {
 
   const sanitized = sanitizeForLlm(input, planId);
   const inputHash = await sha256(JSON.stringify(sanitized));
+  const cached = await getCachedAiGeneration(env, orderId, inputHash);
+  if (cached) {
+    return json({
+      ok: true,
+      source: cached.used_fallback ? "fallback_cache" : "llm_cache",
+      provider: cached.provider,
+      model: cached.model,
+      data: cached.output.data || localNormalize(input),
+      warnings: cached.output.warnings || [],
+      questions: cached.output.questions || [],
+    });
+  }
+
+  const aiCount = await countAiGenerations(env, orderId);
+  if (aiCount >= 3) {
+    const fallbackData = localNormalize(input);
+    return json({
+      ok: true,
+      source: "fallback_limit",
+      data: fallbackData,
+      warnings: ["Se alcanzó el límite de mejoras con IA para este pedido. Mostramos una versión organizada localmente."],
+      questions: [],
+    });
+  }
 
   try {
     const aiResult = await callLlmProvider(env, planId, sanitized);
@@ -62,7 +86,11 @@ export async function onRequestPost({ request, env }) {
       provider: "local",
       model: "fallback",
       inputHash,
-      output: localNormalize(input),
+      output: {
+        data: localNormalize(input),
+        warnings: ["Fallback local por error del proveedor IA."],
+        questions: [],
+      },
       warnings: ["Fallback local por error del proveedor IA."],
       usedFallback: true,
       error: String(error?.message || error),
@@ -403,6 +431,34 @@ async function recordAiGeneration(env, event) {
       .run();
   } catch {
     // La auditoría de IA no debe impedir que el usuario vea su preview.
+  }
+}
+
+async function getCachedAiGeneration(env, orderId, inputHash) {
+  try {
+    const row = await env.DB.prepare(
+      "SELECT * FROM ai_generations WHERE order_id = ? AND input_hash = ? ORDER BY created_at DESC LIMIT 1"
+    )
+      .bind(orderId, inputHash)
+      .first();
+    if (!row?.output_json) return null;
+    return {
+      ...row,
+      output: JSON.parse(row.output_json),
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function countAiGenerations(env, orderId) {
+  try {
+    const row = await env.DB.prepare("SELECT COUNT(*) AS total FROM ai_generations WHERE order_id = ?")
+      .bind(orderId)
+      .first();
+    return Number(row?.total || 0);
+  } catch {
+    return 0;
   }
 }
 

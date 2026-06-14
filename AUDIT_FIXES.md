@@ -40,8 +40,8 @@ Estados:
 - [x] Registrar auditoria basica en `ai_generations`.
 - [x] Mejorar salida de experiencia informal y bullets.
 - [x] Normalizar texto final (`gondolas` -> `góndolas`, `Posnet`, mayusculas iniciales).
-- [ ] Implementar cache efectivo por `input_hash` antes de llamar al LLM.
-- [ ] Limitar llamadas IA por orden/hash.
+- [x] Implementar cache efectivo por `input_hash` antes de llamar al LLM.
+- [x] Limitar llamadas IA por orden/hash.
 - [ ] Endurecer validacion anti-alucinacion para rol, estudios, fechas, herramientas e idiomas.
 - [ ] Probar prompt injection en campos libres y `jobAd`.
 - [ ] Mejorar prompt del plan Enfocado para priorizar keywords sin copiar texto del aviso.
