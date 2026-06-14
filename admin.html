@@ -40,6 +40,7 @@
               <option value="focused">Enfocado</option>
             </select>
             <input id="filter-email" type="search" placeholder="Buscar email" />
+            <button class="button secondary" type="button" id="cleanup-pending">Cancelar pendientes viejos</button>
           </div>
           <div id="orders-list" class="orders-list"></div>
         </aside>
@@ -80,6 +81,7 @@
       statusFilter.addEventListener("change", loadOrders);
       planFilter.addEventListener("change", loadOrders);
       emailFilter.addEventListener("input", debounce(loadOrders, 350));
+      document.querySelector("#cleanup-pending").addEventListener("click", runCleanup);
 
       async function adminFetch(path) {
         const url = new URL(path, window.location.origin);
@@ -91,6 +93,30 @@
         const data = await response.json();
         if (!response.ok || !data.ok) throw new Error(data.error || "Error admin");
         return data;
+      }
+
+      async function adminPost(path) {
+        const url = new URL(path, window.location.origin);
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            authorization: `Basic ${btoa(`${adminUser}:${adminPassword}`)}`,
+          },
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(data.error || "Error admin");
+        return data;
+      }
+
+      async function runCleanup() {
+        if (!confirm("Esto marcará como cancelados los pedidos pendientes de pago de más de 7 días. ¿Continuar?")) return;
+        try {
+          const result = await adminPost("/api/admin/cleanup?days=7");
+          alert(`Pedidos actualizados: ${result.changed}`);
+          loadOrders();
+        } catch (error) {
+          alert(error.message || "No se pudo limpiar pedidos pendientes.");
+        }
       }
 
       async function loadOrders() {
