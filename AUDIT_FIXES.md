@@ -55,7 +55,7 @@ Estados:
 - [x] Recuperacion por email sin enumerar emails.
 - [ ] Quitar autenticacion alternativa por `ADMIN_TOKEN` si ya no se usa en codigo/documentacion.
 - [ ] Evitar guardar password admin en `sessionStorage`; evaluar sesion temporal o Cloudflare Access.
-- [ ] Agregar CSP en `_headers`.
+- [x] Agregar CSP en `_headers`.
 - [x] Aplicar expiracion real usando `orders.expires_at` en endpoints sensibles.
 - [ ] Agregar rate limit basico por email/order/IP para endpoints criticos.
 - [ ] Revisar soporte con FormSubmit y documentar tratamiento de adjuntos/PII.
