@@ -121,6 +121,44 @@ a {
   filter: drop-shadow(0 24px 44px rgba(23, 32, 51, 0.16));
 }
 
+.hero-mockup {
+  position: relative;
+}
+
+.floating-ai-card {
+  position: absolute;
+  right: -24px;
+  bottom: 42px;
+  max-width: 245px;
+  border: 1px solid rgba(124, 58, 237, 0.18);
+  border-radius: 20px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+}
+
+.floating-ai-card span {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: var(--ai-soft);
+  color: var(--ai);
+  font-size: 0.75rem;
+  font-weight: 950;
+}
+
+.floating-ai-card strong {
+  display: block;
+  margin-top: 8px;
+}
+
+.floating-ai-card p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .section.tinted {
   max-width: none;
   margin: 0;
@@ -521,6 +559,79 @@ h3 {
   gap: 22px;
   align-items: center;
   max-width: 980px;
+}
+
+.transform-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  max-width: 980px;
+}
+
+.transform-card {
+  min-height: 210px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 24px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.transform-card span {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.transform-card.before {
+  border-color: #fed7aa;
+  background: #fff7ed;
+}
+
+.transform-card.before span {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.transform-card.after {
+  border-color: rgba(124, 58, 237, 0.2);
+}
+
+.transform-card.after span {
+  background: var(--ai-soft);
+  color: var(--ai);
+}
+
+.transform-card p {
+  margin: 18px 0 0;
+  color: #7c2d12;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.transform-card ul {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding-left: 20px;
+  color: var(--ink);
+}
+
+.transform-arrow {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--ai));
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 950;
+  box-shadow: var(--shadow);
 }
 
 .form-step-list {
@@ -1824,6 +1935,7 @@ h3 {
   .steps,
   .pricing-grid,
   .mockup-compare,
+  .transform-grid,
   .faq {
     grid-template-columns: 1fr;
   }
@@ -1835,6 +1947,18 @@ h3 {
   .hero-mockup {
     max-width: 340px;
     margin: 0 auto;
+  }
+
+  .floating-ai-card {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    margin: -36px auto 0;
+  }
+
+  .transform-arrow {
+    margin: 0 auto;
+    transform: rotate(90deg);
   }
 
   .steps::before {
