@@ -21,6 +21,10 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "Pedido no habilitado para IA." }, { status: 403 });
   }
 
+  if (order.expires_at && new Date(order.expires_at).getTime() < Date.now()) {
+    return json({ ok: false, error: "El enlace del pedido expiró." }, { status: 410 });
+  }
+
   const planId = order.plan_id || input.planId || "basic";
   if (!AI_PLANS.has(planId)) {
     return json({

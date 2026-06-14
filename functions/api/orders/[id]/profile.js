@@ -15,6 +15,10 @@ export async function onRequestPost({ request, params, env }) {
     return json({ ok: false, error: "Orden no encontrada" }, { status: 404 });
   }
 
+  if (order.expires_at && new Date(order.expires_at).getTime() < Date.now()) {
+    return json({ ok: false, error: "El enlace del pedido expiró" }, { status: 410 });
+  }
+
   if (!["paid", "discount_test", "form_started", "preview_ready"].includes(order.status)) {
     return json({ ok: false, error: "Orden no habilitada para formulario" }, { status: 403 });
   }

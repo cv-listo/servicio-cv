@@ -25,6 +25,9 @@ CREATE TABLE IF NOT EXISTS orders (
 
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(email);
+CREATE INDEX IF NOT EXISTS idx_orders_token ON orders(token);
+CREATE INDEX IF NOT EXISTS idx_orders_external_reference ON orders(external_reference);
+CREATE INDEX IF NOT EXISTS idx_orders_mp_payment_id ON orders(mp_payment_id);
 
 CREATE TABLE IF NOT EXISTS order_audits (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

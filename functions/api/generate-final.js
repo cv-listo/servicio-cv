@@ -16,6 +16,10 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: false, error: "Orden no encontrada" }, { status: 404 });
   }
 
+  if (order.expires_at && new Date(order.expires_at).getTime() < Date.now()) {
+    return json({ ok: false, error: "El enlace del pedido expiró" }, { status: 410 });
+  }
+
   if (order.generated_at) {
     const document = await env.DB.prepare("SELECT * FROM final_documents WHERE order_id = ?")
       .bind(orderId)

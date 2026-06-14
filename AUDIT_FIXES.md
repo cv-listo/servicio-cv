@@ -56,7 +56,7 @@ Estados:
 - [ ] Quitar autenticacion alternativa por `ADMIN_TOKEN` si ya no se usa en codigo/documentacion.
 - [ ] Evitar guardar password admin en `sessionStorage`; evaluar sesion temporal o Cloudflare Access.
 - [ ] Agregar CSP en `_headers`.
-- [ ] Aplicar expiracion real usando `orders.expires_at` en endpoints sensibles.
+- [x] Aplicar expiracion real usando `orders.expires_at` en endpoints sensibles.
 - [ ] Agregar rate limit basico por email/order/IP para endpoints criticos.
 - [ ] Revisar soporte con FormSubmit y documentar tratamiento de adjuntos/PII.
 - [ ] Migrar soporte a endpoint propio `/api/support` con Resend o proveedor transaccional.
@@ -111,7 +111,7 @@ Estados:
 - [x] Agregar campos Mercado Pago a `orders`.
 - [x] Agregar `mp_events`.
 - [x] Agregar `ai_generations`.
-- [ ] Agregar indices utiles: `orders(token)`, `orders(external_reference)`, `orders(mp_payment_id)`.
+- [x] Agregar indices utiles: `orders(token)`, `orders(external_reference)`, `orders(mp_payment_id)`.
 - [ ] Agregar limpieza/expiracion de ordenes `payment_pending` viejas.
 - [ ] Agregar limpieza de registros IA antiguos si crecen demasiado.
 - [ ] Resolver ruido de line endings que deja archivos como modificados sin diff real.
