@@ -437,12 +437,16 @@ h3 {
 .price-card {
   display: grid;
   gap: 14px;
-  grid-template-rows: auto minmax(46px, auto) auto 1fr auto auto;
+  grid-template-rows: auto minmax(46px, auto) auto minmax(48px, auto) 1fr auto auto;
 }
 
 .price-card.featured {
   border-color: rgba(52, 87, 213, 0.45);
   transform: translateY(-6px);
+  background:
+    radial-gradient(circle at 90% 0%, rgba(124, 58, 237, 0.13), transparent 32%),
+    radial-gradient(circle at 0% 10%, rgba(52, 87, 213, 0.1), transparent 28%),
+    var(--paper);
 }
 
 .price-card:nth-child(3) {
@@ -493,6 +497,13 @@ h3 {
   letter-spacing: -0.05em;
 }
 
+.plan-subtitle {
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+
 .price-card ul,
 .check-list {
   display: grid;
@@ -508,6 +519,31 @@ h3 {
 
 .plan-summary-card {
   border-color: rgba(52, 87, 213, 0.45);
+}
+
+.pricing-trust {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.pricing-trust span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--accent-dark);
+  font-size: 0.9rem;
+  font-weight: 850;
+}
+
+.pricing-trust span::before {
+  content: "✓";
+  margin-right: 7px;
+  color: var(--ok);
+  font-weight: 950;
 }
 
 .last-order-card {
