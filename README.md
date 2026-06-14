@@ -58,6 +58,7 @@ GROQ_MODEL = llama-3.1-8b-instant
 PLAN_BASIC_AMOUNT = 9999
 PLAN_PROFESSIONAL_AMOUNT = 19999
 PLAN_FOCUSED_AMOUNT = 29999
+ADMIN_TOKEN = (clave privada para /admin.html)
 ```
 
 Variables opcionales:
@@ -70,6 +71,8 @@ DEBUG_AI = false
 ```
 
 Los valores `PLAN_*_AMOUNT` controlan los precios que se muestran en la web y los montos enviados a Mercado Pago. Si no están configurados, se usan los valores por defecto del repositorio.
+
+`admin.html` permite revisar pedidos, datos cargados, pagos, eventos e IA. Protegelo con un `ADMIN_TOKEN` largo y privado.
 
 No guardar credenciales en el repositorio. Usar Variables and Secrets de Cloudflare.
 

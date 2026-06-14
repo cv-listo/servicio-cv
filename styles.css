@@ -1917,6 +1917,123 @@ h3 {
   max-width: 920px;
 }
 
+.admin-shell {
+  max-width: 1280px;
+}
+
+.admin-auth {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-top: 18px;
+}
+
+.admin-auth label,
+.admin-filters {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 380px minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.admin-filters {
+  grid-template-columns: 1fr;
+  margin-bottom: 14px;
+}
+
+.orders-list {
+  display: grid;
+  gap: 8px;
+  max-height: 720px;
+  overflow: auto;
+}
+
+.order-row {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.order-row:hover {
+  border-color: var(--accent);
+  background: #f8faff;
+}
+
+.order-row span,
+.order-row small,
+.admin-detail-head p {
+  color: var(--muted);
+}
+
+.admin-detail {
+  overflow: auto;
+}
+
+.admin-detail-head {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+}
+
+.admin-links,
+.admin-summary {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.admin-summary span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: #fff;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.admin-json {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin-top: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.admin-json summary {
+  cursor: pointer;
+  padding: 12px 14px;
+  font-weight: 900;
+}
+
+.admin-json pre {
+  max-height: 460px;
+  overflow: auto;
+  margin: 0;
+  border-top: 1px solid var(--line);
+  padding: 14px;
+  background: #0f172a;
+  color: #e5e7eb;
+  font-size: 0.82rem;
+}
+
 .success-mark {
   display: grid;
   width: 72px;
@@ -2081,6 +2198,11 @@ h3 {
   }
 
   .checkout-premium-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-grid,
+  .admin-auth {
     grid-template-columns: 1fr;
   }
 
