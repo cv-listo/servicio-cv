@@ -105,7 +105,7 @@ Estados:
 - [x] Evitar secciones vacias y placeholders falsos.
 - [x] Crear selector real de plantilla: visual vs ATS-friendly.
 - [x] Mejorar control de overflow A4 y sugerencias automaticas para reducir texto.
-- [ ] Validar impresion/PDF en Chrome, Edge, Firefox y mobile.
+- [~] Validar impresion/PDF en Chrome, Edge, Firefox y mobile.
 - [ ] Evaluar generacion PDF real en una fase posterior.
 
 ## Base de datos y mantenimiento

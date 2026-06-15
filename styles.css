@@ -2420,9 +2420,17 @@ h3 {
 }
 
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
   .topbar,
   .audit-panel,
   .app-actions,
+  .success-mark,
+  .download-tip,
+  .next-steps,
   .download-card > .eyebrow,
   .download-card > h1,
   .download-card > p {
@@ -2431,6 +2439,8 @@ h3 {
 
   body {
     background: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .app-shell,
@@ -2446,8 +2456,17 @@ h3 {
   .cv-page {
     width: 210mm;
     min-height: 297mm;
+    padding: 14mm;
     max-width: none;
     box-shadow: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .cv-section,
+  .cv-entry {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
 
