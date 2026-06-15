@@ -590,7 +590,7 @@ function normalizeBullets(value) {
   const rawItems = Array.isArray(value) ? value : splitLines(value);
   return rawItems
     .flatMap((item) => splitActionPhrases(item))
-    .map(cleanText)
+    .map(trimDanglingConnector)
     .filter((item) => !hasDanglingConnector(item))
     .filter(Boolean)
     .slice(0, 5);
@@ -604,6 +604,10 @@ function hasCompleteTaskCoverage(nextItems, originalItems) {
 
 function hasDanglingConnector(value) {
   return /\b(y|e|o|u)$/i.test(cleanText(value));
+}
+
+function trimDanglingConnector(value) {
+  return cleanText(value).replace(/\s+(y|e|o|u)$/i, "");
 }
 
 function splitActionPhrases(value) {

@@ -311,10 +311,14 @@ function splitItems(value) {
     .replace(/\s*•\s*/g, "\n")
     .replace(actionPhraseBoundaryPattern(), "\n")
     .split(/\n|;|,/)
-    .map((item) => item.trim())
+    .map((item) => trimDanglingConnector(item.trim()))
     .filter((item) => !hasPromptInjection(item))
     .filter(Boolean)
     .slice(0, 8);
+}
+
+function trimDanglingConnector(value) {
+  return normalizeText(value).replace(/\s+(y|e|o|u)$/i, "");
 }
 
 function actionPhraseBoundaryPattern() {
