@@ -42,9 +42,9 @@ Estados:
 - [x] Normalizar texto final (`gondolas` -> `góndolas`, `Posnet`, mayusculas iniciales).
 - [x] Implementar cache efectivo por `input_hash` antes de llamar al LLM.
 - [x] Limitar llamadas IA por orden/hash.
-- [ ] Endurecer validacion anti-alucinacion para rol, estudios, fechas, herramientas e idiomas.
+- [x] Endurecer validacion anti-alucinacion para rol, estudios, fechas, herramientas e idiomas.
 - [ ] Probar prompt injection en campos libres y `jobAd`.
-- [ ] Mejorar prompt del plan Enfocado para priorizar keywords sin copiar texto del aviso.
+- [x] Mejorar prompt del plan Enfocado para priorizar keywords sin copiar texto del aviso.
 
 ## Seguridad y privacidad
 
