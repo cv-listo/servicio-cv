@@ -186,7 +186,12 @@
           </ul>
         `;
 
-        document.querySelector("#refresh-preview").addEventListener("click", async () => {
+        const refreshButton = document.querySelector("#refresh-preview");
+        refreshButton.addEventListener("click", async () => {
+          const originalRefreshText = refreshButton.textContent;
+          refreshButton.disabled = true;
+          refreshButton.classList.add("is-loading");
+          refreshButton.textContent = "Actualizando...";
           order.data.summary = document.querySelector("#quick-summary").value;
           const quickExperience = document.querySelector("#quick-experience").value;
           if (order.data.experienceType !== "formal" && order.data.informalExperience !== undefined) {
@@ -207,6 +212,12 @@
           }
           render();
           updateA4Status();
+          refreshButton.classList.remove("is-loading");
+          refreshButton.textContent = "Vista actualizada";
+          setTimeout(() => {
+            refreshButton.disabled = false;
+            refreshButton.textContent = originalRefreshText;
+          }, 1000);
         });
 
         document.querySelector("#generate-btn").addEventListener("click", async () => {

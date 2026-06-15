@@ -341,12 +341,9 @@ function auditAndMerge(original, ai) {
     data.summary = ai.refinedSummary.trim();
   }
 
-  if (typeof ai.skills === "string" && ai.skills.trim()) {
-    data.skills = filterSkillClaims(ai.skills, original).join(", ");
-  }
-  if (Array.isArray(ai.suggestedSkills) && ai.suggestedSkills.length) {
-    data.skills = filterSkillClaims(ai.suggestedSkills.join(", "), original).join(", ");
-  }
+  // Las habilidades son declaraciones sensibles: mantenemos las cargadas por el usuario
+  // para evitar que el LLM convierta tareas o requisitos del aviso en skills.
+  data.skills = cleanText(original.skills);
 
   const aiExperiences = Array.isArray(ai.experiences) ? ai.experiences : ai.refinedExperiences;
   if (Array.isArray(aiExperiences) && original.experienceType !== "formal" && cleanText(original.informalExperience)) {
@@ -577,6 +574,7 @@ async function countAiGenerations(env, orderId) {
 function splitLines(value) {
   return cleanText(value)
     .replace(/\s+-\s+/g, "\n")
+    .replace(/\s*•\s*/g, "\n")
     .split(/\n|;|,/)
     .map(cleanText)
     .filter(Boolean);
