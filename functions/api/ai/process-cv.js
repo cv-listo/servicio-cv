@@ -596,10 +596,14 @@ function splitActionPhrases(value) {
   const text = cleanText(value);
   if (!text) return [];
   return text
-    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Cargaba|Revisaba|Organizaba|Preparaba|Respondía|Respondia|Cargué|Cargue|Revisé|Revise|Organicé|Organice|Preparé|Prepare|Respondí|Respondi|Carga|Revisión|Revision|Organización|Organizacion|Preparación|Preparacion|Respuesta|Manejo|Reposición|Reposicion|Limpieza|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
+    .replace(actionPhraseBoundaryPattern(), "\n")
     .split(/\n+/)
     .map(cleanText)
     .filter(Boolean);
+}
+
+function actionPhraseBoundaryPattern() {
+  return /\s+(?:y\s+)?(?=(cobraba|realizaba|acomodaba|limpiaba|atendía|atencion|atención|ayudaba|cargaba|revisaba|organizaba|preparaba|respondía|respondia|cargué|cargue|revisé|revise|organicé|organice|preparé|prepare|respondí|respondi|carga|revisión|revision|organización|organizacion|preparación|preparacion|respuesta|manejo|reposición|reposicion|limpieza|elaboración|elaboracion|evaluación|evaluacion|investigación|investigacion|dictado)\b)/gi;
 }
 
 function filterNoisyDiagnostics(items, original) {
