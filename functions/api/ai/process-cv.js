@@ -1,4 +1,4 @@
-import { json, readJson } from "../_utils.js";
+import { checkRateLimit, clientIp, json, readJson } from "../_utils.js";
 
 const AI_PLANS = new Set(["professional", "focused"]);
 const DEFAULT_TIMEOUT_MS = 10000;
@@ -11,6 +11,10 @@ export async function onRequestPost({ request, env }) {
 
   if (!orderId || !token || !input || typeof input !== "object") {
     return json({ ok: false, error: "Datos insuficientes para procesar el CV." }, { status: 400 });
+  }
+  const rate = await checkRateLimit(env, `ai:${clientIp(request)}:${orderId}`, 8, 900);
+  if (!rate.ok) {
+    return json({ ok: false, error: "Demasiadas solicitudes de IA. Probá nuevamente más tarde." }, { status: 429 });
   }
 
   if (JSON.stringify(input).length > 70000) {

@@ -1,10 +1,14 @@
-import { getPlan, isTestCodeEnabled, json, nowIso, randomId, readJson } from "./_utils.js";
+import { checkRateLimit, clientIp, getPlan, isTestCodeEnabled, json, nowIso, randomId, readJson } from "./_utils.js";
 
 export async function onRequestPost({ request, env }) {
   const body = await readJson(request);
   const plan = getPlan(env, body.planId);
   const email = String(body.email || "").trim();
   const discountCode = String(body.discountCode || "").trim();
+  const rate = await checkRateLimit(env, `orders:${clientIp(request)}:${email.toLowerCase()}`, 5, 600);
+  if (!rate.ok) {
+    return json({ ok: false, error: "Demasiados intentos. Probá nuevamente en unos minutos." }, { status: 429 });
+  }
   const id = randomId("order");
   const token = randomId("token");
   const now = nowIso();

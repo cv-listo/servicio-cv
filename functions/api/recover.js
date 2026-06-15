@@ -1,4 +1,4 @@
-import { json } from "./_utils.js";
+import { checkRateLimit, clientIp, json } from "./_utils.js";
 import { sendEmail } from "./_email.js";
 
 export async function onRequestGet({ request, env }) {
@@ -14,6 +14,10 @@ export async function onRequestGet({ request, env }) {
 
   if (!normalizedEmail) {
     return json({ ok: false, error: "Email requerido" }, { status: 400 });
+  }
+  const rate = await checkRateLimit(env, `recover:${clientIp(request)}:${normalizedEmail}`, 5, 900);
+  if (!rate.ok) {
+    return json({ ok: true, message: "Si existe un pedido activo, se envió un enlace de recuperación al email indicado." });
   }
 
   const order = await env.DB.prepare(

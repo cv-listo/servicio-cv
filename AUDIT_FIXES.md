@@ -57,7 +57,7 @@ Estados:
 - [x] Evitar guardar password admin en `sessionStorage`; evaluar sesion temporal o Cloudflare Access.
 - [x] Agregar CSP en `_headers`.
 - [x] Aplicar expiracion real usando `orders.expires_at` en endpoints sensibles.
-- [ ] Agregar rate limit basico por email/order/IP para endpoints criticos.
+- [x] Agregar rate limit basico por email/order/IP para endpoints criticos.
 - [x] Revisar soporte con FormSubmit y documentar tratamiento de adjuntos/PII.
 - [ ] Migrar soporte a endpoint propio `/api/support` con Resend o proveedor transaccional.
 

@@ -61,3 +61,29 @@ export function isTestCodeEnabled(env, code) {
   }
   return normalized && activeCode && normalized === activeCode;
 }
+
+export function clientIp(request) {
+  return request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "unknown";
+}
+
+export async function checkRateLimit(env, key, limit = 10, windowSeconds = 300) {
+  if (!env.DB || !key) return { ok: true };
+  const now = Date.now();
+  const current = await env.DB.prepare("SELECT * FROM rate_limits WHERE key = ?")
+    .bind(key)
+    .first();
+  if (!current || new Date(current.reset_at).getTime() <= now) {
+    const resetAt = new Date(now + windowSeconds * 1000).toISOString();
+    await env.DB.prepare("INSERT OR REPLACE INTO rate_limits (key, count, reset_at) VALUES (?, 1, ?)")
+      .bind(key, resetAt)
+      .run();
+    return { ok: true, remaining: limit - 1, resetAt };
+  }
+  if (Number(current.count) >= limit) {
+    return { ok: false, remaining: 0, resetAt: current.reset_at };
+  }
+  await env.DB.prepare("UPDATE rate_limits SET count = count + 1 WHERE key = ?")
+    .bind(key)
+    .run();
+  return { ok: true, remaining: limit - Number(current.count) - 1, resetAt: current.reset_at };
+}

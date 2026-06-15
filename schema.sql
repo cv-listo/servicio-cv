@@ -85,3 +85,9 @@ CREATE TABLE IF NOT EXISTS mp_events (
 CREATE INDEX IF NOT EXISTS idx_mp_events_payment_id ON mp_events(payment_id);
 CREATE INDEX IF NOT EXISTS idx_mp_events_order_id ON mp_events(order_id);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_mp_events_request_payment ON mp_events(x_request_id, payment_id);
+
+CREATE TABLE IF NOT EXISTS rate_limits (
+  key TEXT PRIMARY KEY,
+  count INTEGER NOT NULL DEFAULT 0,
+  reset_at TEXT NOT NULL
+);
