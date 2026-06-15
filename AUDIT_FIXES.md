@@ -53,6 +53,7 @@ Estados:
 - [x] Admin oculto hasta login correcto.
 - [x] Admin con `ADMIN_USER` y `ADMIN_PASSWORD`.
 - [x] Recuperacion por email sin enumerar emails.
+- [x] Recuperacion por email sin exponer error interno de configuracion.
 - [x] Quitar autenticacion alternativa por `ADMIN_TOKEN` si ya no se usa en codigo/documentacion.
 - [x] Evitar guardar password admin en `sessionStorage`; evaluar sesion temporal o Cloudflare Access.
 - [x] Agregar CSP en `_headers`.
@@ -73,6 +74,7 @@ Estados:
 - [x] Validar adjuntos de soporte: PDF/JPG/PNG hasta 2 MB.
 - [x] Agregar paginacion real al admin.
 - [x] Agregar colores por estado en filas del admin: `paid`, `generated`, `pending`, `rejected`.
+- [x] Agregar estados `form_started`, `payment_cancelled` y `payment_rejected` al filtro admin.
 - [x] Agregar notas internas de soporte por pedido.
 - [x] Agregar feedback visual al guardar nota interna.
 - [x] Agregar accion admin para reenviar/copiar link de recuperacion con texto listo.
@@ -91,6 +93,7 @@ Estados:
 - [x] Wizard con iconos/microcopy por paso.
 - [x] Agregar menu mobile para evitar overflow horizontal del navbar.
 - [x] Revisar toda la web para eliminar restos de promesas no implementadas.
+- [x] Neutralizar `og:description` para no mostrar precios hardcodeados.
 - [~] Revisar mobile completo en Android Chrome e iOS Safari.
 - [x] Mejorar `pago.html` con estados mas claros para pendiente/rechazado/reintento.
 - [x] Agregar aviso en descarga sobre guardar PDF desde navegador/mobile.
@@ -104,6 +107,7 @@ Estados:
 - [x] Agregar base `cv-page-ats`.
 - [x] Evitar secciones vacias y placeholders falsos.
 - [x] Crear selector real de plantilla: visual vs ATS-friendly.
+- [x] Evitar que `jobAd` se copie como seccion del CV final.
 - [x] Mejorar control de overflow A4 y sugerencias automaticas para reducir texto.
 - [~] Validar impresion/PDF en Chrome, Edge, Firefox y mobile.
 - [ ] Evaluar generacion PDF real en una fase posterior.

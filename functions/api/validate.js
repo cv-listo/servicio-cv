@@ -54,6 +54,9 @@ export function validateData(data, planId) {
 
 export async function onRequestPost({ request }) {
   const body = await readJson(request);
+  if (JSON.stringify(body.data || {}).length > 60000) {
+    return json({ ok: false, isValid: false, reports: [{ severity: "critical", message: "El formulario es demasiado extenso." }] }, { status: 413 });
+  }
   const reports = validateData(body.data || {}, body.planId || "basic");
   const isValid = !reports.some((report) => report.severity === "critical");
   return json({ ok: true, isValid, reports });

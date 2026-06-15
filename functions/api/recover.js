@@ -4,7 +4,7 @@ import { sendEmail } from "./_email.js";
 export async function onRequestGet({ request, env }) {
   if (env.RECOVERY_BY_EMAIL_ENABLED !== "true") {
     return json(
-      { ok: false, error: "La recuperación por email requiere configurar envío de correo transaccional." },
+      { ok: false, error: "No se pudo procesar la solicitud en este momento." },
       { status: 501 }
     );
   }

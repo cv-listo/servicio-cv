@@ -423,7 +423,6 @@ function buildResumeHtml(data) {
         <h2>Habilidades</h2>
         ${skillsHtml}
       </section>` : ""}
-      ${normalizeText(data.jobAd) ? `<section class="cv-section"><h2>Enfoque del puesto</h2><p>${formatMultiline(data.jobAd)}</p></section>` : ""}
     </article>
   `;
 }
