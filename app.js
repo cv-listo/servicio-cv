@@ -211,7 +211,7 @@ function hasPromptInjection(value) {
 }
 
 function safeCvText(value) {
-  const text = normalizeText(value);
+  const text = normalizeText(value).replace(/\borganizé\b/gi, "organicé");
   if (hasPromptInjection(text)) return "";
   if (/\b(no se puede|no puedo|falta de informaci[oó]n veraz|datos falsos|informaci[oó]n proporcionada|instrucciones anteriores|prompt|sistema|system)\b/i.test(text)) return "";
   return text;
@@ -309,7 +309,7 @@ function splitItems(value) {
   return safeCvText(value)
     .replace(/\s+-\s+/g, "\n")
     .replace(/\s*•\s*/g, "\n")
-    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Cargaba|Revisaba|Organizaba|Preparaba|Respondía|Respondia|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
+    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Cargaba|Revisaba|Organizaba|Preparaba|Respondía|Respondia|Cargué|Cargue|Revisé|Revise|Organicé|Organice|Preparé|Prepare|Respondí|Respondi|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
     .split(/\n|;|,/)
     .map((item) => item.trim())
     .filter((item) => !hasPromptInjection(item))

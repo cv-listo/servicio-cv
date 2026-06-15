@@ -488,6 +488,7 @@ function cleanText(value) {
   return String(value || "")
     .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email]")
     .replace(/(?:\+?54)?\s?9?\s?\d{2,4}[\s.-]?\d{3,4}[\s.-]?\d{3,4}/g, "[telefono]")
+    .replace(/\borganizé\b/gi, "organicé")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -593,7 +594,7 @@ function splitActionPhrases(value) {
   const text = cleanText(value);
   if (!text) return [];
   return text
-    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Cargaba|Revisaba|Organizaba|Preparaba|Respondía|Respondia|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
+    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Cargaba|Revisaba|Organizaba|Preparaba|Respondía|Respondia|Cargué|Cargue|Revisé|Revise|Organicé|Organice|Preparé|Prepare|Respondí|Respondi|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
     .split(/\n+/)
     .map(cleanText)
     .filter(Boolean);
@@ -632,6 +633,7 @@ function filterNoisyDiagnostics(items, original) {
       if (sourceText.includes("excel") && text.includes("excel")) return false;
       if (hasPlace && (text.includes("nombre del estudio") || text.includes("nombre de la empresa") || text.includes("donde trabaj"))) return false;
       if (hasTasks && text.includes("más detalles")) return false;
+      if (text.includes("objetivos profesionales")) return false;
       return true;
     });
 }
