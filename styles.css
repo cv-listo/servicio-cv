@@ -2182,6 +2182,67 @@ h3 {
   height: 4px;
 }
 
+.cv-page-visual {
+  background:
+    linear-gradient(90deg, rgba(52, 87, 213, 0.06), transparent 28%) #fff;
+}
+
+.cv-page-visual .cv-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.cv-page-visual .cv-header::after {
+  content: "";
+  position: absolute;
+  right: -18mm;
+  top: -20mm;
+  width: 72mm;
+  height: 72mm;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cv-page-visual .cv-header h1,
+.cv-page-visual .cv-headline,
+.cv-page-visual .cv-contact-line {
+  position: relative;
+  z-index: 1;
+}
+
+.cv-page-visual .cv-contact-line {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cv-page-visual .cv-section-objective {
+  border-left-color: transparent;
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: #f3f6ff;
+}
+
+.cv-page-visual .cv-section-skills ul {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cv-page-visual .cv-section-skills li {
+  border: 1px solid rgba(52, 87, 213, 0.18);
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: #f8faff;
+  color: #1e3a8a;
+  font-size: 0.92rem;
+}
+
+.cv-page-visual .cv-section-skills li::before {
+  display: none;
+}
+
 .cv-entry + .cv-entry {
   margin-top: 10px;
 }

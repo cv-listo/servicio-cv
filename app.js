@@ -448,20 +448,20 @@ function buildResumeHtml(data) {
         ${target ? `<p class="cv-headline">${escapeHtml(sentenceCase(target))}</p>` : ""}
         <p class="cv-contact-line">${escapeHtml(contact) || "Datos de contacto"}</p>
       </header>
-      <section class="cv-section">
+      <section class="cv-section cv-section-profile">
         <h2>Perfil</h2>
         <p>${formatMultiline(polishCvText(safeCvText(data.summary))) || escapeHtml(profileFallback)}</p>
       </section>
-      ${objectiveDetails ? `<section class="cv-section"><h2>Objetivo</h2><p>${escapeHtml(objectiveDetails)}</p></section>` : ""}
-      ${experienceHtml ? `<section class="cv-section">
+      ${objectiveDetails ? `<section class="cv-section cv-section-objective"><h2>Objetivo</h2><p>${escapeHtml(objectiveDetails)}</p></section>` : ""}
+      ${experienceHtml ? `<section class="cv-section cv-section-experience">
         <h2>Experiencia</h2>
         ${experienceHtml}
       </section>` : ""}
-      ${educationHtml ? `<section class="cv-section">
+      ${educationHtml ? `<section class="cv-section cv-section-education">
         <h2>Educación</h2>
         ${educationHtml}
       </section>` : ""}
-      ${skillsHtml ? `<section class="cv-section">
+      ${skillsHtml ? `<section class="cv-section cv-section-skills">
         <h2>Habilidades</h2>
         ${skillsHtml}
       </section>` : ""}
