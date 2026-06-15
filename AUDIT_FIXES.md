@@ -29,7 +29,7 @@ Estados:
 - [x] Agregar endpoint de conciliacion manual `/api/payments/check`.
 - [ ] Probar estados reales/sandbox: `approved`, `pending`, `rejected`, `cancelled`, `refunded`, `charged_back`.
 - [x] Registrar mejor reversas posteriores a `generated` sin reabrir el CV.
-- [ ] Limpiar o expirar ordenes viejas `payment_pending` de pruebas.
+- [x] Limpiar o expirar ordenes viejas `payment_pending` de pruebas.
 
 ## IA / Groq
 
