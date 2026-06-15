@@ -93,7 +93,7 @@ Estados:
 - [x] Mejorar `pago.html` con estados mas claros para pendiente/rechazado/reintento.
 - [x] Agregar aviso en descarga sobre guardar PDF desde navegador/mobile.
 - [ ] Optimizar `og-image.png` si sigue pesando demasiado.
-- [ ] Mejorar favicon/logo final.
+- [x] Mejorar favicon/logo final.
 
 ## CV generado
 
