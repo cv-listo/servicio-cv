@@ -1,7 +1,27 @@
-import { json, readJson } from "./_utils.js";
+import { checkRateLimit, clientIp, json, readJson } from "./_utils.js";
 
 function clean(value) {
   return String(value || "").trim();
+}
+
+function hasPromptInjection(value) {
+  return [
+    /ignor[aá]\s+(todas?\s+)?(las?\s+)?instrucciones?/i,
+    /olv[ií]date\s+de\s+(todo|las?\s+instrucciones?)/i,
+    /invent[aáe]\s+que/i,
+    /dec[ií]\s+que\s+(soy|fui|tengo|sabe?s?)/i,
+    /agrega[r]?\s+que/i,
+    /nueva\s+instrucci[oó]n/i,
+    /act[uú]a\s+como/i,
+    /\b(system|developer|assistant|prompt|api[_\s-]?key)\s*:/i,
+    /\[INST\]|<\|im_start\|>/i,
+  ].some((pattern) => pattern.test(String(value || "")));
+}
+
+function hasUnsafePromptText(value) {
+  if (Array.isArray(value)) return value.some(hasUnsafePromptText);
+  if (value && typeof value === "object") return Object.values(value).some(hasUnsafePromptText);
+  return typeof value === "string" && hasPromptInjection(value);
 }
 
 export function validateData(data, planId) {
@@ -9,6 +29,10 @@ export function validateData(data, planId) {
 
   if (!clean(data.fullName)) {
     reports.push({ severity: "critical", message: "El nombre completo es obligatorio." });
+  }
+
+  if (hasUnsafePromptText(data)) {
+    reports.push({ severity: "critical", message: "Detectamos instrucciones no válidas dentro de campos del CV. Eliminá ese texto antes de generar." });
   }
 
   if (!clean(data.email) && !clean(data.phone)) {
@@ -52,7 +76,11 @@ export function validateData(data, planId) {
   return reports;
 }
 
-export async function onRequestPost({ request }) {
+export async function onRequestPost({ request, env }) {
+  const rate = await checkRateLimit(env, `validate:${clientIp(request)}`, 30, 300);
+  if (!rate.ok) {
+    return json({ ok: false, error: "Demasiadas validaciones. Probá nuevamente en unos minutos." }, { status: 429 });
+  }
   const body = await readJson(request);
   if (JSON.stringify(body.data || {}).length > 60000) {
     return json({ ok: false, isValid: false, reports: [{ severity: "critical", message: "El formulario es demasiado extenso." }] }, { status: 413 });

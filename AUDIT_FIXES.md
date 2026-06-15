@@ -43,7 +43,7 @@ Estados:
 - [x] Implementar cache efectivo por `input_hash` antes de llamar al LLM.
 - [x] Limitar llamadas IA por orden/hash.
 - [x] Endurecer validacion anti-alucinacion para rol, estudios, fechas, herramientas e idiomas.
-- [ ] Probar prompt injection en campos libres y `jobAd`.
+- [~] Probar prompt injection en campos libres y `jobAd`: se detecto un caso fallido y se endurecio sanitizacion/validacion; falta retest en Pages.
 - [x] Mejorar prompt del plan Enfocado para priorizar keywords sin copiar texto del aviso.
 
 ## Seguridad y privacidad
@@ -59,7 +59,9 @@ Estados:
 - [x] Agregar CSP en `_headers`.
 - [x] Aplicar expiracion real usando `orders.expires_at` en endpoints sensibles.
 - [x] Agregar rate limit basico por email/order/IP para endpoints criticos.
+- [x] Agregar rate limit a `/api/validate`.
 - [x] Revisar soporte con FormSubmit y documentar tratamiento de adjuntos/PII.
+- [x] Evitar usar `soporte@cvlisto.com.ar` como destino/contacto operativo mientras la casilla no exista.
 - [ ] Migrar soporte a endpoint propio `/api/support` con Resend o proveedor transaccional.
 
 ## Admin y soporte
@@ -93,6 +95,7 @@ Estados:
 - [x] Wizard con iconos/microcopy por paso.
 - [x] Agregar menu mobile para evitar overflow horizontal del navbar.
 - [x] Revisar toda la web para eliminar restos de promesas no implementadas.
+- [x] Alinear textos de pasos entre landing y formulario con paso Enfocado opcional.
 - [x] Neutralizar `og:description` para no mostrar precios hardcodeados.
 - [~] Revisar mobile completo en Android Chrome e iOS Safari.
 - [x] Mejorar `pago.html` con estados mas claros para pendiente/rechazado/reintento.
@@ -120,7 +123,7 @@ Estados:
 - [x] Agregar indices utiles: `orders(token)`, `orders(external_reference)`, `orders(mp_payment_id)`.
 - [x] Agregar limpieza/expiracion de ordenes `payment_pending` viejas.
 - [x] Agregar limpieza de registros IA antiguos si crecen demasiado.
-- [~] Resolver ruido de line endings que deja archivos como modificados sin diff real.
+- [x] Resolver ruido de line endings que deja archivos como modificados sin diff real.
 
 ## Checklist de pruebas finales
 

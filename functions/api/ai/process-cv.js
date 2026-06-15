@@ -53,9 +53,9 @@ export async function onRequestPost({ request, env }) {
       source: cached.used_fallback ? "fallback_cache" : "llm_cache",
       provider: cached.provider,
       model: cached.model,
-      data: cached.output.data || localNormalize(input),
-      warnings: cached.output.warnings || [],
-      questions: cached.output.questions || [],
+      data: sanitizeObject(cached.output.data || localNormalize(input)),
+      warnings: filterNoisyDiagnostics(cached.output.warnings || [], input),
+      questions: filterNoisyDiagnostics(cached.output.questions || [], input),
     });
   }
 
@@ -299,27 +299,27 @@ Formato de salida:
 function sanitizeForLlm(data, planId) {
   return {
     planId,
-    targetArea: cleanText(data.targetArea),
-    targetRole: cleanText(data.targetRole),
-    modality: cleanText(data.modality),
-    availability: cleanText(data.availability),
-    summary: cleanText(data.summary),
+    targetArea: safeInputText(data.targetArea),
+    targetRole: safeInputText(data.targetRole),
+    modality: safeInputText(data.modality),
+    availability: safeInputText(data.availability),
+    summary: safeInputText(data.summary),
     experienceType: cleanText(data.experienceType),
-    informalExperience: cleanText(data.informalExperience),
+    informalExperience: safeInputText(data.informalExperience),
     experiences: (data.experiences || []).slice(0, 3).map((item) => ({
-      place: cleanText(item.place),
-      role: cleanText(item.role),
-      tasks: cleanText(item.tasks),
+      place: safeInputText(item.place),
+      role: safeInputText(item.role),
+      tasks: safeInputText(item.tasks),
       date: [item.startMonth, item.startYear, item.endMonth, item.endYear].filter(Boolean).join("/"),
       isCurrent: item.isCurrent === "on",
     })),
-    education: cleanText(data.education),
-    educationLevel: cleanText(data.educationLevel),
-    educationStatus: cleanText(data.educationStatus),
-    skills: cleanText(data.skills),
+    education: safeInputText(data.education),
+    educationLevel: safeInputText(data.educationLevel),
+    educationStatus: safeInputText(data.educationStatus),
+    skills: safeInputText(data.skills),
     focused: planId === "focused" ? {
-      targetCompany: cleanText(data.targetCompany),
-      jobAd: cleanText(data.jobAd).slice(0, 2500),
+      targetCompany: safeInputText(data.targetCompany),
+      jobAd: safeInputText(data.jobAd).slice(0, 2500),
     } : null,
   };
 }
@@ -333,10 +333,10 @@ function auditAndMerge(original, ai) {
   const warnings = filterNoisyDiagnostics(rawWarnings, original).slice(0, 5);
   const questions = filterNoisyDiagnostics(rawQuestions, original).slice(0, 5);
 
-  if (typeof ai.summary === "string" && ai.summary.trim()) {
+  if (typeof ai.summary === "string" && ai.summary.trim() && isSafeGeneratedText(ai.summary)) {
     data.summary = ai.summary.trim();
   }
-  if (typeof ai.refinedSummary === "string" && ai.refinedSummary.trim()) {
+  if (typeof ai.refinedSummary === "string" && ai.refinedSummary.trim() && isSafeGeneratedText(ai.refinedSummary)) {
     data.summary = ai.refinedSummary.trim();
   }
 
@@ -413,6 +413,7 @@ function filterSkillClaims(value, originalData) {
 function filterUnsafeLines(value, originalData) {
   const source = evidenceText(originalData);
   return splitLines(value)
+    .filter((line) => isSafeGeneratedText(line))
     .filter((line) => !isUnsupportedSpecificClaim(line, source));
 }
 
@@ -420,6 +421,16 @@ function isUnsupportedSpecificClaim(value, source) {
   const text = cleanText(value).toLowerCase();
   const claims = ["sap", "sql", "python", "power bi", "aws", "kubernetes", "salesforce", "crm", "excel avanzado", "inglés avanzado", "ingles avanzado"];
   return claims.some((claim) => text.includes(claim) && !source.includes(claim));
+}
+
+function isSafeGeneratedText(value) {
+  const text = cleanText(value);
+  if (!text) return false;
+  if (hasPromptInjection(text)) return false;
+  if (/\b(no se puede|no puedo|falta de informaci[oó]n veraz|datos falsos|informaci[oó]n proporcionada|instrucciones anteriores|prompt|sistema|system)\b/i.test(text)) {
+    return false;
+  }
+  return true;
 }
 
 function evidenceText(originalData) {
@@ -437,20 +448,36 @@ function sanitizeObject(value) {
 
 function sanitizeInjection(value) {
   const text = String(value || "");
+  if (hasPromptInjection(text)) return "";
+  return text;
+}
+
+function hasPromptInjection(value) {
+  const text = String(value || "");
   const patterns = [
     /ignor[aá]\s+(todas?\s+)?(las?\s+)?instrucciones?/i,
     /olv[ií]date\s+de\s+(todo|las?\s+instrucciones?)/i,
     /dec[ií]\s+que\s+(soy|fui|tengo|sabe?s?)/i,
+    /invent[aáe]\s+que/i,
     /agrega[r]?\s+que/i,
     /nueva\s+instrucci[oó]n/i,
     /act[uú]a\s+como/i,
     /sistem[a]?\s*:/i,
+    /system\s*:/i,
+    /developer\s*:/i,
+    /assistant\s*:/i,
+    /api[_\s-]?key/i,
+    /prompt\s+(anterior|del\s+sistema|system)/i,
     /\[INST\]/i,
     /<\|im_start\|>/i,
     /copiar?\s+(este\s+)?aviso/i,
     /aunque\s+no\s+lo\s+dij/i,
   ];
-  return patterns.some((pattern) => pattern.test(text)) ? "" : text;
+  return patterns.some((pattern) => pattern.test(text));
+}
+
+function safeInputText(value) {
+  return cleanText(sanitizeInjection(value));
 }
 
 function cleanText(value) {
@@ -573,6 +600,7 @@ function filterNoisyDiagnostics(items, original) {
   return items
     .map(cleanText)
     .filter(Boolean)
+    .filter(isSafeGeneratedText)
     .filter((item) => {
       const text = item.toLowerCase();
       if (modalityOk && text.includes("modalidad")) return false;

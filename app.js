@@ -196,6 +196,41 @@ function normalizeText(value) {
   return (value || "").trim();
 }
 
+function hasPromptInjection(value) {
+  return [
+    /ignor[aá]\s+(todas?\s+)?(las?\s+)?instrucciones?/i,
+    /olv[ií]date\s+de\s+(todo|las?\s+instrucciones?)/i,
+    /invent[aáe]\s+que/i,
+    /dec[ií]\s+que\s+(soy|fui|tengo|sabe?s?)/i,
+    /agrega[r]?\s+que/i,
+    /nueva\s+instrucci[oó]n/i,
+    /act[uú]a\s+como/i,
+    /\b(system|developer|assistant|prompt|api[_\s-]?key)\s*:/i,
+    /\[INST\]|<\|im_start\|>/i,
+  ].some((pattern) => pattern.test(String(value || "")));
+}
+
+function safeCvText(value) {
+  const text = normalizeText(value);
+  if (hasPromptInjection(text)) return "";
+  if (/\b(no se puede|no puedo|falta de informaci[oó]n veraz|datos falsos|informaci[oó]n proporcionada|instrucciones anteriores|prompt|sistema|system)\b/i.test(text)) return "";
+  return text;
+}
+
+function hasUnsafePromptText(value) {
+  if (Array.isArray(value)) return value.some(hasUnsafePromptText);
+  if (value && typeof value === "object") return Object.values(value).some(hasUnsafePromptText);
+  return typeof value === "string" && hasPromptInjection(value);
+}
+
+function sanitizeCvData(value) {
+  if (Array.isArray(value)) return value.map(sanitizeCvData);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, sanitizeCvData(item)]));
+  }
+  return typeof value === "string" ? safeCvText(value) : value;
+}
+
 function collectFormData(form) {
   const data = Object.fromEntries(new FormData(form).entries());
   form.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
@@ -229,6 +264,9 @@ function validateResumeData(data, planId) {
   }
   if (!normalizeText(data.targetRole)) {
     reports.push({ severity: "warning", message: "Conviene indicar el puesto o rubro objetivo." });
+  }
+  if (hasUnsafePromptText(data)) {
+    reports.push({ severity: "critical", message: "Detectamos instrucciones no válidas dentro de campos del CV. Eliminá ese texto antes de generar." });
   }
   const hasExperience = normalizeText(data.experience) || normalizeText(data.informalExperience) || (data.experiences || []).some((item) => item.tasks || item.role || item.place);
   const hasEducation = normalizeText(data.education) || (data.educationItems || []).some((item) => item.text);
@@ -264,14 +302,15 @@ function escapeHtml(value) {
 }
 
 function formatMultiline(value) {
-  return escapeHtml(value).replace(/\n+/g, "<br />");
+  return escapeHtml(safeCvText(value)).replace(/\n+/g, "<br />");
 }
 
 function splitItems(value) {
-  return normalizeText(value)
+  return safeCvText(value)
     .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
     .split(/\n|;|,/)
     .map((item) => item.trim())
+    .filter((item) => !hasPromptInjection(item))
     .filter(Boolean)
     .slice(0, 8);
 }
@@ -319,11 +358,11 @@ function formatExperienceDateRange(item) {
 }
 
 function renderExperiences(data) {
-  if (normalizeText(data.informalExperience) && data.experienceType !== "formal") {
+  if (safeCvText(data.informalExperience) && data.experienceType !== "formal") {
     return `
       <div class="cv-entry">
         <p><strong>Experiencia práctica y actividades</strong></p>
-        ${renderBullets(splitItems(data.informalExperience)) || `<p>${formatMultiline(data.informalExperience)}</p>`}
+        ${renderBullets(splitItems(data.informalExperience)) || `<p>${formatMultiline(safeCvText(data.informalExperience))}</p>`}
       </div>
     `;
   }
@@ -340,7 +379,7 @@ function renderExperiences(data) {
   const rendered = items
     .filter((item) => normalizeText(item.place) || normalizeText(item.role) || normalizeText(item.tasks))
     .map((item) => {
-      const title = [item.role, item.place].map(normalizeText).filter(Boolean).join(" · ");
+      const title = [item.role, item.place].map(safeCvText).filter(Boolean).join(" · ");
       const range = formatExperienceDateRange(item);
       return `
         <div class="cv-entry">
@@ -356,8 +395,8 @@ function renderExperiences(data) {
 function renderEducation(data) {
   const items = data.educationItems?.length ? data.educationItems : [{ text: data.education }];
   const rendered = items
-    .filter((item) => normalizeText(item.text))
-    .map((item) => `<p>${formatMultiline(item.text)}</p>`)
+    .filter((item) => safeCvText(item.text))
+    .map((item) => `<p>${formatMultiline(safeCvText(item.text))}</p>`)
     .join("");
   return rendered;
 }
@@ -365,23 +404,23 @@ function renderEducation(data) {
 function buildResumeHtml(data) {
   const template = data.template === "visual" ? "visual" : "ats";
   const contact = [
-    data.showEmail === "on" ? data.email : "",
-    data.showPhone === "on" ? data.phone : "",
-    data.showDni === "on" ? data.dni : "",
-    data.showAddress === "on" ? data.address : "",
-    data.linkedin,
+    data.showEmail === "on" ? safeCvText(data.email) : "",
+    data.showPhone === "on" ? safeCvText(data.phone) : "",
+    data.showDni === "on" ? safeCvText(data.dni) : "",
+    data.showAddress === "on" ? safeCvText(data.address) : "",
+    safeCvText(data.linkedin),
   ]
     .map(normalizeText)
     .filter(Boolean)
     .join(" · ");
 
-  const target = polishCvText(data.targetRole);
-  const company = normalizeText(data.targetCompany);
-  const educationText = normalizeText(data.education) || [data.educationLevel, data.educationStatus]
-    .map(polishCvText)
+  const target = polishCvText(safeCvText(data.targetRole));
+  const company = safeCvText(data.targetCompany);
+  const educationText = safeCvText(data.education) || [data.educationLevel, data.educationStatus]
+    .map((item) => polishCvText(safeCvText(item)))
     .filter(Boolean)
     .join(" - ");
-  const skills = splitItems(data.skills);
+  const skills = splitItems(safeCvText(data.skills));
   const profileFallback = target
     ? `Perfil orientado a ${target}${company ? ` en ${company}` : ""}.`
     : "Perfil orientado a nuevas oportunidades laborales.";
@@ -402,13 +441,13 @@ function buildResumeHtml(data) {
   return `
     <article class="cv-page cv-page-polished cv-page-${template}">
       <header class="cv-header">
-        <h1>${escapeHtml(data.fullName) || "Nombre Apellido"}</h1>
+        <h1>${escapeHtml(safeCvText(data.fullName)) || "Nombre Apellido"}</h1>
         ${target ? `<p class="cv-headline">${escapeHtml(sentenceCase(target))}</p>` : ""}
         <p class="cv-contact-line">${escapeHtml(contact) || "Datos de contacto"}</p>
       </header>
       <section class="cv-section">
         <h2>Perfil</h2>
-        <p>${formatMultiline(polishCvText(data.summary)) || escapeHtml(profileFallback)}</p>
+        <p>${formatMultiline(polishCvText(safeCvText(data.summary))) || escapeHtml(profileFallback)}</p>
       </section>
       ${objectiveDetails ? `<section class="cv-section"><h2>Objetivo</h2><p>${escapeHtml(objectiveDetails)}</p></section>` : ""}
       ${experienceHtml ? `<section class="cv-section">
@@ -447,6 +486,9 @@ window.CVListo = {
   renderPlanSummary,
   collectFormData,
   validateResumeData,
+  safeCvText,
+  sanitizeCvData,
+  hasPromptInjection,
   buildResumeHtml,
   escapeHtml,
   sha256,

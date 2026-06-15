@@ -16,6 +16,7 @@ export async function onRequestPost({ request, env }) {
   const isTest = isTestCodeEnabled(env, discountCode);
   const status = isTest ? "discount_test" : "created";
   const amount = isTest ? 0 : plan.amount;
+  const storedDiscountCode = isTest ? discountCode.toUpperCase() : null;
 
   await env.DB.prepare(
     `INSERT INTO orders (
@@ -30,7 +31,7 @@ export async function onRequestPost({ request, env }) {
       plan.id,
       amount,
       status,
-      isTest ? "TEST" : null,
+      storedDiscountCode,
       id,
       now,
       now,

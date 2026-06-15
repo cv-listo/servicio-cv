@@ -362,7 +362,7 @@
       }
 
       async function copyClientMessage(email, url) {
-        const message = `Hola${email ? ` ${email}` : ""}, te compartimos el enlace para continuar o recuperar tu pedido de CV Listo:\n\n${url}\n\nSi tenés algún problema, escribinos a soporte@cvlisto.com.ar.`;
+        const message = `Hola${email ? ` ${email}` : ""}, te compartimos el enlace para continuar o recuperar tu pedido de CV Listo:\n\n${url}\n\nSi tenés algún problema, escribinos desde la página de soporte: ${new URL("./soporte.html", window.location.href).href}`;
         await navigator.clipboard?.writeText(message);
         alert("Mensaje copiado.");
       }

@@ -69,7 +69,7 @@ AI_TIMEOUT_MS = 10000
 GEMINI_API_KEY = ...
 OPENAI_API_KEY = ...
 RESEND_API_KEY = ...
-EMAIL_FROM = CV Listo <soporte@cvlisto.com.ar>
+EMAIL_FROM = (remitente verificado si se habilita email transaccional)
 DEBUG_AI = false
 ```
 
@@ -81,7 +81,7 @@ Los valores `PLAN_*_AMOUNT` controlan los precios que se muestran en la web y lo
 
 No guardar credenciales en el repositorio. Usar Variables and Secrets de Cloudflare.
 
-El formulario de soporte manual usa FormSubmit temporalmente hacia un correo operativo. `soporte@cvlisto.com.ar` se muestra como contacto de marca, pero el dominio/casilla deben activarse antes de usarlo como destino real.
+El formulario de soporte manual usa FormSubmit temporalmente hacia un correo operativo. No usar `soporte@cvlisto.com.ar` como destino real hasta activar el dominio/casilla.
 
 ## Arquitectura objetivo
 
@@ -91,7 +91,7 @@ Ver `ARCHITECTURE.md`.
 
 - Probar Mercado Pago en sandbox y producción.
 - Configurar `MP_WEBHOOK_SECRET` y validar firma de webhooks.
-- En producción, dejar `TEST_DISCOUNT_CODE` vacío o usar un código no público.
+- En producción, mantener `TEST_DISCOUNT_CODE` como secreto privado de Cloudflare y no exponerlo en frontend ni documentación pública.
 - Implementar caché IA persistente con `ai_generations`.
 - Mejorar plantillas de CV y versión ATS-friendly.
 - Evaluar email automático, versión editable real y OCR.
