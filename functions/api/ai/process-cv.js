@@ -600,9 +600,13 @@ function splitActionPhrases(value) {
 }
 
 function filterNoisyDiagnostics(items, original) {
-  const modalityOk = /^indistint[oa]$/i.test(cleanText(original.modality));
-  const availabilityOk = /^indistint[oa]$/i.test(cleanText(original.availability));
+  const modalityOk = Boolean(cleanText(original.modality));
+  const availabilityOk = Boolean(cleanText(original.availability));
   const educationOk = Boolean(cleanText(original.education) || cleanText(original.educationLevel) || cleanText(original.educationStatus));
+  const hasPlace = Boolean(
+    cleanText(original.experiencePlace)
+      || (original.experiences || []).some((item) => cleanText(item.place))
+  );
   return items
     .map(cleanText)
     .filter(Boolean)
@@ -612,6 +616,7 @@ function filterNoisyDiagnostics(items, original) {
       if (modalityOk && text.includes("modalidad")) return false;
       if (availabilityOk && text.includes("disponibilidad")) return false;
       if (educationOk && (text.includes("educación") || text.includes("educacion") || text.includes("formal alcanzado"))) return false;
+      if (hasPlace && (text.includes("nombre del estudio") || text.includes("nombre de la empresa") || text.includes("donde trabaj"))) return false;
       return true;
     });
 }
