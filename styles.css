@@ -347,6 +347,13 @@ h3 {
   padding: 12px 18px;
   font-weight: 900;
   text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(52, 87, 213, 0.12);
 }
 
 .button.primary {
@@ -378,6 +385,11 @@ h3 {
   color: var(--accent-dark);
 }
 
+.button.secondary:hover {
+  border-color: rgba(52, 87, 213, 0.32);
+  background: #f5f7ff;
+}
+
 .button.disabled {
   opacity: 0.72;
   cursor: not-allowed;
@@ -387,6 +399,10 @@ h3 {
 .button.is-loading {
   opacity: 0.72;
   cursor: wait;
+}
+
+.button:disabled:not(.is-loading) {
+  cursor: not-allowed;
 }
 
 .button.is-loading {
