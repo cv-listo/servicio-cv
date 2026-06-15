@@ -32,6 +32,7 @@ export function json(data, init = {}) {
     ...init,
     headers: {
       "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
       ...(init.headers || {}),
     },
   });
@@ -83,4 +84,38 @@ export async function checkRateLimit(env, key, limit = 10, windowSeconds = 300) 
     .bind(key)
     .run();
   return { ok: true, remaining: limit - Number(current.count) - 1, resetAt: current.reset_at };
+}
+
+export function hasPromptInjection(value) {
+  return [
+    /ignor[aá]\s+(lo\s+anterior|todo|todas?\s+las?\s+instrucciones?|las?\s+instrucciones?)/i,
+    /olv[ií]date\s+de\s+(todo|las?\s+instrucciones?)/i,
+    /invent[aáe]?\b/i,
+    /dec[ií]\s+que\s+(soy|fui|tengo|sabe?s?)/i,
+    /agreg[aáe]r?\b/i,
+    /nueva\s+instrucci[oó]n/i,
+    /act[uú]a\s+como/i,
+    /\b(system|developer|assistant|prompt|api[_\s-]?key)\s*:/i,
+    /\[INST\]|<\|im_start\|>/i,
+  ].some((pattern) => pattern.test(String(value || "")));
+}
+
+export function sanitizeCvData(value) {
+  if (Array.isArray(value)) return value.map(sanitizeCvData);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, sanitizeCvData(item)]));
+  }
+  if (typeof value !== "string") return value;
+  const text = value
+    .replace(/\borganizé\b/gi, "organicé")
+    .replace(/\s+(y|e|o|u)$/i, "")
+    .trim();
+  if (!hasPromptInjection(text)) return text;
+  return text
+    .split(/(?<=[.!?])\s+|\n+|;+/)
+    .map((part) => part.trim())
+    .filter((part) => part && !hasPromptInjection(part))
+    .join(". ")
+    .replace(/\.{2,}/g, ".")
+    .trim();
 }

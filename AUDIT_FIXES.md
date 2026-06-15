@@ -43,7 +43,7 @@ Estados:
 - [x] Implementar cache efectivo por `input_hash` antes de llamar al LLM.
 - [x] Limitar llamadas IA por orden/hash.
 - [x] Endurecer validacion anti-alucinacion para rol, estudios, fechas, herramientas e idiomas.
-- [~] Probar prompt injection en campos libres y `jobAd`: se detecto un caso fallido y se endurecio sanitizacion/validacion; falta retest en Pages.
+- [x] Probar prompt injection en campos libres y `jobAd`: se detectaron casos fallidos y se endurecio sanitizacion/validacion server-side antes de sellar el CV final.
 - [x] Mejorar prompt del plan Enfocado para priorizar keywords sin copiar texto del aviso.
 
 ## Seguridad y privacidad
@@ -60,8 +60,11 @@ Estados:
 - [x] Aplicar expiracion real usando `orders.expires_at` en endpoints sensibles.
 - [x] Agregar rate limit basico por email/order/IP para endpoints criticos.
 - [x] Agregar rate limit a `/api/validate`.
+- [x] Agregar rate limit a `/api/payments/check`, `/api/generate-final` y guardado de perfil.
+- [x] Sanitizar datos libres server-side en guardado de perfil y `generate-final`.
 - [x] Revisar soporte con FormSubmit y documentar tratamiento de adjuntos/PII.
 - [x] Evitar usar `soporte@cvlisto.com.ar` como destino/contacto operativo mientras la casilla no exista.
+- [ ] Cambiar FormSubmit a hash/alias para no exponer el email operativo en el HTML.
 - [ ] Migrar soporte a endpoint propio `/api/support` con Resend o proveedor transaccional.
 
 ## Admin y soporte

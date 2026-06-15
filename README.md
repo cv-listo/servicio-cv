@@ -15,24 +15,24 @@ https://servicio-cv.pages.dev/
 - Frontend HTML/CSS/JS puro, sin framework ni build step.
 - Cloudflare Pages Functions en `/functions/api`.
 - Cloudflare D1 para órdenes, perfiles, auditorías y documentos finales.
-- Flujo `TEST` para QA sin pago real.
+- Flujo de descuento privado para QA sin pago real.
 - Mercado Pago Checkout Pro preparado con webhook y pantalla de verificación.
 - IA server-side configurable: Groq por defecto, Gemini/OpenAI opcionales y fallback local.
 - Generación final única por pedido.
 - PDF mediante impresión/guardar como PDF del navegador.
 - Páginas incluidas: `index.html`, `confirmar.html`, `pago.html`, `formulario.html`, `preview.html`, `descargar.html`, `retomar.html`.
 
-## Probar flujo TEST
+## Probar flujo con codigo privado
 
 1. Abrir `confirmar.html?plan=basic`, `professional` o `focused`.
 2. Ingresar cualquier email.
-3. Usar código `TEST`.
+3. Usar el valor privado configurado en `TEST_DISCOUNT_CODE`.
 4. Completar formulario.
 5. Revisar preview A4.
 6. Confirmar generación final.
 7. Guardar como PDF desde el navegador.
 
-En Cloudflare Pages, el código `TEST` crea una orden `discount_test` en D1 y habilita el formulario.
+En Cloudflare Pages, el valor privado de `TEST_DISCOUNT_CODE` crea una orden `discount_test` en D1 y habilita el formulario.
 
 ## Cloudflare Pages
 
@@ -48,7 +48,7 @@ Aplicar `schema.sql` en Cloudflare D1 para crear o actualizar tablas.
 Variables de entorno necesarias en Cloudflare Pages:
 
 ```text
-TEST_DISCOUNT_CODE = TEST
+TEST_DISCOUNT_CODE = (codigo privado de QA)
 MP_ACCESS_TOKEN = (Access Token de Mercado Pago)
 MP_WEBHOOK_SECRET = (Secret de webhook de Mercado Pago)
 APP_BASE_URL = https://servicio-cv.pages.dev
@@ -81,7 +81,7 @@ El plan Básico no consume LLM externo. `GROQ_MODEL_PROFESSIONAL` define el mode
 
 `admin.html` permite revisar pedidos, datos cargados, pagos, eventos e IA. Protegelo con `ADMIN_USER` y `ADMIN_PASSWORD`.
 
-`TEST_DISCOUNT_CODE` define el código interno que habilita un pedido gratuito. Si lo configurás como `TEST`, ese será el pase gratis; si lo cambiás, solo funcionará el nuevo valor.
+`TEST_DISCOUNT_CODE` define el código interno que habilita un pedido gratuito. Debe ser un valor privado y no publicarse en frontend ni documentación pública.
 
 No guardar credenciales en el repositorio. Usar Variables and Secrets de Cloudflare.
 
@@ -102,7 +102,7 @@ Ver `ARCHITECTURE.md`.
 
 ## Checklist Mercado Pago
 
-1. Crear una orden sin código `TEST`.
+1. Crear una orden sin código de descuento privado.
 2. Confirmar que `/api/orders` devuelve una URL de checkout.
 3. Completar pago en Mercado Pago sandbox.
 4. Verificar que el usuario vuelve a `pago.html`.

@@ -6,11 +6,11 @@ function clean(value) {
 
 function hasPromptInjection(value) {
   return [
-    /ignor[aá]\s+(todas?\s+)?(las?\s+)?instrucciones?/i,
+    /ignor[aá]\s+(lo\s+anterior|todo|todas?\s+las?\s+instrucciones?|las?\s+instrucciones?)/i,
     /olv[ií]date\s+de\s+(todo|las?\s+instrucciones?)/i,
-    /invent[aáe]\s+que/i,
+    /invent[aáe]?\b/i,
     /dec[ií]\s+que\s+(soy|fui|tengo|sabe?s?)/i,
-    /agrega[r]?\s+que/i,
+    /agreg[aáe]r?\b/i,
     /nueva\s+instrucci[oó]n/i,
     /act[uú]a\s+como/i,
     /\b(system|developer|assistant|prompt|api[_\s-]?key)\s*:/i,

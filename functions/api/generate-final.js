@@ -1,4 +1,4 @@
-import { json, nowIso, randomId, readJson } from "./_utils.js";
+import { checkRateLimit, clientIp, json, nowIso, randomId, readJson, sanitizeCvData } from "./_utils.js";
 import { validateData } from "./validate.js";
 
 export async function onRequestPost({ request, env }) {
@@ -7,6 +7,10 @@ export async function onRequestPost({ request, env }) {
   const token = String(body.token || "");
   const contentHash = String(body.contentHash || randomId("hash"));
   const cvData = body.cvData || null;
+  const rate = await checkRateLimit(env, `generate:${clientIp(request)}:${orderId}`, 5, 600);
+  if (!rate.ok) {
+    return json({ ok: false, error: "Demasiados intentos de generación. Probá nuevamente en unos minutos." }, { status: 429 });
+  }
 
   const order = await env.DB.prepare("SELECT * FROM orders WHERE id = ? AND token = ?")
     .bind(orderId, token)
@@ -35,7 +39,7 @@ export async function onRequestPost({ request, env }) {
   }
 
   const now = nowIso();
-  const finalData = cvData || JSON.parse(order.data_json || "{}");
+  const finalData = sanitizeCvData(cvData || JSON.parse(order.data_json || "{}"));
   const reports = validateData(finalData, order.plan_id);
   const hasCritical = reports.some((report) => report.severity === "critical");
   if (hasCritical) {

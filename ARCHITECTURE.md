@@ -147,9 +147,9 @@ Usar Checkout Pro, no links fijos, para poder:
 
 El frontend nunca decide si el pedido está pagado. El Worker consulta Mercado Pago y actualiza D1.
 
-## Código TEST
+## Codigo privado de QA
 
-El código de descuento `TEST` sirve solo para pruebas. Debe validarse del lado servidor.
+El codigo de descuento de QA vive en `TEST_DISCOUNT_CODE`, sirve solo para pruebas y debe validarse del lado servidor. No publicar el valor real en frontend ni documentacion publica.
 
 Reglas:
 
@@ -158,7 +158,7 @@ Reglas:
 - crear orden con estado `discount_test`;
 - saltear Mercado Pago;
 - habilitar formulario y generación como si estuviera pagado;
-- deshabilitar o rotar el código antes de producción pública.
+- rotar el codigo antes de produccion publica si fue compartido durante QA.
 
 ## Generación única
 
@@ -229,7 +229,7 @@ Reglas:
 Etapa 0:
 
 - Landing publicada en GitHub Pages.
-- Flujo estático de prueba con `TEST` y `localStorage`.
+- Flujo estático de prueba con codigo privado de QA y `localStorage`.
 - Páginas: confirmar, formulario, preview y descarga.
 - Functions base preparadas para Cloudflare Pages.
 

@@ -1,9 +1,13 @@
-import { json, nowIso, readJson } from "../_utils.js";
+import { checkRateLimit, clientIp, json, nowIso, readJson } from "../_utils.js";
 
 export async function onRequestPost({ request, env }) {
   const body = await readJson(request);
   const orderId = String(body.orderId || "");
   const token = String(body.token || "");
+  const rate = await checkRateLimit(env, `payments-check:${clientIp(request)}:${orderId}`, 8, 600);
+  if (!rate.ok) {
+    return json({ ok: false, error: "Demasiadas consultas de pago. Probá nuevamente en unos minutos." }, { status: 429 });
+  }
 
   if (!orderId || !token) {
     return json({ ok: false, error: "Datos insuficientes" }, { status: 400 });
