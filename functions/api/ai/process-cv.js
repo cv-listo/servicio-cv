@@ -613,6 +613,11 @@ function filterNoisyDiagnostics(items, original) {
     cleanText(original.experiencePlace)
       || (original.experiences || []).some((item) => cleanText(item.place))
   );
+  const hasTasks = Boolean(
+    cleanText(original.experience)
+      || cleanText(original.informalExperience)
+      || (original.experiences || []).some((item) => cleanText(item.tasks))
+  );
   return items
     .map(cleanText)
     .filter(Boolean)
@@ -626,6 +631,7 @@ function filterNoisyDiagnostics(items, original) {
       if (hasSkills && (text.includes("habilidad") || text.includes("competencia"))) return false;
       if (sourceText.includes("excel") && text.includes("excel")) return false;
       if (hasPlace && (text.includes("nombre del estudio") || text.includes("nombre de la empresa") || text.includes("donde trabaj"))) return false;
+      if (hasTasks && text.includes("más detalles")) return false;
       return true;
     });
 }

@@ -2165,6 +2165,20 @@ h3 {
   padding-left: 2px;
 }
 
+.cv-page-visual ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+.cv-page-visual li {
+  position: relative;
+  padding-left: 18px;
+}
+
+.cv-page-visual li::before {
+  left: 2px;
+}
+
 .cv-entry + .cv-entry {
   margin-top: 10px;
 }
