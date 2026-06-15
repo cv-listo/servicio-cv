@@ -54,7 +54,8 @@ MP_WEBHOOK_SECRET = (Secret de webhook de Mercado Pago)
 APP_BASE_URL = https://servicio-cv.pages.dev
 LLM_PROVIDER = groq
 GROQ_API_KEY = (API key de Groq)
-GROQ_MODEL = llama-3.1-8b-instant
+GROQ_MODEL_PROFESSIONAL = llama-3.1-8b-instant
+GROQ_MODEL_FOCUSED = llama-3.3-70b-versatile
 PLAN_BASIC_AMOUNT = 9999
 PLAN_PROFESSIONAL_AMOUNT = 19999
 PLAN_FOCUSED_AMOUNT = 29999
@@ -66,6 +67,7 @@ Variables opcionales:
 
 ```text
 AI_TIMEOUT_MS = 10000
+GROQ_MODEL = (override global opcional; si se configura, pisa los modelos por plan)
 GEMINI_API_KEY = ...
 OPENAI_API_KEY = ...
 RESEND_API_KEY = ...
@@ -74,6 +76,8 @@ DEBUG_AI = false
 ```
 
 Los valores `PLAN_*_AMOUNT` controlan los precios que se muestran en la web y los montos enviados a Mercado Pago. Si no están configurados, se usan los valores por defecto del repositorio.
+
+El plan Básico no consume LLM externo. `GROQ_MODEL_PROFESSIONAL` define el modelo del plan intermedio y `GROQ_MODEL_FOCUSED` el del plan Enfocado. Usar `GROQ_MODEL` solo si querés forzar un único modelo para todos los planes con IA.
 
 `admin.html` permite revisar pedidos, datos cargados, pagos, eventos e IA. Protegelo con `ADMIN_USER` y `ADMIN_PASSWORD`.
 

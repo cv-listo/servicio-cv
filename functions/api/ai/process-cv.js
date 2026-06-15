@@ -236,6 +236,8 @@ async function fetchWithTimeout(url, options, timeoutMs) {
 }
 
 function selectGroqModel(env, planId, sanitized) {
+  const planModel = env[`GROQ_MODEL_${String(planId || "").toUpperCase()}`];
+  if (planModel) return planModel;
   if (env.GROQ_MODEL) return env.GROQ_MODEL;
   const inputSize = JSON.stringify(sanitized).length;
   if (planId === "focused" || inputSize > 6500) {
