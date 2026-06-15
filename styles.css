@@ -75,6 +75,17 @@ a {
   text-decoration: none;
 }
 
+.menu-toggle {
+  display: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #fff;
+  color: var(--accent-dark);
+  font: inherit;
+  font-weight: 900;
+}
+
 .topbar .brand-link {
   margin-right: auto;
   color: var(--ink);
@@ -2532,17 +2543,44 @@ h3 {
 
 @media (max-width: 620px) {
   .topbar {
-    justify-content: flex-start;
-    overflow-x: auto;
-    flex-wrap: nowrap;
+    justify-content: space-between;
+    overflow-x: visible;
+    flex-wrap: wrap;
     padding: 10px 12px;
-    -webkit-overflow-scrolling: touch;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+
+  .topbar a:not(.brand-link):not(.nav-cta) {
+    display: none;
+    width: 100%;
+  }
+
+  .topbar.open a:not(.brand-link):not(.nav-cta) {
+    display: flex;
+  }
+
+  .topbar .nav-cta {
+    display: none;
+    width: 100%;
+  }
+
+  .topbar.open .nav-cta {
+    display: flex;
   }
 
   .topbar a {
-    flex: 0 0 auto;
     padding: 8px 10px;
     font-size: 0.86rem;
+  }
+
+  .topbar .brand-link {
+    width: auto;
+    margin-right: 0;
   }
 
   .hero-content,

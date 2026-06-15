@@ -20,6 +20,7 @@
     <header class="hero">
       <nav class="topbar" aria-label="Navegación principal">
         <a class="brand-link" href="./index.html" aria-label="CV Listo inicio"><span>CV</span>CV Listo</a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-label="Abrir navegación">Menú</button>
         <a href="#como-funciona">Cómo funciona</a>
         <a href="#planes">Planes</a>
         <a href="./soporte.html">Soporte</a>
@@ -431,6 +432,12 @@
         .catch(() => CVListo.hydratePlanPrices());
       const stickyCta = document.querySelector(".mobile-sticky-cta");
       const plansSection = document.querySelector("#planes");
+      const topbar = document.querySelector(".topbar");
+      const menuToggle = document.querySelector(".menu-toggle");
+      menuToggle?.addEventListener("click", () => {
+        const isOpen = topbar.classList.toggle("open");
+        menuToggle.setAttribute("aria-expanded", String(isOpen));
+      });
       if (stickyCta && plansSection && "IntersectionObserver" in window) {
         const observer = new IntersectionObserver(([entry]) => {
           stickyCta.classList.toggle("is-hidden", entry.isIntersecting);

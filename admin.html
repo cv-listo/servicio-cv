@@ -223,6 +223,7 @@
         return `
           <form class="admin-note-form" onsubmit="saveAdminNote(event, '${escapeJs(order.id)}')">
             <label>Nota interna de soporte<textarea name="message" rows="3" maxlength="1200" placeholder="Ej: Cliente consultó por pago duplicado, se respondió por WhatsApp."></textarea></label>
+            <p class="form-note" data-note-status hidden></p>
             <button class="button secondary" type="submit">Guardar nota</button>
           </form>
         `;
@@ -370,8 +371,11 @@
         if (!message) return;
         try {
           await adminPost("/api/admin/notes", { orderId, message });
+          const status = form.querySelector("[data-note-status]");
+          status.textContent = "Nota guardada.";
+          status.hidden = false;
           form.reset();
-          await loadOrder(orderId);
+          setTimeout(() => loadOrder(orderId), 700);
         } catch (error) {
           alert(error.message || "No se pudo guardar la nota.");
         }

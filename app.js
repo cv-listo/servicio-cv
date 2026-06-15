@@ -269,7 +269,7 @@ function formatMultiline(value) {
 
 function splitItems(value) {
   return normalizeText(value)
-    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion)\b)/g, "\n")
+    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
     .split(/\n|;|,/)
     .map((item) => item.trim())
     .filter(Boolean)

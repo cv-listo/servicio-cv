@@ -74,6 +74,7 @@ Estados:
 - [x] Agregar paginacion real al admin.
 - [x] Agregar colores por estado en filas del admin: `paid`, `generated`, `pending`, `rejected`.
 - [x] Agregar notas internas de soporte por pedido.
+- [x] Agregar feedback visual al guardar nota interna.
 - [x] Agregar accion admin para reenviar/copiar link de recuperacion con texto listo.
 
 ## UX/UI y contenido
@@ -88,8 +89,9 @@ Estados:
 - [x] Descarga celebratoria con proximos pasos.
 - [x] Preview con checklist visual y telemetria A4.
 - [x] Wizard con iconos/microcopy por paso.
+- [x] Agregar menu mobile para evitar overflow horizontal del navbar.
 - [x] Revisar toda la web para eliminar restos de promesas no implementadas.
-- [ ] Revisar mobile completo en Android Chrome e iOS Safari.
+- [~] Revisar mobile completo en Android Chrome e iOS Safari.
 - [x] Mejorar `pago.html` con estados mas claros para pendiente/rechazado/reintento.
 - [x] Agregar aviso en descarga sobre guardar PDF desde navegador/mobile.
 - [ ] Optimizar `og-image.png` si sigue pesando demasiado.

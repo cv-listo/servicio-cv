@@ -560,7 +560,7 @@ function splitActionPhrases(value) {
   const text = cleanText(value);
   if (!text) return [];
   return text
-    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion)\b)/g, "\n")
+    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
     .split(/\n+/)
     .map(cleanText)
     .filter(Boolean);
