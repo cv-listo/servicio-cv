@@ -112,13 +112,15 @@
         return data;
       }
 
-      async function adminPost(path) {
+      async function adminPost(path, body = null) {
         const url = new URL(path, window.location.origin);
         const response = await fetch(url, {
           method: "POST",
           headers: {
             authorization: `Basic ${btoa(`${adminUser}:${adminPassword}`)}`,
+            ...(body ? { "content-type": "application/json" } : {}),
           },
+          body: body ? JSON.stringify(body) : undefined,
         });
         const data = await response.json();
         if (!response.ok || !data.ok) throw new Error(data.error || "Error admin");
@@ -206,6 +208,7 @@
           </div>
           ${renderLinkTools(data.links, order)}
           ${renderSummary(order)}
+          ${renderAdminNoteForm(order)}
           ${renderHumanProfile(order.data_json)}
           ${renderJsonBlock("Datos cargados", order.data_json)}
           ${renderJsonBlock("CV final", order.cv_json)}
@@ -213,6 +216,15 @@
           ${renderTable("Auditorías", data.audits)}
           ${renderTable("IA", data.ai_generations)}
           ${renderTable("Documentos finales", data.final_documents)}
+        `;
+      }
+
+      function renderAdminNoteForm(order) {
+        return `
+          <form class="admin-note-form" onsubmit="saveAdminNote(event, '${escapeJs(order.id)}')">
+            <label>Nota interna de soporte<textarea name="message" rows="3" maxlength="1200" placeholder="Ej: Cliente consultó por pago duplicado, se respondió por WhatsApp."></textarea></label>
+            <button class="button secondary" type="submit">Guardar nota</button>
+          </form>
         `;
       }
 
@@ -349,6 +361,20 @@
         const message = `Hola${email ? ` ${email}` : ""}, te compartimos el enlace para continuar o recuperar tu pedido de CV Listo:\n\n${url}\n\nSi tenés algún problema, escribinos a soporte@cvlisto.com.ar.`;
         await navigator.clipboard?.writeText(message);
         alert("Mensaje copiado.");
+      }
+
+      async function saveAdminNote(event, orderId) {
+        event.preventDefault();
+        const form = event.currentTarget;
+        const message = form.message.value.trim();
+        if (!message) return;
+        try {
+          await adminPost("/api/admin/notes", { orderId, message });
+          form.reset();
+          await loadOrder(orderId);
+        } catch (error) {
+          alert(error.message || "No se pudo guardar la nota.");
+        }
       }
     </script>
   </body>

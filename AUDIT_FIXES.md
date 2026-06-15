@@ -73,7 +73,7 @@ Estados:
 - [x] Validar adjuntos de soporte: PDF/JPG/PNG hasta 2 MB.
 - [x] Agregar paginacion real al admin.
 - [x] Agregar colores por estado en filas del admin: `paid`, `generated`, `pending`, `rejected`.
-- [ ] Agregar notas internas de soporte por pedido.
+- [x] Agregar notas internas de soporte por pedido.
 - [x] Agregar accion admin para reenviar/copiar link de recuperacion con texto listo.
 
 ## UX/UI y contenido
