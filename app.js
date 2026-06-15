@@ -431,15 +431,15 @@ function buildResumeHtml(data) {
   const profileFallback = target
     ? `Perfil orientado a ${target}${company ? ` en ${company}` : ""}.`
     : "Perfil orientado a nuevas oportunidades laborales.";
-  const objectiveDetails = [
-    data.targetArea ? `Área: ${polishCvText(data.targetArea)}` : "",
-    target ? `Puesto objetivo: ${target}` : "",
-    meaningfulOption(data.modality) ? `Modalidad: ${meaningfulOption(data.modality)}` : "",
-    meaningfulOption(data.availability) ? `Disponibilidad: ${meaningfulOption(data.availability)}` : "",
+  const objectiveItems = [
+    data.targetArea ? ["Área", polishCvText(data.targetArea)] : null,
+    target ? ["Puesto objetivo", target] : null,
+    meaningfulOption(data.modality) ? ["Modalidad", meaningfulOption(data.modality)] : null,
+    meaningfulOption(data.availability) ? ["Disponibilidad", meaningfulOption(data.availability)] : null,
   ]
-    .map(normalizeText)
     .filter(Boolean)
-    .join(" | ");
+    .map(([label, value]) => `<li><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</li>`)
+    .join("");
   // Las secciones vacías no se imprimen para evitar placeholders dentro del CV final.
   const experienceHtml = renderExperiences(data);
   const educationHtml = renderEducation({ ...data, education: educationText });
@@ -456,7 +456,7 @@ function buildResumeHtml(data) {
         <h2>Perfil</h2>
         <p>${formatMultiline(polishCvText(safeCvText(data.summary))) || escapeHtml(profileFallback)}</p>
       </section>
-      ${objectiveDetails ? `<section class="cv-section cv-section-objective"><h2>Objetivo</h2><p>${escapeHtml(objectiveDetails)}</p></section>` : ""}
+      ${objectiveItems ? `<section class="cv-section cv-section-objective"><h2>Objetivo</h2><ul class="cv-objective-list">${objectiveItems}</ul></section>` : ""}
       ${experienceHtml ? `<section class="cv-section cv-section-experience">
         <h2>Experiencia</h2>
         ${experienceHtml}

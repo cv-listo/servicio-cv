@@ -2165,6 +2165,18 @@ h3 {
   padding-left: 2px;
 }
 
+.cv-objective-list {
+  display: grid;
+  gap: 4px 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-left: 0 !important;
+  list-style: none;
+}
+
+.cv-objective-list li {
+  padding-left: 0;
+}
+
 .cv-page-visual ul {
   padding-left: 0;
   list-style: none;
@@ -2222,6 +2234,23 @@ h3 {
   border-radius: 14px;
   padding: 10px 12px;
   background: #f3f6ff;
+}
+
+.cv-page-visual .cv-objective-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cv-page-visual .cv-objective-list li {
+  border: 1px solid rgba(52, 87, 213, 0.16);
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.cv-page-visual .cv-objective-list li::before {
+  display: none;
 }
 
 .cv-page-visual .cv-section-skills ul {
