@@ -309,7 +309,7 @@ function splitItems(value) {
   return safeCvText(value)
     .replace(/\s+-\s+/g, "\n")
     .replace(/\s*•\s*/g, "\n")
-    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Cargaba|Revisaba|Organizaba|Preparaba|Respondía|Respondia|Cargué|Cargue|Revisé|Revise|Organicé|Organice|Preparé|Prepare|Respondí|Respondi|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
+    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Cargaba|Revisaba|Organizaba|Preparaba|Respondía|Respondia|Cargué|Cargue|Revisé|Revise|Organicé|Organice|Preparé|Prepare|Respondí|Respondi|Carga|Revisión|Revision|Organización|Organizacion|Preparación|Preparacion|Respuesta|Manejo|Reposición|Reposicion|Limpieza|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
     .split(/\n|;|,/)
     .map((item) => item.trim())
     .filter((item) => !hasPromptInjection(item))

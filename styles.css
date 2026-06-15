@@ -2177,6 +2177,9 @@ h3 {
 
 .cv-page-visual li::before {
   left: 2px;
+  top: 0.7em;
+  width: 4px;
+  height: 4px;
 }
 
 .cv-entry + .cv-entry {

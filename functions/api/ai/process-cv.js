@@ -594,7 +594,7 @@ function splitActionPhrases(value) {
   const text = cleanText(value);
   if (!text) return [];
   return text
-    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Cargaba|Revisaba|Organizaba|Preparaba|Respondía|Respondia|Cargué|Cargue|Revisé|Revise|Organicé|Organice|Preparé|Prepare|Respondí|Respondi|Manejo|Reposición|Reposicion|Limpieza|Organización|Organizacion|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
+    .replace(/\s+(?=(Cobraba|Realizaba|Acomodaba|Limpiaba|Atendía|Atencion|Atención|Ayudaba|Cargaba|Revisaba|Organizaba|Preparaba|Respondía|Respondia|Cargué|Cargue|Revisé|Revise|Organicé|Organice|Preparé|Prepare|Respondí|Respondi|Carga|Revisión|Revision|Organización|Organizacion|Preparación|Preparacion|Respuesta|Manejo|Reposición|Reposicion|Limpieza|Elaboración|Elaboracion|Evaluación|Evaluacion|Investigación|Investigacion|Dictado)\b)/g, "\n")
     .split(/\n+/)
     .map(cleanText)
     .filter(Boolean);
@@ -630,6 +630,7 @@ function filterNoisyDiagnostics(items, original) {
       if (hasDates && text.includes("fecha")) return false;
       if (educationOk && (text.includes("educación") || text.includes("educacion") || text.includes("formal alcanzado"))) return false;
       if (hasSkills && (text.includes("habilidad") || text.includes("competencia"))) return false;
+      if (hasTasks && (text.includes("herramienta") || text.includes("software") || text.includes("reporte"))) return false;
       if (sourceText.includes("excel") && text.includes("excel")) return false;
       if (hasPlace && (text.includes("nombre del estudio") || text.includes("nombre de la empresa") || text.includes("donde trabaj"))) return false;
       if (hasTasks && text.includes("más detalles")) return false;
