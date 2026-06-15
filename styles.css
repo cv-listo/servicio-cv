@@ -1894,6 +1894,17 @@ h3 {
   padding-top: 16px;
 }
 
+.template-picker {
+  display: grid;
+  gap: 7px;
+  border-top: 1px solid var(--line);
+  margin-top: 16px;
+  padding-top: 16px;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .quick-edit h2 {
   font-size: 1.1rem;
   letter-spacing: -0.02em;
@@ -1986,6 +1997,18 @@ h3 {
 
 .cv-page-ats ul {
   padding-left: 20px;
+}
+
+.cv-page-visual .cv-header {
+  border-bottom-color: var(--accent);
+}
+
+.cv-page-visual h2 {
+  color: var(--accent-dark);
+}
+
+.cv-page-visual .cv-headline {
+  color: var(--accent-dark);
 }
 
 .cv-header {

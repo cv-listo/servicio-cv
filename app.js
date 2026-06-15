@@ -363,6 +363,7 @@ function renderEducation(data) {
 }
 
 function buildResumeHtml(data) {
+  const template = data.template === "visual" ? "visual" : "ats";
   const contact = [
     data.showEmail === "on" ? data.email : "",
     data.showPhone === "on" ? data.phone : "",
@@ -399,7 +400,7 @@ function buildResumeHtml(data) {
   const skillsHtml = renderBullets(skills);
 
   return `
-    <article class="cv-page cv-page-polished cv-page-ats">
+    <article class="cv-page cv-page-polished cv-page-${template}">
       <header class="cv-header">
         <h1>${escapeHtml(data.fullName) || "Nombre Apellido"}</h1>
         ${target ? `<p class="cv-headline">${escapeHtml(sentenceCase(target))}</p>` : ""}

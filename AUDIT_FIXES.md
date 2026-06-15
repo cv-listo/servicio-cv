@@ -101,7 +101,7 @@ Estados:
 - [x] Usar `cv_json` sellado en descarga si existe.
 - [x] Agregar base `cv-page-ats`.
 - [x] Evitar secciones vacias y placeholders falsos.
-- [ ] Crear selector real de plantilla: visual vs ATS-friendly.
+- [x] Crear selector real de plantilla: visual vs ATS-friendly.
 - [x] Mejorar control de overflow A4 y sugerencias automaticas para reducir texto.
 - [ ] Validar impresion/PDF en Chrome, Edge, Firefox y mobile.
 - [ ] Evaluar generacion PDF real en una fase posterior.
