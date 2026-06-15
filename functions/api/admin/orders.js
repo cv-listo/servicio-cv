@@ -9,7 +9,8 @@ export async function onRequestGet({ request, env }) {
   const status = url.searchParams.get("status") || "";
   const plan = url.searchParams.get("plan") || "";
   const email = url.searchParams.get("email") || "";
-  const limit = Math.min(Number(url.searchParams.get("limit") || 100), 200);
+  const limit = Math.min(Number(url.searchParams.get("limit") || 50), 100);
+  const offset = Math.max(Number(url.searchParams.get("offset") || 0), 0);
 
   const filters = [];
   const params = [];
@@ -33,12 +34,16 @@ export async function onRequestGet({ request, env }) {
      FROM orders
      ${where}
      ORDER BY created_at DESC
-     LIMIT ?`
+     LIMIT ? OFFSET ?`
   )
-    .bind(...params, limit)
+    .bind(...params, limit, offset)
     .all();
 
-  return json({ ok: true, orders: orders.results || [] });
+  const count = await env.DB.prepare(`SELECT COUNT(*) AS total FROM orders ${where}`)
+    .bind(...params)
+    .first();
+
+  return json({ ok: true, orders: orders.results || [], total: Number(count?.total || 0), limit, offset });
 }
 
 function isAdmin(request, env) {
