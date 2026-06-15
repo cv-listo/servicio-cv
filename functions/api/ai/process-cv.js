@@ -351,7 +351,8 @@ function auditAndMerge(original, ai) {
   if (Array.isArray(aiExperiences) && original.experienceType !== "formal" && cleanText(original.informalExperience)) {
     const first = aiExperiences[0] || {};
     const bullets = normalizeBullets(Array.isArray(first.bulletPoints) ? first.bulletPoints : first.tasks);
-    if (hasEnoughTaskEvidence(original.informalExperience) && bullets.length) {
+    const originalBullets = normalizeBullets(original.informalExperience);
+    if (hasEnoughTaskEvidence(original.informalExperience) && hasCompleteTaskCoverage(bullets, originalBullets)) {
       data.informalExperience = bullets.join("\n");
     }
   }
@@ -359,8 +360,10 @@ function auditAndMerge(original, ai) {
   if (Array.isArray(aiExperiences) && Array.isArray(original.experiences)) {
     data.experiences = original.experiences.map((source, index) => {
       const improved = aiExperiences[index] || {};
-      const bulletTasks = normalizeBullets(Array.isArray(improved.bulletPoints) ? improved.bulletPoints : improved.tasks).join("\n");
+      const improvedBullets = normalizeBullets(Array.isArray(improved.bulletPoints) ? improved.bulletPoints : improved.tasks);
+      const originalBullets = normalizeBullets(source.tasks);
       const canUseImprovedTasks = hasEnoughTaskEvidence(source.tasks);
+      const bulletTasks = hasCompleteTaskCoverage(improvedBullets, originalBullets) ? improvedBullets.join("\n") : source.tasks;
       return {
         ...source,
         place: sameEntityOrOriginal(source.place, improved.place || improved.organization),
@@ -588,8 +591,19 @@ function normalizeBullets(value) {
   return rawItems
     .flatMap((item) => splitActionPhrases(item))
     .map(cleanText)
+    .filter((item) => !hasDanglingConnector(item))
     .filter(Boolean)
     .slice(0, 5);
+}
+
+function hasCompleteTaskCoverage(nextItems, originalItems) {
+  if (!nextItems.length) return false;
+  if (!originalItems.length) return true;
+  return nextItems.length >= Math.min(originalItems.length, 5);
+}
+
+function hasDanglingConnector(value) {
+  return /\b(y|e|o|u)$/i.test(cleanText(value));
 }
 
 function splitActionPhrases(value) {
