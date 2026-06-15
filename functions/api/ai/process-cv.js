@@ -325,7 +325,7 @@ function sanitizeForLlm(data, planId) {
 }
 
 function auditAndMerge(original, ai) {
-  const data = { ...original };
+  const data = sanitizeObject({ ...original });
   const rawWarnings = Array.isArray(ai.warnings)
     ? ai.warnings
     : ai.qualityDiagnostics?.missingDataWarnings || [];
@@ -373,12 +373,13 @@ function auditAndMerge(original, ai) {
 }
 
 function localNormalize(data) {
+  const safeData = sanitizeObject(data);
   return {
-    ...data,
-    fullName: titleCase(data.fullName || ""),
-    targetRole: titleCase(data.targetRole || ""),
-    summary: cleanText(data.summary),
-    skills: cleanText(data.skills),
+    ...safeData,
+    fullName: titleCase(safeData.fullName || ""),
+    targetRole: titleCase(safeData.targetRole || ""),
+    summary: cleanText(safeData.summary),
+    skills: cleanText(safeData.skills),
   };
 }
 
@@ -424,6 +425,32 @@ function isUnsupportedSpecificClaim(value, source) {
 function evidenceText(originalData) {
   const { jobAd, focused, targetCompany, ...rest } = originalData || {};
   return JSON.stringify(rest).toLowerCase();
+}
+
+function sanitizeObject(value) {
+  if (Array.isArray(value)) return value.map(sanitizeObject);
+  if (!value || typeof value !== "object") {
+    return typeof value === "string" ? sanitizeInjection(value) : value;
+  }
+  return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, sanitizeObject(item)]));
+}
+
+function sanitizeInjection(value) {
+  const text = String(value || "");
+  const patterns = [
+    /ignor[aá]\s+(todas?\s+)?(las?\s+)?instrucciones?/i,
+    /olv[ií]date\s+de\s+(todo|las?\s+instrucciones?)/i,
+    /dec[ií]\s+que\s+(soy|fui|tengo|sabe?s?)/i,
+    /agrega[r]?\s+que/i,
+    /nueva\s+instrucci[oó]n/i,
+    /act[uú]a\s+como/i,
+    /sistem[a]?\s*:/i,
+    /\[INST\]/i,
+    /<\|im_start\|>/i,
+    /copiar?\s+(este\s+)?aviso/i,
+    /aunque\s+no\s+lo\s+dij/i,
+  ];
+  return patterns.some((pattern) => pattern.test(text)) ? "" : text;
 }
 
 function cleanText(value) {
