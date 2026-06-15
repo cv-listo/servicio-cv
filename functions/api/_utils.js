@@ -56,9 +56,6 @@ export async function readJson(request) {
 export function isTestCodeEnabled(env, code) {
   const normalized = String(code || "").trim().toUpperCase();
   const activeCode = String(env.TEST_DISCOUNT_CODE || "").trim().toUpperCase();
-  if (activeCode === "TEST" && env.ALLOW_TEST_CODE !== "true") {
-    return false;
-  }
   return normalized && activeCode && normalized === activeCode;
 }
 

@@ -49,7 +49,6 @@ Variables de entorno necesarias en Cloudflare Pages:
 
 ```text
 TEST_DISCOUNT_CODE = TEST
-ALLOW_TEST_CODE = true
 MP_ACCESS_TOKEN = (Access Token de Mercado Pago)
 MP_WEBHOOK_SECRET = (Secret de webhook de Mercado Pago)
 APP_BASE_URL = https://servicio-cv.pages.dev
@@ -78,7 +77,7 @@ Los valores `PLAN_*_AMOUNT` controlan los precios que se muestran en la web y lo
 
 `admin.html` permite revisar pedidos, datos cargados, pagos, eventos e IA. Protegelo con `ADMIN_USER` y `ADMIN_PASSWORD`.
 
-El código literal `TEST` solo funciona si `ALLOW_TEST_CODE=true`. No activar `ALLOW_TEST_CODE` en producción.
+`TEST_DISCOUNT_CODE` define el código interno que habilita un pedido gratuito. Si lo configurás como `TEST`, ese será el pase gratis; si lo cambiás, solo funcionará el nuevo valor.
 
 No guardar credenciales en el repositorio. Usar Variables and Secrets de Cloudflare.
 

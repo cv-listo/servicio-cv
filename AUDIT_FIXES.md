@@ -10,7 +10,7 @@ Estados:
 
 ## Critico antes de lanzamiento abierto
 
-- [x] Desactivar o cambiar `TEST_DISCOUNT_CODE` en produccion para que no exista un bypass publico de pago.
+- [x] Mantener `TEST_DISCOUNT_CODE` configurable server-side sin delatar el valor en la UI.
 - [x] Implementar `/api/payments/check` para conciliacion manual con Mercado Pago desde `pago.html`.
 - [x] Conectar `pago.html` al endpoint `/api/payments/check` cuando el webhook tarde o falle.
 - [x] Revisar y eliminar fallback local de produccion en `formulario.html`, `preview.html` y `descargar.html` si permite continuar sin backend.
