@@ -603,6 +603,12 @@ function filterNoisyDiagnostics(items, original) {
   const modalityOk = Boolean(cleanText(original.modality));
   const availabilityOk = Boolean(cleanText(original.availability));
   const educationOk = Boolean(cleanText(original.education) || cleanText(original.educationLevel) || cleanText(original.educationStatus));
+  const sourceText = evidenceText(original);
+  const hasSkills = Boolean(cleanText(original.skills));
+  const hasDates = Boolean(
+    (cleanText(original.startYear) && (cleanText(original.endYear) || original.isCurrent === "on"))
+      || (original.experiences || []).some((item) => cleanText(item.startYear) && (cleanText(item.endYear) || item.isCurrent === "on"))
+  );
   const hasPlace = Boolean(
     cleanText(original.experiencePlace)
       || (original.experiences || []).some((item) => cleanText(item.place))
@@ -615,7 +621,10 @@ function filterNoisyDiagnostics(items, original) {
       const text = item.toLowerCase();
       if (modalityOk && text.includes("modalidad")) return false;
       if (availabilityOk && text.includes("disponibilidad")) return false;
+      if (hasDates && text.includes("fecha")) return false;
       if (educationOk && (text.includes("educación") || text.includes("educacion") || text.includes("formal alcanzado"))) return false;
+      if (hasSkills && (text.includes("habilidad") || text.includes("competencia"))) return false;
+      if (sourceText.includes("excel") && text.includes("excel")) return false;
       if (hasPlace && (text.includes("nombre del estudio") || text.includes("nombre de la empresa") || text.includes("donde trabaj"))) return false;
       return true;
     });

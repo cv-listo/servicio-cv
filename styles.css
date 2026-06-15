@@ -2055,15 +2055,61 @@ h3 {
 }
 
 .cv-page-visual .cv-header {
-  border-bottom-color: var(--accent);
+  margin: -16mm -16mm 16mm;
+  border-bottom: 0;
+  padding: 14mm 16mm 12mm;
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+  color: #fff;
 }
 
 .cv-page-visual h2 {
   color: var(--accent-dark);
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.cv-page-visual h2::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 999px;
+  background: var(--accent);
 }
 
 .cv-page-visual .cv-headline {
-  color: var(--accent-dark);
+  color: #dbeafe;
+}
+
+.cv-page-visual .cv-contact-line {
+  color: #eff6ff;
+}
+
+.cv-page-visual .cv-section {
+  border-left: 3px solid rgba(52, 87, 213, 0.22);
+  padding-left: 12px;
+}
+
+.cv-page-visual ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+.cv-page-visual li {
+  position: relative;
+  padding-left: 16px;
+}
+
+.cv-page-visual li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
 }
 
 .cv-header {
