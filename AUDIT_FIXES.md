@@ -11,6 +11,7 @@ Estados:
 ## Critico antes de lanzamiento abierto
 
 - [x] Mantener `TEST_DISCOUNT_CODE` configurable server-side sin delatar el valor en la UI.
+- [x] Gatear `TEST_DISCOUNT_CODE` para lanzamiento abierto: kill-switch `TEST_CODE_ENABLED=false` y allowlist `TEST_CODE_ALLOWED_EMAILS` (retrocompatible: inertes si no se configuran).
 - [x] Implementar `/api/payments/check` para conciliacion manual con Mercado Pago desde `pago.html`.
 - [x] Conectar `pago.html` al endpoint `/api/payments/check` cuando el webhook tarde o falle.
 - [x] Revisar y eliminar fallback local de produccion en `formulario.html`, `preview.html` y `descargar.html` si permite continuar sin backend.

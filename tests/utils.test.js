@@ -65,6 +65,20 @@ describe("isTestCodeEnabled", () => {
     expect(isTestCodeEnabled({ TEST_DISCOUNT_CODE: "abc" }, "")).toBeFalsy();
     expect(isTestCodeEnabled({ TEST_DISCOUNT_CODE: "abc" }, "xyz")).toBe(false);
   });
+
+  it("respeta el kill-switch TEST_CODE_ENABLED=false", () => {
+    expect(isTestCodeEnabled({ TEST_DISCOUNT_CODE: "abc", TEST_CODE_ENABLED: "false" }, "abc")).toBe(false);
+    expect(isTestCodeEnabled({ TEST_DISCOUNT_CODE: "abc", TEST_CODE_ENABLED: "true" }, "abc")).toBe(true);
+  });
+
+  it("aplica la allowlist de emails solo si está definida", () => {
+    const env = { TEST_DISCOUNT_CODE: "abc", TEST_CODE_ALLOWED_EMAILS: "qa@cv.com, lic@cv.com" };
+    expect(isTestCodeEnabled(env, "abc", "QA@cv.com")).toBe(true);
+    expect(isTestCodeEnabled(env, "abc", "otro@cv.com")).toBe(false);
+    expect(isTestCodeEnabled(env, "abc")).toBe(false);
+    // Sin allowlist, cualquier email vale (comportamiento actual de QA).
+    expect(isTestCodeEnabled({ TEST_DISCOUNT_CODE: "abc" }, "abc", "cualquiera@cv.com")).toBe(true);
+  });
 });
 
 describe("getPlans", () => {

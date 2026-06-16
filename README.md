@@ -83,6 +83,8 @@ El plan Básico no consume LLM externo. `GROQ_MODEL_PROFESSIONAL` define el mode
 
 `TEST_DISCOUNT_CODE` define el código interno que habilita un pedido gratuito. Debe ser un valor privado y no publicarse en frontend ni documentación pública.
 
+Para el lanzamiento abierto hay dos controles opcionales (retrocompatibles): `TEST_CODE_ENABLED=false` apaga por completo el código de prueba, y `TEST_CODE_ALLOWED_EMAILS` (lista separada por comas) lo restringe solo a emails de QA. Si `TEST_CODE_ALLOWED_EMAILS` queda vacío, el código funciona para cualquier email (comportamiento de QA actual).
+
 No guardar credenciales en el repositorio. Usar Variables and Secrets de Cloudflare.
 
 El formulario de soporte manual usa FormSubmit temporalmente hacia un correo operativo. No usar `soporte@cvlisto.com.ar` como destino real hasta activar el dominio/casilla.

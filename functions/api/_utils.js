@@ -54,10 +54,22 @@ export async function readJson(request) {
   }
 }
 
-export function isTestCodeEnabled(env, code) {
+// Habilita el codigo de prueba (orden gratis) solo si:
+//  - el codigo coincide con TEST_DISCOUNT_CODE, y
+//  - no esta apagado por el kill-switch TEST_CODE_ENABLED=false, y
+//  - el email esta en TEST_CODE_ALLOWED_EMAILS (si esa allowlist esta definida).
+// Si la allowlist no se define, se comporta como antes (cualquier email).
+export function isTestCodeEnabled(env, code, email) {
   const normalized = String(code || "").trim().toUpperCase();
   const activeCode = String(env.TEST_DISCOUNT_CODE || "").trim().toUpperCase();
-  return normalized && activeCode && normalized === activeCode;
+  if (!normalized || !activeCode || normalized !== activeCode) return false;
+  if (String(env.TEST_CODE_ENABLED || "").trim().toLowerCase() === "false") return false;
+  const allow = String(env.TEST_CODE_ALLOWED_EMAILS || "")
+    .split(/[,;\s]+/)
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+  if (allow.length === 0) return true;
+  return allow.includes(String(email || "").trim().toLowerCase());
 }
 
 export function clientIp(request) {

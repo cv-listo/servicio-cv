@@ -13,7 +13,7 @@ export async function onRequestPost({ request, env }) {
   const token = randomId("token");
   const now = nowIso();
 
-  const isTest = isTestCodeEnabled(env, discountCode);
+  const isTest = isTestCodeEnabled(env, discountCode, email);
   const status = isTest ? "discount_test" : "created";
   const amount = isTest ? 0 : plan.amount;
   const storedDiscountCode = isTest ? discountCode.toUpperCase() : null;
