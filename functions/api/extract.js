@@ -121,7 +121,7 @@ async function extractOneFile(file, env) {
   }
 }
 
-function detectFileType(bytes) {
+export function detectFileType(bytes) {
   if (bytes.length >= 4 && bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46) {
     return "pdf";
   }
@@ -151,7 +151,7 @@ async function extractPdfText(bytes) {
 // Unir todo con un espacio fijo parte palabras ("grandes" -> "gran des").
 // Acá decidimos el separador según el hueco real entre fragmentos: si están
 // pegados no metemos espacio, si hay salto de línea ponemos \n.
-function joinTextItems(items) {
+export function joinTextItems(items) {
   let text = "";
   let prevEndX = null;
   let prevY = null;
@@ -259,7 +259,7 @@ async function inflateRaw(compBytes) {
   return new Uint8Array(out);
 }
 
-function normalizeExtracted(text) {
+export function normalizeExtracted(text) {
   return String(text || "")
     .replace(/\r\n?/g, "\n")
     .replace(/[ \t]+/g, " ")

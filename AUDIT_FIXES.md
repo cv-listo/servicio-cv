@@ -136,7 +136,8 @@ Estados:
 - [x] Tests del codigo de prueba: `isTestCodeEnabled` (case-insensitive).
 - [x] Test de firma MP: `timingSafeEqual`.
 - [x] Test de regresion del splitting de bullets: `actionPhraseBoundaryPattern` (no corta tras preposiciones/conjunciones).
-- [ ] Cobertura de extraccion de archivos (`/api/extract`) e integracion end-to-end.
+- [x] Tests de extraccion: `detectFileType`, `normalizeExtracted`, `joinTextItems` (reconstruccion de palabras partidas de pdf.js).
+- [ ] Integracion end-to-end (`/api/extract` con PDF/DOCX reales y orden en D1).
 
 ## Checklist de pruebas finales
 
