@@ -2546,6 +2546,70 @@ h3 {
   margin-top: 10px;
 }
 
+/* --- Plantilla visual: refinamiento (solo CSS, sin tocar el HTML) --- */
+.cv-page-visual {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.cv-page-visual .cv-header {
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent) 75%);
+  padding: 16mm 16mm 13mm;
+}
+
+.cv-page-visual .cv-header h1 {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.cv-page-visual .cv-headline {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Título de sección con barra de acento en vez del punto */
+.cv-page-visual h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+}
+
+.cv-page-visual h2::before {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 3px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+/* Jerarquía clara en cada experiencia: rol fuerte, empresa/fecha tenue */
+.cv-page-visual .cv-section-experience .cv-entry {
+  border-left: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  padding-left: 12px;
+}
+
+.cv-page-visual .cv-section-experience .cv-entry > p:first-child {
+  color: #475569;
+  font-weight: 500;
+}
+
+.cv-page-visual .cv-section-experience .cv-entry > p:first-child strong {
+  color: #1e293b;
+  font-size: 1.02rem;
+}
+
+/* La plantilla visual no necesita borde a la izquierda en TODAS las secciones */
+.cv-page-visual .cv-section {
+  border-left: 0;
+  padding-left: 0;
+}
+
 .download-card {
   max-width: 920px;
 }
