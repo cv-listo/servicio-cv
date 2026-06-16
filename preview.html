@@ -156,27 +156,35 @@
         const reports = [...(order.reports || [])];
         aiWarnings.forEach((message) => reports.push({ severity: "warning", message }));
         aiQuestions.forEach((message) => reports.push({ severity: "warning", message: `Sugerencia: ${message}` }));
+        const PAGE_PX = 1122; // 297mm a 96dpi (alto de una pagina A4)
         const updateA4Status = () => {
           const cvPage = document.querySelector(".cv-page");
           const status = document.querySelector("#a4-status");
           const percent = document.querySelector("#a4-percent");
           const fill = document.querySelector("#a4-meter-fill");
-          if (!cvPage || !status) return;
-          const overflow = cvPage.scrollHeight > cvPage.clientHeight + 8 || cvPage.scrollWidth > cvPage.clientWidth + 8;
-          const usage = Math.min(100, Math.round((cvPage.scrollHeight / Math.max(cvPage.clientHeight, 1)) * 100));
-          status.className = `a4-status ${overflow ? "warning" : "ok"}`;
-          status.textContent = overflow
-            ? "Tu CV puede superar una página A4. Reducí el perfil, experiencias o habilidades antes de generar."
-            : "Formato A4 correcto en la vista previa.";
+          if (!cvPage || !status) return false;
+          // El CV ahora puede ocupar varias carillas A4. Calculamos cuantas.
+          const totalHeight = cvPage.scrollHeight;
+          const pages = Math.max(1, Math.ceil(totalHeight / PAGE_PX));
+          // Cuanto se usa de la ultima carilla (para el medidor).
+          const lastPageUsage = Math.min(100, Math.round(((totalHeight % PAGE_PX || PAGE_PX) / PAGE_PX) * 100));
+          // Solo es "mucho" si supera 3 carillas (ahi conviene recortar).
+          const tooLong = pages > 3;
+          status.className = `a4-status ${tooLong ? "warning" : "ok"}`;
+          status.textContent = pages === 1
+            ? "Formato A4 correcto: una carilla."
+            : tooLong
+              ? `Tu CV ocupa ${pages} carillas A4. Para un CV mas leible, conviene resumir a 2 paginas.`
+              : `Formato A4 correcto: ${pages} carillas, con saltos de pagina prolijos.`;
           if (percent && fill) {
-            percent.textContent = `${usage}%`;
-            fill.style.width = `${usage}%`;
-            fill.className = overflow || usage > 94 ? "risk" : usage > 84 ? "warn" : "ok";
+            percent.textContent = pages === 1 ? `${lastPageUsage}%` : `${pages} pág.`;
+            fill.style.width = `${pages === 1 ? lastPageUsage : 100}%`;
+            fill.className = tooLong ? "risk" : pages > 1 ? "warn" : "ok";
           }
-          return overflow;
+          return tooLong;
         };
         if (updateA4Status()) {
-          reports.push({ severity: "warning", message: "La vista previa podría exceder una página A4. Volvé al formulario o usá edición rápida para reducir textos largos." });
+          reports.push({ severity: "warning", message: "El CV ocupa mas de 3 carillas. Volvé al formulario o usá edición rápida para resumir textos largos." });
         }
         list.innerHTML = `
           <ul class="quality-list">

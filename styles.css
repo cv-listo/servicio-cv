@@ -2276,6 +2276,21 @@ h3 {
   overflow-x: auto;
 }
 
+/* Guia visual de corte de pagina A4 en la vista previa (no afecta impresion).
+   Dibuja una linea punteada cada 297mm para que se vea donde termina cada
+   carilla cuando el CV ocupa mas de una pagina. */
+.cv-preview .cv-page {
+  position: relative;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(297mm - 1px),
+    color-mix(in srgb, var(--accent) 35%, transparent) calc(297mm - 1px),
+    color-mix(in srgb, var(--accent) 35%, transparent) 297mm
+  );
+  background-repeat: repeat-y;
+}
+
 .cv-page {
   width: 210mm;
   min-height: 297mm;
@@ -2932,14 +2947,29 @@ h3 {
     padding: 14mm;
     max-width: none;
     box-shadow: none;
+    /* Multipagina: el contenido fluye a varias carillas A4 cuando es largo.
+       NO usamos break-inside: avoid aca para no forzar todo a una sola pagina. */
+  }
+
+  /* No partir un bloque de experiencia/estudio ni una seccion corta al medio. */
+  .cv-section,
+  .cv-entry,
+  .cv-header {
     break-inside: avoid;
     page-break-inside: avoid;
   }
 
-  .cv-section,
-  .cv-entry {
-    break-inside: avoid;
-    page-break-inside: avoid;
+  /* Un titulo de seccion nunca queda solo al final de una pagina. */
+  .cv-page h2 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Evitar lineas huerfanas/viudas en parrafos largos del perfil. */
+  .cv-page p,
+  .cv-page li {
+    orphans: 3;
+    widows: 3;
   }
 }
 
