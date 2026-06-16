@@ -1038,45 +1038,74 @@
         return true;
       }
 
+      function isExperienceCardEmpty(card) {
+        if (!card) return false;
+        const fields = ["experiencePlace", "experienceRole", "startMonth", "startYear", "endMonth", "endYear", "experience"];
+        return fields.every((name) => !String(card.querySelector(`[name="${name}"]`)?.value || "").trim());
+      }
+
+      function isEducationCardEmpty(card) {
+        if (!card) return false;
+        return !String(card.querySelector('[name="education"]')?.value || "").trim();
+      }
+
+      function fillExperienceCard(card, item) {
+        if (!card) return;
+        card.querySelector('[name="experiencePlace"]').value = item.place || "";
+        card.querySelector('[name="experienceRole"]').value = item.role || "";
+        card.querySelector('[name="startMonth"]').value = normalizePrefillMonth(item.startMonth);
+        card.querySelector('[name="startYear"]').value = String(item.startYear || "").slice(0, 4);
+        card.querySelector('[name="endMonth"]').value = normalizePrefillMonth(item.endMonth);
+        card.querySelector('[name="endYear"]').value = String(item.endYear || "").slice(0, 4);
+        const isCurrent = card.querySelector('[name="isCurrent"]');
+        if (isCurrent) isCurrent.checked = Boolean(item.isCurrent);
+        card.querySelector('[name="experience"]').value = item.tasks || "";
+      }
+
+      function ensureExperienceCard(experienceList, template) {
+        const clone = template.cloneNode(true);
+        clone.querySelectorAll("input, textarea, select").forEach((field) => {
+          if (field.type === "checkbox") field.checked = false;
+          else field.value = "";
+        });
+        clone.insertAdjacentHTML("beforeend", "<button class='button secondary small-button remove-repeat' type='button'>Eliminar experiencia</button>");
+        clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
+        experienceList.appendChild(clone);
+        clone.querySelectorAll(".chip-row button").forEach((button) => button.addEventListener("click", handleChipClick));
+        return clone;
+      }
+
       function applyPrefillExperiences(items) {
         const experienceType = document.querySelector('[name="experienceType"]');
-        if (experienceType) {
+        if (experienceType && (!experienceType.value || experienceType.value === "none")) {
           experienceType.value = "formal";
           experienceType.dispatchEvent(new Event("change", { bubbles: true }));
         }
+        const activeType = experienceType?.value || "formal";
         document.querySelectorAll("[data-choice-for='experienceType'] button").forEach((button) => {
-          button.classList.toggle("active", button.dataset.value === "formal");
+          button.classList.toggle("active", button.dataset.value === activeType);
         });
 
         const experienceList = document.querySelector("#experience-list");
         const template = experienceList?.querySelector("[data-repeat='experience']");
         if (!experienceList || !template) return;
 
-        while (experienceList.querySelectorAll("[data-repeat='experience']").length < items.length && experienceList.querySelectorAll("[data-repeat='experience']").length < 3) {
-          const clone = template.cloneNode(true);
-          clone.querySelectorAll("input, textarea, select").forEach((field) => {
-            if (field.type === "checkbox") field.checked = false;
-            else field.value = "";
-          });
-          clone.insertAdjacentHTML("beforeend", "<button class='button secondary small-button remove-repeat' type='button'>Eliminar experiencia</button>");
-          clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
-          experienceList.appendChild(clone);
-          clone.querySelectorAll(".chip-row button").forEach((button) => button.addEventListener("click", handleChipClick));
-        }
-
-        items.forEach((item, index) => {
-          const card = experienceList.querySelectorAll("[data-repeat='experience']")[index];
-          if (!card) return;
-          card.querySelector('[name="experiencePlace"]').value = item.place || "";
-          card.querySelector('[name="experienceRole"]').value = item.role || "";
-          card.querySelector('[name="startMonth"]').value = normalizePrefillMonth(item.startMonth);
-          card.querySelector('[name="startYear"]').value = String(item.startYear || "").slice(0, 4);
-          card.querySelector('[name="endMonth"]').value = normalizePrefillMonth(item.endMonth);
-          card.querySelector('[name="endYear"]').value = String(item.endYear || "").slice(0, 4);
-          const isCurrent = card.querySelector('[name="isCurrent"]');
-          if (isCurrent) isCurrent.checked = Boolean(item.isCurrent);
-          card.querySelector('[name="experience"]').value = item.tasks || "";
+        items.forEach((item) => {
+          const cards = experienceList.querySelectorAll("[data-repeat='experience']");
+          if (cards.length >= 3 && !Array.from(cards).some(isExperienceCardEmpty)) return;
+          const emptyCard = Array.from(cards).find(isExperienceCardEmpty);
+          const target = emptyCard || ensureExperienceCard(experienceList, template);
+          fillExperienceCard(target, item);
         });
+      }
+
+      function ensureEducationCard(educationList, template) {
+        const clone = template.cloneNode(true);
+        clone.querySelectorAll("textarea").forEach((field) => { field.value = ""; });
+        clone.insertAdjacentHTML("beforeend", "<button class='button secondary small-button remove-repeat' type='button'>Eliminar</button>");
+        clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
+        educationList.appendChild(clone);
+        return clone;
       }
 
       function applyPrefillEducation(items) {
@@ -1084,18 +1113,12 @@
         const template = educationList?.querySelector("[data-repeat='education']");
         if (!educationList || !template) return;
 
-        while (educationList.querySelectorAll("[data-repeat='education']").length < items.length && educationList.querySelectorAll("[data-repeat='education']").length < 3) {
-          const clone = template.cloneNode(true);
-          clone.querySelectorAll("textarea").forEach((field) => { field.value = ""; });
-          clone.insertAdjacentHTML("beforeend", "<button class='button secondary small-button remove-repeat' type='button'>Eliminar</button>");
-          clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
-          educationList.appendChild(clone);
-        }
-
-        items.forEach((item, index) => {
-          const card = educationList.querySelectorAll("[data-repeat='education']")[index];
-          if (!card) return;
-          card.querySelector('[name="education"]').value = item.text || "";
+        items.forEach((item) => {
+          const cards = educationList.querySelectorAll("[data-repeat='education']");
+          if (cards.length >= 3 && !Array.from(cards).some(isEducationCardEmpty)) return;
+          const emptyCard = Array.from(cards).find(isEducationCardEmpty);
+          const target = emptyCard || ensureEducationCard(educationList, template);
+          target.querySelector('[name="education"]').value = item.text || "";
         });
       }
 
