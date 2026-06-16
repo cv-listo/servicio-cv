@@ -196,6 +196,11 @@
               </div>
             </div>
             <label>Habilidades<textarea name="skills" rows="3" placeholder="Ej: atención al cliente, manejo de caja, Excel, trabajo en equipo, puntualidad."></textarea></label>
+            <div class="ai-plan-only suggestion-box">
+              <p>Notas para la IA (opcional)</p>
+              <label>¿Algo más que quieras que tengamos en cuenta?<textarea name="extraNotes" rows="3" maxlength="1500" placeholder="Ej: Tengo certificado de manipulación de alimentos y carnet de conducir. Quiero destacar mi disponibilidad horaria. Manejo redes sociales para emprendimientos."></textarea></label>
+              <span class="form-note">La IA usa esto como información adicional para ordenar tu CV. No inventa datos que no escribas.</span>
+            </div>
           </section>
 
           <section class="wizard-step focused-only" data-step="4">
@@ -336,6 +341,9 @@
         populateDateSelects();
         if (planId !== "focused") {
           document.querySelectorAll(".focused-only").forEach((element) => element.remove());
+        }
+        if (planId === "basic") {
+          document.querySelectorAll(".ai-plan-only").forEach((element) => element.remove());
         }
         setupRepeaters();
         setupSuggestionChips();
