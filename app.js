@@ -402,10 +402,19 @@ function renderExperiences(data) {
     .map((item) => {
       const title = [item.role, item.place].map(safeCvText).filter(Boolean).join(" · ");
       const range = formatExperienceDateRange(item);
+      const bullets = renderBullets(splitItems(item.tasks));
+      const heading = title
+        ? `<strong>${escapeHtml(sentenceCase(title))}</strong>${range ? ` · ${escapeHtml(range)}` : ""}`
+        : range ? escapeHtml(range) : "";
+      // Sin tareas descritas: una línea compacta en lugar de una tarjeta vacía
+      // que en la plantilla visual quedaría como un bloque con borde y sin contenido.
+      if (!bullets) {
+        return heading ? `<p class="cv-entry-compact">${heading}</p>` : "";
+      }
       return `
         <div class="cv-entry">
-          ${title ? `<p><strong>${escapeHtml(sentenceCase(title))}</strong>${range ? ` · ${escapeHtml(range)}` : ""}</p>` : ""}
-          ${renderBullets(splitItems(item.tasks)) || ""}
+          ${heading ? `<p>${heading}</p>` : ""}
+          ${bullets}
         </div>
       `;
     })

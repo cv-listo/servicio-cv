@@ -2546,6 +2546,16 @@ h3 {
   margin-top: 10px;
 }
 
+/* Experiencia sin tareas descritas: línea sobria, sin tarjeta ni borde. */
+.cv-entry-compact {
+  margin: 6px 0 0;
+  color: #475569;
+}
+
+.cv-entry-compact strong {
+  color: #1e293b;
+}
+
 /* --- Plantilla visual: refinamiento (solo CSS, sin tocar el HTML) --- */
 .cv-page-visual {
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;

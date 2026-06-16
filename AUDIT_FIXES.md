@@ -113,6 +113,7 @@ Estados:
 - [x] Usar `cv_json` sellado en descarga si existe.
 - [x] Agregar base `cv-page-ats`.
 - [x] Evitar secciones vacias y placeholders falsos.
+- [x] No renderizar experiencias sin tareas como tarjeta: se muestran en una linea compacta (sin borde/padding de tarjeta vacia).
 - [x] Crear selector real de plantilla: visual vs ATS-friendly.
 - [x] Evitar que `jobAd` se copie como seccion del CV final.
 - [x] Mejorar control de overflow A4 y sugerencias automaticas para reducir texto.
