@@ -325,7 +325,7 @@ function sanitizeForLlm(data, planId) {
     educationLevel: safeInputText(data.educationLevel),
     educationStatus: safeInputText(data.educationStatus),
     skills: safeInputText(data.skills),
-    extraNotes: safeInputText(data.extraNotes).slice(0, 6000),
+    extraNotes: safeInputText(data.extraNotes).slice(0, 12000),
     focused: planId === "focused" ? {
       targetCompany: safeInputText(data.targetCompany),
       jobAd: safeInputText(data.jobAd).slice(0, 2500),

@@ -40,6 +40,17 @@
               <h2>Datos personales</h2>
               <p>Vos decidís qué datos aparecen en el CV final.</p>
             </div>
+            <div class="ai-plan-only file-extract-box suggestion-box">
+              <p>Subir CV anterior o certificados (opcional)</p>
+              <span class="form-note">Podés subir varios PDF con texto o Word (.docx), hasta 4 MB cada uno. Leemos el texto para usarlo de guía y descartamos los archivos: no se guardan. Las imágenes o PDF escaneados no se pueden leer.</span>
+              <div class="file-extract-row">
+                <input type="file" id="cv-file" multiple accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                <button type="button" class="button secondary" id="cv-file-btn">Leer archivos</button>
+              </div>
+              <p class="file-extract-status" id="cv-file-status" role="status" aria-live="polite"></p>
+              <label>Texto leído de archivos y notas para la IA<textarea name="extraNotes" rows="8" maxlength="12000" placeholder="Acá va a aparecer el texto extraído. Podés revisarlo, borrar partes o sumar notas útiles para adaptar el CV."></textarea></label>
+              <span class="form-note">La IA usa este texto como información adicional para ordenar tu CV. No inventa datos que no escribas.</span>
+            </div>
             <div class="form-grid">
               <label>Nombre completo *<input type="text" name="fullName" placeholder="Ej: Ana Martínez" required /></label>
               <label>Email *<input type="email" name="email" placeholder="ana@email.com" required /><span class="toggle-row"><input type="checkbox" name="showEmail" checked /> <span>Mostrar en el CV</span></span></label>
@@ -208,17 +219,6 @@
               <label>Tono deseado<select name="desiredTone"><option>Formal</option><option>Moderno</option><option>Simple y operativo</option></select></label>
             </div>
             <label>Aviso laboral o requisitos del puesto<textarea name="jobAd" rows="5" placeholder="Pegá el texto del aviso o los requisitos principales."></textarea></label>
-            <div class="file-extract-box suggestion-box">
-              <p>Subir CV anterior o certificados (opcional)</p>
-              <span class="form-note">Aceptamos PDF con texto o Word (.docx), hasta 4 MB. Leemos el texto para usarlo de guía y descartamos el archivo: no se guarda. Las imágenes o PDF escaneados no se pueden leer.</span>
-              <div class="file-extract-row">
-                <input type="file" id="cv-file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
-                <button type="button" class="button secondary" id="cv-file-btn">Leer archivo</button>
-              </div>
-              <p class="file-extract-status" id="cv-file-status" role="status" aria-live="polite"></p>
-              <label>Texto leído del archivo y notas para la IA<textarea name="extraNotes" rows="8" maxlength="6000" placeholder="Acá va a aparecer el texto extraído. Podés revisarlo, borrar partes o sumar notas útiles para adaptar el CV."></textarea></label>
-              <span class="form-note">La IA usa este texto como información adicional para ordenar tu CV. No inventa datos que no escribas.</span>
-            </div>
           </section>
 
           <section class="wizard-step" data-step="5">
@@ -351,7 +351,7 @@
         if (planId === "basic") {
           document.querySelectorAll(".ai-plan-only").forEach((element) => element.remove());
         }
-        if (planId === "focused") {
+        if (planId !== "basic") {
           setupFileExtract();
         }
         setupRepeaters();
@@ -625,30 +625,35 @@
         };
 
         button.addEventListener("click", async () => {
-          const file = input.files && input.files[0];
-          if (!file) {
-            setStatus("Elegí un archivo PDF o Word primero.", "warn");
+          const files = Array.from(input.files || []);
+          if (!files.length) {
+            setStatus("Elegí uno o más archivos PDF o Word primero.", "warn");
+            return;
+          }
+          if (files.length > 5) {
+            setStatus("Podés subir hasta 5 archivos por vez.", "warn");
             return;
           }
           // Validacion liviana en cliente (la real es server-side por magic bytes).
-          if (file.size > 4 * 1024 * 1024) {
-            setStatus("El archivo supera los 4 MB.", "warn");
+          const tooLarge = files.find((file) => file.size > 4 * 1024 * 1024);
+          if (tooLarge) {
+            setStatus(`El archivo ${tooLarge.name} supera los 4 MB.`, "warn");
             return;
           }
-          const okExt = /\.(pdf|docx)$/i.test(file.name);
-          if (!okExt) {
-            setStatus("Formato no soportado. Subí un PDF con texto o un Word (.docx).", "warn");
+          const invalidExt = files.find((file) => !/\.(pdf|docx)$/i.test(file.name));
+          if (invalidExt) {
+            setStatus(`Formato no soportado en ${invalidExt.name}. Subí PDF con texto o Word (.docx).`, "warn");
             return;
           }
 
           button.disabled = true;
-          setStatus("Leyendo el archivo...", "");
+          setStatus(files.length === 1 ? "Leyendo el archivo..." : `Leyendo ${files.length} archivos...`, "");
 
           try {
             const fd = new FormData();
             fd.append("orderId", order.id);
             fd.append("token", order.token);
-            fd.append("file", file);
+            files.forEach((file) => fd.append("file", file));
             const res = await fetch("./api/extract", { method: "POST", body: fd });
             const data = await res.json().catch(() => ({}));
 
@@ -665,14 +670,19 @@
             if (notes) {
               // Si el usuario vuelve a leer un archivo, reemplazamos el bloque anterior
               // en vez de duplicarlo. Las notas manuales que estén arriba se conservan.
-              const manualNotes = notes.value.split(/\n\nDel archivo subido:\n/)[0].replace(/^Del archivo subido:\n[\s\S]*$/, "").trim();
+              const manualNotes = notes.value.split(/\n\nTexto extraído de archivos:\n/)[0].replace(/^Texto extraído de archivos:\n[\s\S]*$/, "").trim();
               const prefix = manualNotes ? manualNotes + "\n\n" : "";
-              const combined = (prefix + "Del archivo subido:\n" + extracted);
+              const combined = (prefix + "Texto extraído de archivos:\n" + extracted);
               // Respetar el limite del textarea.
-              notes.value = combined.slice(0, Number(notes.maxLength || 6000));
+              notes.value = combined.slice(0, Number(notes.maxLength || 12000));
               notes.dispatchEvent(new Event("input", { bubbles: true }));
             }
-            setStatus("Listo: leímos el texto y lo agregamos a tus notas. Revisalo y editá lo que quieras.", "ok");
+            const failed = (data.files || []).filter((item) => !item.ok);
+            const okCount = (data.files || []).filter((item) => item.ok).length || (extracted ? 1 : 0);
+            setStatus(failed.length
+              ? `Listo: leímos ${okCount} archivo(s). ${failed.length} no se pudieron leer. Revisá las notas.`
+              : `Listo: leímos ${okCount} archivo(s) y agregamos el texto a tus notas. Revisalo y editá lo que quieras.`,
+            "ok");
           } catch {
             setStatus("Hubo un problema al subir el archivo. Probá de nuevo o completá los datos a mano.", "warn");
           } finally {

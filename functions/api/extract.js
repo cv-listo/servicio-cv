@@ -1,9 +1,11 @@
 import { checkRateLimit, clientIp, json } from "./_utils.js";
 
-// Solo el plan Enfocado puede subir archivos. Se valida server-side contra la orden.
-const FOCUSED_PLAN = "focused";
+// Solo planes con IA pueden subir archivos. Se valida server-side contra la orden.
+const FILE_UPLOAD_PLANS = new Set(["professional", "focused"]);
 const MAX_FILE_BYTES = 4 * 1024 * 1024;
 const MAX_TEXT_CHARS = 8000;
+const MAX_TOTAL_TEXT_CHARS = 16000;
+const MAX_FILES = 5;
 const MIN_TEXT_FOR_PDF = 40;
 
 export async function onRequestPost({ request, env }) {
@@ -21,12 +23,18 @@ export async function onRequestPost({ request, env }) {
 
   const orderId = String(form.get("orderId") || "");
   const token = String(form.get("token") || "");
-  const file = form.get("file");
+  const files = form.getAll("file");
 
   if (!orderId || !token) {
     return json({ ok: false, error: "Faltan datos del pedido." }, { status: 400 });
   }
-  if (!file || typeof file === "string" || typeof file.arrayBuffer !== "function") {
+  if (!files.length) {
+    return json({ ok: false, error: "No se recibió ningún archivo." }, { status: 400 });
+  }
+  if (files.length > MAX_FILES) {
+    return json({ ok: false, error: `Podés subir hasta ${MAX_FILES} archivos por vez.` }, { status: 400 });
+  }
+  if (files.some((file) => !file || typeof file === "string" || typeof file.arrayBuffer !== "function")) {
     return json({ ok: false, error: "No se recibió ningún archivo válido." }, { status: 400 });
   }
 
@@ -40,65 +48,77 @@ export async function onRequestPost({ request, env }) {
   if (order.expires_at && new Date(order.expires_at).getTime() < Date.now()) {
     return json({ ok: false, error: "El enlace del pedido expiró." }, { status: 410 });
   }
-  if ((order.plan_id || "") !== FOCUSED_PLAN) {
-    return json({ ok: false, error: "La subida de archivos está disponible solo en el plan Enfocado." }, { status: 403 });
+  if (!FILE_UPLOAD_PLANS.has(order.plan_id || "")) {
+    return json({ ok: false, error: "La subida de archivos está disponible solo en planes con IA." }, { status: 403 });
   }
 
-  if (typeof file.size === "number" && file.size > MAX_FILE_BYTES) {
-    return json({ ok: false, error: "El archivo supera el tamaño máximo de 4 MB." }, { status: 413 });
+  const results = [];
+  for (const file of files) {
+    results.push(await extractOneFile(file, env));
   }
 
-  const buffer = await file.arrayBuffer();
-  if (buffer.byteLength > MAX_FILE_BYTES) {
-    return json({ ok: false, error: "El archivo supera el tamaño máximo de 4 MB." }, { status: 413 });
-  }
-  if (buffer.byteLength === 0) {
-    return json({ ok: false, error: "El archivo está vacío." }, { status: 400 });
-  }
+  const readable = results.filter((item) => item.ok);
+  const combinedText = readable
+    .map((item) => `Archivo: ${item.name}\n${item.text}`)
+    .join("\n\n")
+    .slice(0, MAX_TOTAL_TEXT_CHARS);
 
-  const bytes = new Uint8Array(buffer);
-  const kind = detectFileType(bytes);
-
-  let text = "";
-  try {
-    if (kind === "pdf") {
-      text = await extractPdfText(bytes);
-      if (text.trim().length < MIN_TEXT_FOR_PDF) {
-        return json({
-          ok: false,
-          error: "El PDF parece ser una imagen escaneada y no tiene texto seleccionable. Subí un PDF con texto real o un Word, o completá los datos a mano.",
-          reason: "pdf_sin_texto",
-        }, { status: 422 });
-      }
-    } else if (kind === "docx") {
-      text = await extractDocxText(bytes);
-    } else {
-      return json({
-        ok: false,
-        error: "Formato no soportado. Subí un PDF con texto o un documento Word (.docx).",
-        reason: "formato_no_soportado",
-      }, { status: 415 });
-    }
-  } catch (error) {
-    return json({
-      ok: false,
-      error: "No se pudo leer el contenido del archivo. Probá con otro o completá los datos a mano.",
-      detail: env.DEBUG_EXTRACT === "true" ? String(error?.message || error) : undefined,
-    }, { status: 422 });
-  }
-
-  const cleaned = normalizeExtracted(text).slice(0, MAX_TEXT_CHARS);
-  if (cleaned.trim().length < 10) {
-    return json({ ok: false, error: "No se encontró texto utilizable en el archivo." }, { status: 422 });
+  if (!readable.length) {
+    return json({ ok: false, error: "No se pudo leer texto utilizable en los archivos.", files: results }, { status: 422 });
   }
 
   return json({
     ok: true,
-    kind,
-    chars: cleaned.length,
-    text: cleaned,
+    files: results,
+    totalChars: combinedText.length,
+    text: combinedText,
     note: "Texto extraído. Revisalo y editá lo que quieras antes de generar el CV.",
   });
+}
+
+async function extractOneFile(file, env) {
+  const name = file.name || "archivo";
+  try {
+    if (typeof file.size === "number" && file.size > MAX_FILE_BYTES) {
+      return { ok: false, name, error: "El archivo supera el tamaño máximo de 4 MB.", reason: "archivo_grande" };
+    }
+
+    const buffer = await file.arrayBuffer();
+    if (buffer.byteLength > MAX_FILE_BYTES) {
+      return { ok: false, name, error: "El archivo supera el tamaño máximo de 4 MB.", reason: "archivo_grande" };
+    }
+    if (buffer.byteLength === 0) {
+      return { ok: false, name, error: "El archivo está vacío.", reason: "archivo_vacio" };
+    }
+
+    const bytes = new Uint8Array(buffer);
+    const kind = detectFileType(bytes);
+    let text = "";
+    if (kind === "pdf") {
+      text = await extractPdfText(bytes);
+      if (text.trim().length < MIN_TEXT_FOR_PDF) {
+        return { ok: false, name, kind, error: "El PDF parece ser una imagen escaneada y no tiene texto seleccionable.", reason: "pdf_sin_texto" };
+      }
+    } else if (kind === "docx") {
+      text = await extractDocxText(bytes);
+    } else {
+      return { ok: false, name, error: "Formato no soportado. Subí PDF con texto o Word (.docx).", reason: "formato_no_soportado" };
+    }
+
+    const cleaned = normalizeExtracted(text).slice(0, MAX_TEXT_CHARS);
+    if (cleaned.trim().length < 10) {
+      return { ok: false, name, kind, error: "No se encontró texto utilizable en el archivo.", reason: "sin_texto" };
+    }
+    return { ok: true, name, kind, chars: cleaned.length, text: cleaned.slice(0, MAX_TEXT_CHARS) };
+  } catch (error) {
+    return {
+      ok: false,
+      name,
+      error: "No se pudo leer el contenido del archivo.",
+      detail: env.DEBUG_EXTRACT === "true" ? String(error?.message || error) : undefined,
+      reason: "error_lectura",
+    };
+  }
 }
 
 function detectFileType(bytes) {
