@@ -142,6 +142,7 @@ Estados:
 - [x] Test de regresion del splitting de bullets: `actionPhraseBoundaryPattern` (no corta tras preposiciones/conjunciones).
 - [x] Tests de extraccion: `detectFileType`, `normalizeExtracted`, `joinTextItems` (reconstruccion de palabras partidas de pdf.js).
 - [ ] Integracion end-to-end (`/api/extract` con PDF/DOCX reales y orden en D1).
+- [x] `// @ts-check` + JSDoc en `_utils.js`, `validate.js` y `webhook-mp.js` con `npm run typecheck` (tsc + `@cloudflare/workers-types`, `strictNullChecks`).
 
 ## Checklist de pruebas finales
 

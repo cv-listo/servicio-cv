@@ -1,3 +1,4 @@
+// @ts-check
 import { checkRateLimit, clientIp, json, readJson, hasPromptInjection } from "./_utils.js";
 
 function clean(value) {
@@ -10,7 +11,14 @@ function hasUnsafePromptText(value) {
   return typeof value === "string" && hasPromptInjection(value);
 }
 
+/**
+ * Valida los datos del CV y devuelve reportes (criticos bloquean la generacion).
+ * @param {Record<string, any>} data
+ * @param {string} [planId]
+ * @returns {Array<{ severity: "critical" | "warning", message: string }>}
+ */
 export function validateData(data, planId) {
+  /** @type {Array<{ severity: "critical" | "warning", message: string }>} */
   const reports = [];
 
   if (!clean(data.fullName)) {

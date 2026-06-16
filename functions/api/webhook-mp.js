@@ -1,3 +1,4 @@
+// @ts-check
 import { json, nowIso, readJson } from "./_utils.js";
 
 export async function onRequestPost({ request, env }) {
@@ -204,6 +205,14 @@ function mapPaymentStatus(mpStatus, currentStatus) {
   return currentStatus || "payment_pending";
 }
 
+/**
+ * Valida la firma HMAC-SHA256 del webhook de Mercado Pago.
+ * @param {Request} request
+ * @param {URL} url
+ * @param {string} secret
+ * @param {string | null} paymentId
+ * @returns {Promise<boolean>}
+ */
 async function verifyMercadoPagoSignature(request, url, secret, paymentId) {
   const signature = request.headers.get("x-signature") || "";
   const requestId = request.headers.get("x-request-id") || "";
@@ -257,6 +266,12 @@ async function insertMpEvent(env, event = {}) {
   }
 }
 
+/**
+ * Comparacion en tiempo constante para evitar timing attacks en firmas.
+ * @param {string} a
+ * @param {string} b
+ * @returns {boolean}
+ */
 export function timingSafeEqual(a, b) {
   if (a.length !== b.length) return false;
   let result = 0;

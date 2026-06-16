@@ -1,3 +1,4 @@
+// @ts-check
 export const DEFAULT_PLANS = {
   basic: { id: "basic", name: "Básico", amount: 4990 },
   professional: { id: "professional", name: "Profesional", amount: 8990 },
@@ -6,6 +7,15 @@ export const DEFAULT_PLANS = {
 
 export const PLANS = DEFAULT_PLANS;
 
+/**
+ * @typedef {{ id: string, name: string, amount: number }} Plan
+ */
+
+/**
+ * Devuelve los planes con el monto sobrescrito por variables de entorno.
+ * @param {Record<string, any>} [env]
+ * @returns {{ basic: Plan, professional: Plan, focused: Plan }}
+ */
 export function getPlans(env = {}) {
   return {
     basic: withEnvAmount(DEFAULT_PLANS.basic, env.PLAN_BASIC_AMOUNT),
@@ -14,19 +24,38 @@ export function getPlans(env = {}) {
   };
 }
 
+/**
+ * @param {Record<string, any>} env
+ * @param {string} planId
+ * @returns {Plan}
+ */
 export function getPlan(env, planId) {
   return getPlans(env)[planId] || getPlans(env).basic;
 }
 
+/**
+ * @param {number|string} amount
+ * @returns {string}
+ */
 export function formatPrice(amount) {
   return `$${Number(amount || 0).toLocaleString("es-AR")}`;
 }
 
+/**
+ * @param {Plan} plan
+ * @param {unknown} rawAmount
+ * @returns {Plan}
+ */
 function withEnvAmount(plan, rawAmount) {
   const amount = Number(String(rawAmount || "").replace(/[^\d]/g, ""));
   return { ...plan, amount: Number.isFinite(amount) && amount > 0 ? amount : plan.amount };
 }
 
+/**
+ * @param {any} data
+ * @param {ResponseInit} [init]
+ * @returns {Response}
+ */
 export function json(data, init = {}) {
   return new Response(JSON.stringify(data), {
     ...init,
@@ -42,10 +71,18 @@ export function nowIso() {
   return new Date().toISOString();
 }
 
+/**
+ * @param {string} prefix
+ * @returns {string}
+ */
 export function randomId(prefix) {
   return `${prefix}_${crypto.randomUUID()}`;
 }
 
+/**
+ * @param {Request} request
+ * @returns {Promise<any>}
+ */
 export async function readJson(request) {
   try {
     return await request.json();
@@ -59,6 +96,12 @@ export async function readJson(request) {
 //  - no esta apagado por el kill-switch TEST_CODE_ENABLED=false, y
 //  - el email esta en TEST_CODE_ALLOWED_EMAILS (si esa allowlist esta definida).
 // Si la allowlist no se define, se comporta como antes (cualquier email).
+/**
+ * @param {Record<string, any>} env
+ * @param {string} [code]
+ * @param {string} [email]
+ * @returns {boolean}
+ */
 export function isTestCodeEnabled(env, code, email) {
   const normalized = String(code || "").trim().toUpperCase();
   const activeCode = String(env.TEST_DISCOUNT_CODE || "").trim().toUpperCase();
@@ -72,10 +115,22 @@ export function isTestCodeEnabled(env, code, email) {
   return allow.includes(String(email || "").trim().toLowerCase());
 }
 
+/**
+ * @param {Request} request
+ * @returns {string}
+ */
 export function clientIp(request) {
   return request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "unknown";
 }
 
+/**
+ * Rate limit basico apoyado en la tabla `rate_limits` de D1.
+ * @param {Record<string, any>} env
+ * @param {string} key
+ * @param {number} [limit]
+ * @param {number} [windowSeconds]
+ * @returns {Promise<{ ok: boolean, remaining?: number, resetAt?: string }>}
+ */
 export async function checkRateLimit(env, key, limit = 10, windowSeconds = 300) {
   if (!env.DB || !key) return { ok: true };
   const now = Date.now();
@@ -119,11 +174,21 @@ export const PROMPT_INJECTION_PATTERNS = [
   /aunque\s+no\s+lo\s+dij/i,
 ];
 
+/**
+ * @param {unknown} value
+ * @returns {boolean}
+ */
 export function hasPromptInjection(value) {
   const text = String(value || "");
   return PROMPT_INJECTION_PATTERNS.some((pattern) => pattern.test(text));
 }
 
+/**
+ * Limpia recursivamente strings de un objeto/array de CV, neutralizando
+ * intentos de inyeccion de prompts. Devuelve la misma forma de entrada.
+ * @param {any} value
+ * @returns {any}
+ */
 export function sanitizeCvData(value) {
   if (Array.isArray(value)) return value.map(sanitizeCvData);
   if (value && typeof value === "object") {
