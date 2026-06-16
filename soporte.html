@@ -54,6 +54,8 @@
           <form class="support-form" action="https://formsubmit.co/mariano.pereyra.1990.1@gmail.com" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="_subject" value="Soporte CV Listo" />
             <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_next" value="https://servicio-cv.pages.dev/soporte.html?enviado=1" />
             <input type="text" name="_honey" class="hidden-field" tabindex="-1" autocomplete="off" />
             <label>Email de contacto<input type="email" name="email" placeholder="tu@email.com" required /></label>
             <label>Código del pedido, si lo tenés<input type="text" name="order_id" placeholder="order_..." /></label>
@@ -123,6 +125,19 @@
         }
         window.location.href = `./formulario.html?order=${order.id}&token=${order.token}`;
       });
+
+      // Mostrar confirmación si FormSubmit redirigió con ?enviado=1
+      if (new URLSearchParams(window.location.search).get("enviado") === "1") {
+        const form = document.querySelector(".support-form");
+        if (form) {
+          form.innerHTML = `
+            <div style="text-align:center;padding:2rem 0">
+              <p style="font-size:2rem">✅</p>
+              <p><strong>Tu solicitud fue enviada.</strong></p>
+              <p style="color:var(--muted)">Te respondemos al email indicado dentro de 24&nbsp;hs hábiles.</p>
+            </div>`;
+        }
+      }
 
       const fileInput = document.querySelector("#support-file");
       const fileName = document.querySelector("#support-file-name");
