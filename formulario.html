@@ -656,7 +656,8 @@
             const data = await res.json().catch(() => ({}));
 
             if (!res.ok || !data.ok) {
-              setStatus(data.error || "No se pudo leer el archivo.", "warn");
+              const detail = data.detail ? ` Detalle técnico: ${data.detail}` : "";
+              setStatus(`${data.error || "No se pudo leer el archivo."}${detail}`, "warn");
               button.disabled = false;
               return;
             }
