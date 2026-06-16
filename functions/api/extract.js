@@ -79,8 +79,12 @@ export async function onRequestPost({ request, env }) {
         reason: "formato_no_soportado",
       }, { status: 415 });
     }
-  } catch {
-    return json({ ok: false, error: "No se pudo leer el contenido del archivo. Probá con otro o completá los datos a mano." }, { status: 422 });
+  } catch (error) {
+    return json({
+      ok: false,
+      error: "No se pudo leer el contenido del archivo. Probá con otro o completá los datos a mano.",
+      detail: env.DEBUG_EXTRACT === "true" ? String(error?.message || error) : undefined,
+    }, { status: 422 });
   }
 
   const cleaned = normalizeExtracted(text).slice(0, MAX_TEXT_CHARS);
