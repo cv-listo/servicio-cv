@@ -1887,25 +1887,32 @@ h3 {
   margin-top: 18px;
 }
 
+#generate-btn {
+  flex: 1 1 auto;
+  padding: 14px 20px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
 .audit {
-  border-radius: 14px;
+  border-radius: var(--radius-sm);
   padding: 10px 12px;
-  font-weight: 750;
+  font-weight: 600;
 }
 
 .audit.ok {
-  background: #e8f7f4;
+  background: var(--ok-soft);
   color: var(--ok);
 }
 
 .audit.warning {
-  background: #fff7e6;
+  background: var(--warning-soft);
   color: var(--warning);
 }
 
 .audit.critical {
-  background: #ffecec;
-  color: #b42318;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .a4-status {
@@ -1917,13 +1924,13 @@ h3 {
 }
 
 .ai-status {
-  border-radius: 14px;
+  border-radius: var(--radius-sm);
   margin: 12px 0;
   padding: 10px 12px;
   background: var(--ai-soft);
   color: var(--ai);
-  font-size: 0.92rem;
-  font-weight: 850;
+  font-size: var(--text-sm);
+  font-weight: 600;
 }
 
 .ai-status.ok {
@@ -1932,7 +1939,7 @@ h3 {
 }
 
 .ai-status.warning {
-  background: #fff7e6;
+  background: var(--warning-soft);
   color: var(--warning);
 }
 
@@ -1943,10 +1950,10 @@ h3 {
 
 .a4-meter {
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   margin: 12px 0;
   padding: 12px;
-  background: #fbfcff;
+  background: var(--surface-2);
 }
 
 .a4-meter-row {
@@ -1955,8 +1962,8 @@ h3 {
   gap: 10px;
   margin-bottom: 8px;
   color: var(--muted);
-  font-size: 0.86rem;
-  font-weight: 850;
+  font-size: var(--text-xs);
+  font-weight: 600;
 }
 
 .a4-meter-row strong {
@@ -1966,8 +1973,8 @@ h3 {
 .a4-meter-track {
   height: 9px;
   overflow: hidden;
-  border-radius: 999px;
-  background: #e5eaf3;
+  border-radius: var(--radius-pill);
+  background: var(--line);
 }
 
 .a4-meter-track span {
@@ -1983,11 +1990,11 @@ h3 {
 }
 
 .a4-meter-track .warn {
-  background: #d97706;
+  background: var(--warning);
 }
 
 .a4-meter-track .risk {
-  background: #dc2626;
+  background: var(--danger);
 }
 
 .quality-list {
@@ -2002,10 +2009,10 @@ h3 {
   display: flex;
   gap: 9px;
   align-items: flex-start;
-  border-radius: 14px;
+  border-radius: var(--radius-sm);
   padding: 10px 12px;
-  font-size: 0.9rem;
-  font-weight: 780;
+  font-size: var(--text-sm);
+  font-weight: 600;
 }
 
 .quality-list span {
@@ -2015,13 +2022,13 @@ h3 {
   flex: 0 0 auto;
   place-items: center;
   border-radius: 50%;
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 950;
+  color: var(--paper);
+  font-size: var(--text-xs);
+  font-weight: 700;
 }
 
 .quality-list .ok {
-  background: #e8f7f4;
+  background: var(--ok-soft);
   color: var(--ok);
 }
 
@@ -2030,7 +2037,7 @@ h3 {
 }
 
 .quality-list .warn {
-  background: #fff7e6;
+  background: var(--warning-soft);
   color: var(--warning);
 }
 
@@ -2039,12 +2046,12 @@ h3 {
 }
 
 .quality-list .danger {
-  background: #ffecec;
-  color: #b42318;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .quality-list .danger span {
-  background: #b42318;
+  background: var(--danger);
 }
 
 .a4-status.ok {
@@ -2156,40 +2163,47 @@ h3 {
   margin-top: 16px;
   padding-top: 16px;
   color: var(--ink);
-  font-size: 0.9rem;
-  font-weight: 800;
+  font-size: var(--text-sm);
+  font-weight: 600;
 }
 
 .quick-edit h2 {
-  font-size: 1.1rem;
-  letter-spacing: -0.02em;
+  font-size: var(--text-lg);
+  letter-spacing: var(--tracking-tight);
 }
 
 .quick-edit label {
   display: grid;
   gap: 5px;
   color: var(--ink);
-  font-size: 0.9rem;
-  font-weight: 800;
+  font-size: var(--text-sm);
+  font-weight: 600;
 }
 
 .quick-edit textarea {
   width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
   padding: 9px 11px;
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.quick-edit textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .print-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: var(--z-overlay);
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(23, 32, 51, 0.58);
+  background: rgba(19, 26, 40, 0.58);
   backdrop-filter: blur(4px);
 }
 
@@ -2199,11 +2213,27 @@ h3 {
 
 .print-overlay > div {
   max-width: 420px;
-  border-radius: 24px;
+  border-radius: var(--radius-lg);
   padding: 24px;
-  background: #fff;
-  box-shadow: var(--shadow);
+  background: var(--paper);
+  box-shadow: var(--shadow-lg);
   text-align: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .print-overlay:not([hidden]) {
+    animation: overlayIn var(--dur-base) var(--ease-out) both;
+  }
+
+  @keyframes overlayIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
 }
 
 .print-overlay strong {
@@ -2227,7 +2257,7 @@ h3 {
   max-width: 100%;
   margin: 0 auto;
   padding: 16mm;
-  background: white;
+  background: var(--paper);
   color: #1d2433;
   box-shadow: var(--shadow);
 }
@@ -2733,10 +2763,28 @@ h3 {
   place-items: center;
   border-radius: 50%;
   margin: 0 0 18px;
-  background: #e8f7f4;
+  background: var(--ok-soft);
   color: var(--ok);
   font-size: 2.3rem;
-  font-weight: 950;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .success-mark {
+    animation: successPop var(--dur-slow) var(--ease-out) both;
+  }
+
+  @keyframes successPop {
+    from {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 }
 
 .next-steps {
@@ -2750,12 +2798,12 @@ h3 {
   display: grid;
   gap: 4px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   margin-top: 18px;
   padding: 12px 14px;
-  background: #f8faff;
+  background: var(--accent-soft);
   color: var(--muted);
-  font-size: 0.94rem;
+  font-size: var(--text-sm);
 }
 
 .download-tip strong {
@@ -2764,9 +2812,9 @@ h3 {
 
 .next-steps article {
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   padding: 16px;
-  background: #fbfcff;
+  background: var(--surface-2);
 }
 
 .next-steps strong {
@@ -2790,7 +2838,7 @@ h3 {
   color: var(--accent-dark);
   cursor: pointer;
   font: inherit;
-  font-weight: 900;
+  font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
