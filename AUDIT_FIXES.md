@@ -101,6 +101,7 @@ Estados:
 - [x] Revisar toda la web para eliminar restos de promesas no implementadas.
 - [x] Alinear textos de pasos entre landing y formulario con paso Enfocado opcional.
 - [x] Neutralizar `og:description` para no mostrar precios hardcodeados.
+- [x] SEO: `robots.txt` + `sitemap.xml`, `noindex` en paginas de flujo (formulario, preview, pago, descargar, confirmar, retomar), `og:url` por pagina y `canonical` en landing/soporte.
 - [~] Revisar mobile completo en Android Chrome e iOS Safari.
 - [x] Mejorar `pago.html` con estados mas claros para pendiente/rechazado/reintento.
 - [x] Agregar aviso en descarga sobre guardar PDF desde navegador/mobile.

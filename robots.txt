@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /admin.html
+Disallow: /confirmar.html
+Disallow: /pago.html
+Disallow: /formulario.html
+Disallow: /preview.html
+Disallow: /descargar.html
+Disallow: /retomar.html
+
+Sitemap: https://servicio-cv.pages.dev/sitemap.xml
