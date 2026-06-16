@@ -18,7 +18,7 @@
     <main class="app-shell checkout-shell">
       <section class="app-card payment-status-card">
         <p class="eyebrow">Mercado Pago</p>
-        <div class="payment-status-orb" id="payment-status-orb"><span></span></div>
+        <div class="payment-status-orb" id="payment-status-orb" aria-hidden="true"><span></span></div>
         <h1>Estamos verificando tu pago</h1>
         <p id="payment-status-text">Esto puede demorar unos segundos. No cierres esta pantalla.</p>
         <div class="payment-brand-row" aria-label="Pago seguro">
@@ -27,7 +27,7 @@
           <span>Mastercard</span>
           <span>Débito</span>
         </div>
-        <div class="a4-status warning" id="payment-status-box">Esperando confirmación del pago...</div>
+        <div class="a4-status warning" id="payment-status-box" role="status" aria-live="polite">Esperando confirmación del pago...</div>
         <div class="app-actions">
           <button class="button primary" type="button" id="retry-payment-check">Ya pagué, verificar de nuevo</button>
           <a class="button secondary" href="./retomar.html">Retomar pedido</a>

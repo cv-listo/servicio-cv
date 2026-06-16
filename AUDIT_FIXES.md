@@ -103,6 +103,7 @@ Estados:
 - [x] Alinear textos de pasos entre landing y formulario con paso Enfocado opcional.
 - [x] Neutralizar `og:description` para no mostrar precios hardcodeados.
 - [x] SEO: `robots.txt` + `sitemap.xml`, `noindex` en paginas de flujo (formulario, preview, pago, descargar, confirmar, retomar), `og:url` por pagina y `canonical` en landing/soporte.
+- [x] A11y (M3): anillo de foco solido de alto contraste (>=3:1), `aria-hidden` en emojis/orbe decorativos y `role=status`/`aria-live` en el estado de pago.
 - [~] Revisar mobile completo en Android Chrome e iOS Safari.
 - [x] Mejorar `pago.html` con estados mas claros para pendiente/rechazado/reintento.
 - [x] Agregar aviso en descarga sobre guardar PDF desde navegador/mobile.

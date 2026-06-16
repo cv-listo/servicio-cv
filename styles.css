@@ -60,8 +60,9 @@
   --ai-soft: #efe7fb;
   --ai-soft: oklch(0.95 0.035 295);
 
-  /* --- Anillo de foco accesible --- */
-  --focus-ring: rgba(47, 86, 212, 0.45);
+  /* --- Anillo de foco accesible (solido, >=3:1 sobre fondos claros) --- */
+  --focus-ring: #1f3da3;
+  --focus-ring: oklch(0.42 0.16 262);
 
   /* --- Tipografia (system stack, sin dependencias externas / CSP-safe) --- */
   --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
