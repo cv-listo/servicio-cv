@@ -178,6 +178,18 @@ a {
   backdrop-filter: blur(10px);
 }
 
+@media (min-width: 621px) {
+  .hero {
+    padding-top: 64px;
+  }
+
+  .topbar {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: var(--z-sticky);
+  }
+}
+
 .topbar a {
   border: 1px solid transparent;
   border-radius: 999px;
