@@ -3403,6 +3403,20 @@ h3 {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  position: sticky;
+  bottom: 0;
+  padding: 8px 0;
+  background: linear-gradient(to top, var(--paper) 70%, transparent);
+}
+
+.prefill-counter {
+  margin-left: 6px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+#prefill-apply {
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 35%, transparent);
 }
 
 .prefill-applied-msg {

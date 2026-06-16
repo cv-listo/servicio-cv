@@ -51,11 +51,11 @@
               <p class="file-extract-status" id="cv-file-status" role="status" aria-live="polite"></p>
               <div class="prefill-review-panel" id="prefill-review-panel" hidden>
                 <h3>Esto encontramos en tus archivos</h3>
-                <p class="form-note">Revisá cada dato antes de usarlo. Los de baja confianza vienen desmarcados. Nada se aplica hasta que confirmes.</p>
+                <p class="form-note">Revisá cada dato antes de usarlo. Los de baja confianza vienen desmarcados. <strong>Nada se aplica hasta que aprietes "Usar lo seleccionado".</strong></p>
                 <div class="prefill-warnings" id="prefill-warnings" hidden></div>
                 <div class="prefill-sections" id="prefill-sections"></div>
                 <div class="prefill-actions">
-                  <button type="button" class="button primary" id="prefill-apply">Usar lo seleccionado</button>
+                  <button type="button" class="button primary" id="prefill-apply">Usar lo seleccionado <span id="prefill-counter" class="prefill-counter" aria-live="polite"></span></button>
                   <button type="button" class="button secondary" id="prefill-discard">Descartar todo</button>
                 </div>
               </div>
@@ -657,22 +657,34 @@
           renderPrefillReviewPanel(profile, warnings, meta);
           reviewPanel?.removeAttribute("hidden");
           appliedMsg?.setAttribute("hidden", "");
+          updatePrefillCounter();
+          setTimeout(() => {
+            reviewPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 80);
         };
 
         document.querySelector("#prefill-apply")?.addEventListener("click", () => {
           const applied = applyPrefillSelections();
-          if (!applied) return;
+          if (applied === 0) {
+            setStatus("No marcaste ningún dato para usar. Marcá al menos uno o apretá 'Descartar todo'.", "warn");
+            return;
+          }
+          if (applied === false) return;
           reviewPanel?.setAttribute("hidden", "");
           if (appliedMsg) {
-            appliedMsg.textContent = "Listo, completamos el formulario con lo que seleccionaste. Revisá y ajustá lo que quieras.";
+            appliedMsg.textContent = `Listo, completamos ${applied} campo(s) del formulario. Revisá y ajustá lo que quieras en los pasos siguientes.`;
             appliedMsg.removeAttribute("hidden");
           }
-          setStatus("Datos aplicados al formulario. Podés editarlos en los pasos siguientes.", "ok");
+          setStatus(`Datos aplicados al formulario (${applied} campo(s)). Podés editarlos en los pasos siguientes.`, "ok");
         });
 
         document.querySelector("#prefill-discard")?.addEventListener("click", () => {
           hidePrefillReview();
           setStatus("Descartaste la sugerencia. Podés completar el formulario a mano.", "");
+        });
+
+        document.querySelector("#prefill-sections")?.addEventListener("change", (event) => {
+          if (event.target.matches('[data-prefill-kind]')) updatePrefillCounter();
         });
 
         button.addEventListener("click", async () => {
@@ -877,8 +889,10 @@
         }
 
         const experiences = (profile.experiences || []).filter((item) => item.place || item.role || item.tasks);
-        if (experiences.length) {
-          html += `<section class="prefill-section"><h4>Experiencias</h4>`;
+        html += `<section class="prefill-section"><h4>Experiencias</h4>`;
+        if (!experiences.length) {
+          html += `<p class="form-note">No encontramos experiencias claras en los archivos. Cargalas a mano en el Paso 3.</p>`;
+        } else {
           if (experiences.length > 3) {
             html += `<p class="form-note">Encontramos ${experiences.length} experiencias; el formulario admite hasta 3. Se aplicarán las primeras 3 seleccionadas.</p>`;
           }
@@ -887,11 +901,13 @@
             const checked = defaultPrefillChecked(item.confidence);
             return `<label class="prefill-item prefill-exp-card confidence-${item.confidence || "low"}"><input type="checkbox" data-prefill-kind="experience" data-prefill-index="${index}" ${checked ? "checked" : ""} /><span><strong>${CVListo.escapeHtml(item.role || "Sin rol")}</strong> — ${CVListo.escapeHtml(item.place || "Sin lugar")}${dates ? `<br /><small>${CVListo.escapeHtml(dates)}</small>` : ""}${item.tasks ? `<br />${CVListo.escapeHtml(item.tasks)}` : ""}<br /><small class="prefill-confidence">${confidenceLabel(item.confidence)}</small></span></label>`;
           }).join("");
-          html += `</section>`;
         }
+        html += `</section>`;
 
-        if (educationItems.length) {
-          html += `<section class="prefill-section"><h4>Educación y cursos</h4>`;
+        html += `<section class="prefill-section"><h4>Educación y cursos</h4>`;
+        if (!educationItems.length) {
+          html += `<p class="form-note">No encontramos estudios o cursos claros. Cargalos a mano en el Paso 4.</p>`;
+        } else {
           if (educationItems.length > 3) {
             html += `<p class="form-note">Encontramos ${educationItems.length} ítems; el formulario admite hasta 3.</p>`;
           }
@@ -899,8 +915,8 @@
             const checked = defaultPrefillChecked(item.confidence);
             return `<label class="prefill-item confidence-${item.confidence || "low"}"><input type="checkbox" data-prefill-kind="education" data-prefill-index="${index}" ${checked ? "checked" : ""} /><span>${CVListo.escapeHtml(item.text)}<br /><small class="prefill-confidence">${confidenceLabel(item.confidence)}</small></span></label>`;
           }).join("");
-          html += `</section>`;
         }
+        html += `</section>`;
 
         if (String(skillsValue).trim()) {
           html += `<section class="prefill-section"><h4>Habilidades</h4>${renderPrefillScalarRow("skills", "Habilidades sugeridas", skillsValue, profile.skills?.confidence, "skills")}</section>`;
@@ -957,6 +973,13 @@
         return String(map[fieldName] || "").trim();
       }
 
+      function updatePrefillCounter() {
+        const counter = document.querySelector("#prefill-counter");
+        if (!counter) return;
+        const checked = document.querySelectorAll('#prefill-sections [data-prefill-kind]:checked').length;
+        counter.textContent = checked ? `(${checked})` : "";
+      }
+
       function applyPrefillSelections() {
         const sections = document.querySelector("#prefill-sections");
         if (!sections?.dataset.prefillPayload) return false;
@@ -968,6 +991,7 @@
         }
         const profile = payload.profile || {};
         const checkedScalars = Array.from(sections.querySelectorAll('[data-prefill-kind="scalar"]:checked'));
+        let applied = 0;
 
         checkedScalars.forEach((input) => {
           const fieldName = input.dataset.prefillField;
@@ -986,6 +1010,7 @@
               notes.value = (prefix + "GitHub: " + value).slice(0, Number(notes.maxLength || 12000));
               notes.dispatchEvent(new Event("input", { bubbles: true }));
             }
+            applied += 1;
             return;
           }
 
@@ -997,6 +1022,7 @@
               field.value = mapped;
               persistArea(mapped);
               field.dispatchEvent(new Event("change", { bubbles: true }));
+              applied += 1;
             }
             return;
           }
@@ -1007,6 +1033,7 @@
             field.value = value;
           }
           field.dispatchEvent(new Event("input", { bubbles: true }));
+          applied += 1;
         });
 
         const selectedExperiences = Array.from(sections.querySelectorAll('[data-prefill-kind="experience"]:checked'))
@@ -1018,6 +1045,7 @@
 
         if (selectedExperiences.length) {
           applyPrefillExperiences(selectedExperiences);
+          applied += selectedExperiences.length;
         }
 
         const educationPool = [
@@ -1033,9 +1061,10 @@
 
         if (selectedEducation.length) {
           applyPrefillEducation(selectedEducation);
+          applied += selectedEducation.length;
         }
 
-        return true;
+        return applied;
       }
 
       function isExperienceCardEmpty(card) {
