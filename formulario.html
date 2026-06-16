@@ -663,7 +663,10 @@
             // de Fase B: en el backend de IA extraNotes entra como DATO, nunca como instruccion).
             const extracted = String(data.text || "").trim();
             if (notes) {
-              const prefix = notes.value.trim() ? notes.value.trim() + "\n\n" : "";
+              // Si el usuario vuelve a leer un archivo, reemplazamos el bloque anterior
+              // en vez de duplicarlo. Las notas manuales que estén arriba se conservan.
+              const manualNotes = notes.value.split(/\n\nDel archivo subido:\n/)[0].replace(/^Del archivo subido:\n[\s\S]*$/, "").trim();
+              const prefix = manualNotes ? manualNotes + "\n\n" : "";
               const combined = (prefix + "Del archivo subido:\n" + extracted);
               // Respetar el limite del textarea.
               notes.value = combined.slice(0, Number(notes.maxLength || 6000));
