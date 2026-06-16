@@ -41,13 +41,25 @@
               <p>Vos decidís qué datos aparecen en el CV final.</p>
             </div>
             <div class="ai-plan-only file-extract-box suggestion-box">
-              <p>Subir CV anterior o certificados (opcional)</p>
-              <span class="form-note">Podés subir varios PDF con texto o Word (.docx), hasta 4 MB cada uno. Leemos el texto para usarlo de guía y descartamos los archivos: no se guardan. Las imágenes o PDF escaneados no se pueden leer.</span>
+              <p>¿Ya tenés un CV o certificados? Subilos y completamos el formulario por vos (después revisás todo).</p>
+              <span class="form-note">Podés subir varios PDF con texto o Word (.docx), hasta 4 MB cada uno. Leemos el texto para prellenar el formulario y descartamos los archivos: no se guardan. Las imágenes o PDF escaneados no se pueden leer.</span>
               <div class="file-extract-row">
                 <input type="file" id="cv-file" multiple accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
                 <button type="button" class="button secondary" id="cv-file-btn">Leer archivos</button>
               </div>
+              <ul class="file-entry-list" id="cv-file-list" aria-live="polite"></ul>
               <p class="file-extract-status" id="cv-file-status" role="status" aria-live="polite"></p>
+              <div class="prefill-review-panel" id="prefill-review-panel" hidden>
+                <h3>Esto encontramos en tus archivos</h3>
+                <p class="form-note">Revisá cada dato antes de usarlo. Los de baja confianza vienen desmarcados. Nada se aplica hasta que confirmes.</p>
+                <div class="prefill-warnings" id="prefill-warnings" hidden></div>
+                <div class="prefill-sections" id="prefill-sections"></div>
+                <div class="prefill-actions">
+                  <button type="button" class="button primary" id="prefill-apply">Usar lo seleccionado</button>
+                  <button type="button" class="button secondary" id="prefill-discard">Descartar todo</button>
+                </div>
+              </div>
+              <p class="prefill-applied-msg" id="prefill-applied-msg" hidden role="status"></p>
               <label>Texto leído de archivos y notas para la IA<textarea name="extraNotes" rows="8" maxlength="12000" placeholder="Acá va a aparecer el texto extraído. Podés revisarlo, borrar partes o sumar notas útiles para adaptar el CV."></textarea></label>
               <span class="form-note">La IA usa este texto como información adicional para ordenar tu CV. No inventa datos que no escribas.</span>
             </div>
@@ -616,13 +628,52 @@
         const input = document.querySelector("#cv-file");
         const button = document.querySelector("#cv-file-btn");
         const status = document.querySelector("#cv-file-status");
+        const fileList = document.querySelector("#cv-file-list");
         const notes = document.querySelector('[name="extraNotes"]');
+        const reviewPanel = document.querySelector("#prefill-review-panel");
+        const appliedMsg = document.querySelector("#prefill-applied-msg");
         if (!input || !button || !status) return;
 
         const setStatus = (msg, kind) => {
           status.textContent = msg;
           status.className = `file-extract-status${kind ? " " + kind : ""}`;
         };
+
+        const renderFileList = (files, stateByName) => {
+          if (!fileList) return;
+          fileList.innerHTML = files.map((file) => {
+            const state = stateByName[file.name] || { kind: "pending", message: "Pendiente" };
+            const icon = state.kind === "ok" ? "✓" : state.kind === "error" ? "✕" : "…";
+            return `<li class="file-entry file-entry--${state.kind}"><span class="file-entry-icon" aria-hidden="true">${icon}</span><span class="file-entry-name">${CVListo.escapeHtml(file.name)}</span><span class="file-entry-meta">${CVListo.escapeHtml(state.message)}</span></li>`;
+          }).join("");
+        };
+
+        const hidePrefillReview = () => {
+          reviewPanel?.setAttribute("hidden", "");
+          appliedMsg?.setAttribute("hidden", "");
+        };
+
+        const showPrefillReview = (profile, warnings, meta) => {
+          renderPrefillReviewPanel(profile, warnings, meta);
+          reviewPanel?.removeAttribute("hidden");
+          appliedMsg?.setAttribute("hidden", "");
+        };
+
+        document.querySelector("#prefill-apply")?.addEventListener("click", () => {
+          const applied = applyPrefillSelections();
+          if (!applied) return;
+          reviewPanel?.setAttribute("hidden", "");
+          if (appliedMsg) {
+            appliedMsg.textContent = "Listo, completamos el formulario con lo que seleccionaste. Revisá y ajustá lo que quieras.";
+            appliedMsg.removeAttribute("hidden");
+          }
+          setStatus("Datos aplicados al formulario. Podés editarlos en los pasos siguientes.", "ok");
+        });
+
+        document.querySelector("#prefill-discard")?.addEventListener("click", () => {
+          hidePrefillReview();
+          setStatus("Descartaste la sugerencia. Podés completar el formulario a mano.", "");
+        });
 
         button.addEventListener("click", async () => {
           const files = Array.from(input.files || []);
@@ -634,7 +685,6 @@
             setStatus("Podés subir hasta 5 archivos por vez.", "warn");
             return;
           }
-          // Validacion liviana en cliente (la real es server-side por magic bytes).
           const tooLarge = files.find((file) => file.size > 4 * 1024 * 1024);
           if (tooLarge) {
             setStatus(`El archivo ${tooLarge.name} supera los 4 MB.`, "warn");
@@ -646,7 +696,10 @@
             return;
           }
 
+          hidePrefillReview();
           button.disabled = true;
+          const pendingState = Object.fromEntries(files.map((file) => [file.name, { kind: "pending", message: "Leyendo…" }]));
+          renderFileList(files, pendingState);
           setStatus(files.length === 1 ? "Leyendo el archivo..." : `Leyendo ${files.length} archivos...`, "");
 
           try {
@@ -660,34 +713,389 @@
             if (!res.ok || !data.ok) {
               const detail = data.detail ? ` Detalle técnico: ${data.detail}` : "";
               setStatus(`${data.error || "No se pudo leer el archivo."}${detail}`, "warn");
+              (data.files || []).forEach((item) => {
+                pendingState[item.name] = {
+                  kind: item.ok ? "ok" : "error",
+                  message: item.ok ? `${item.chars || 0} caracteres` : (item.error || "No se pudo leer"),
+                };
+              });
+              renderFileList(files, pendingState);
               button.disabled = false;
               return;
             }
 
-            // Volcar el texto extraido al campo de notas (reusa el tratamiento anti-inyeccion
-            // de Fase B: en el backend de IA extraNotes entra como DATO, nunca como instruccion).
             const extracted = String(data.text || "").trim();
             if (notes) {
-              // Si el usuario vuelve a leer un archivo, reemplazamos el bloque anterior
-              // en vez de duplicarlo. Las notas manuales que estén arriba se conservan.
               const manualNotes = notes.value.split(/\n\nTexto extraído de archivos:\n/)[0].replace(/^Texto extraído de archivos:\n[\s\S]*$/, "").trim();
               const prefix = manualNotes ? manualNotes + "\n\n" : "";
-              const combined = (prefix + "Texto extraído de archivos:\n" + extracted);
-              // Respetar el limite del textarea.
+              const combined = prefix + "Texto extraído de archivos:\n" + extracted;
               notes.value = combined.slice(0, Number(notes.maxLength || 12000));
               notes.dispatchEvent(new Event("input", { bubbles: true }));
             }
+
+            (data.files || []).forEach((item) => {
+              pendingState[item.name] = {
+                kind: item.ok ? "ok" : "error",
+                message: item.ok ? `${item.chars || 0} caracteres leídos` : (item.error || "No se pudo leer"),
+              };
+            });
+            renderFileList(files, pendingState);
+
             const failed = (data.files || []).filter((item) => !item.ok);
             const okCount = (data.files || []).filter((item) => item.ok).length || (extracted ? 1 : 0);
+            if (!extracted) {
+              setStatus("No pudimos leer texto utilizable. Podés completar el formulario a mano.", "warn");
+              return;
+            }
+
             setStatus(failed.length
-              ? `Listo: leímos ${okCount} archivo(s). ${failed.length} no se pudieron leer. Revisá las notas.`
-              : `Listo: leímos ${okCount} archivo(s) y agregamos el texto a tus notas. Revisalo y editá lo que quieras.`,
-            "ok");
+              ? `Leímos ${okCount} archivo(s). ${failed.length} no se pudieron leer. Analizando con IA…`
+              : "Analizando con IA para armar tu formulario…", "");
+
+            try {
+              const prefill = await requestPrefillProfile(extracted);
+              if (prefill.ok && prefill.profile) {
+                showPrefillReview(prefill.profile, prefill.warnings || [], prefill.meta || {});
+                setStatus(failed.length
+                  ? `Encontramos datos en ${okCount} archivo(s). Revisá la sugerencia abajo.`
+                  : "Encontramos datos en tus archivos. Revisá la sugerencia abajo.", "ok");
+              } else {
+                setStatus(failed.length
+                  ? `Leímos ${okCount} archivo(s). ${prefill.error || "No pudimos prellenar con IA; el texto quedó en las notas."}`
+                  : (prefill.error || "Leímos el texto pero no pudimos prellenar con IA. Revisá las notas o completá a mano."), failed.length ? "ok" : "warn");
+              }
+            } catch {
+              setStatus(failed.length
+                ? `Leímos ${okCount} archivo(s). No pudimos analizar con IA; el texto quedó en las notas.`
+                : "Leímos el texto pero no pudimos analizar con IA. Revisá las notas.", failed.length ? "ok" : "warn");
+            }
           } catch {
             setStatus("Hubo un problema al subir el archivo. Probá de nuevo o completá los datos a mano.", "warn");
           } finally {
             button.disabled = false;
           }
+        });
+      }
+
+      async function requestPrefillProfile(documentsText) {
+        const jobAdText = document.querySelector('[name="jobAd"]')?.value || "";
+        const res = await fetch("./api/ai/prefill-profile", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            orderId: order.id,
+            token: order.token,
+            documentsText,
+            jobAdText,
+          }),
+        });
+        return res.json().catch(() => ({ ok: false, error: "Respuesta inválida del servidor." }));
+      }
+
+      function formFieldHasValue(name) {
+        const field = document.querySelector(`#resume-form [name="${name}"]`);
+        if (!field) return false;
+        if (field.type === "checkbox") return field.checked;
+        return String(field.value || "").trim().length > 0;
+      }
+
+      function defaultPrefillChecked(confidence, fieldName) {
+        if (!confidence || confidence === "low") return false;
+        if (fieldName && formFieldHasValue(fieldName)) return false;
+        return true;
+      }
+
+      function mapTargetAreaOption(text) {
+        const select = document.querySelector('[name="targetArea"]');
+        if (!select || !text) return "";
+        const normalized = String(text).trim().toLowerCase();
+        const options = Array.from(select.options).map((option) => option.value).filter(Boolean);
+        const exact = options.find((option) => option.toLowerCase() === normalized);
+        if (exact) return exact;
+        const partial = options.find((option) => normalized.includes(option.toLowerCase()) || option.toLowerCase().includes(normalized));
+        return partial || "";
+      }
+
+      function normalizePrefillMonth(value) {
+        const month = Number.parseInt(String(value || "").replace(/^0+/, ""), 10);
+        if (!month || month < 1 || month > 12) return "";
+        return String(month).padStart(2, "0");
+      }
+
+      function confidenceLabel(confidence) {
+        if (confidence === "high") return "Alta confianza";
+        if (confidence === "medium") return "Confianza media";
+        return "Baja confianza";
+      }
+
+      function renderPrefillReviewPanel(profile, warnings, meta) {
+        const sections = document.querySelector("#prefill-sections");
+        const warningsBox = document.querySelector("#prefill-warnings");
+        if (!sections) return;
+
+        const scalarFields = [
+          { key: "fullName", label: "Nombre completo", value: profile.contact?.fullName, field: "fullName" },
+          { key: "email", label: "Email", value: profile.contact?.email, field: "email" },
+          { key: "phone", label: "Teléfono", value: profile.contact?.phone, field: "phone" },
+          { key: "location", label: "Localidad / provincia", value: profile.contact?.location, field: "location" },
+          { key: "address", label: "Dirección o zona", value: profile.contact?.address, field: "address" },
+          { key: "dni", label: "DNI", value: profile.contact?.dni, field: "dni" },
+          { key: "linkedin", label: "LinkedIn o portfolio", value: profile.links?.linkedin, field: "linkedin" },
+          { key: "targetRole", label: "Puesto objetivo", value: profile.objective?.targetRole, field: "targetRole" },
+          { key: "summary", label: "Objetivo sugerido (editable)", value: profile.objective?.summary, field: "summary" },
+        ];
+
+        const targetAreaValue = mapTargetAreaOption(profile.objective?.targetArea?.value || "");
+        const targetAreaConfidence = profile.objective?.targetArea?.confidence || "low";
+        const skillsValue = profile.skills?.value || (profile.skills?.items || []).join(", ");
+        const educationItems = [
+          ...(profile.educationItems || []),
+          ...(profile.certifications || []).map((item) => ({ ...item, text: item.text, confidence: item.confidence || "medium" })),
+        ].filter((item) => String(item.text || "").trim());
+
+        let html = "";
+
+        const contactRows = scalarFields.filter((item) => ["fullName", "email", "phone", "location", "address", "dni", "linkedin"].includes(item.key))
+          .filter((item) => String(item.value?.value || "").trim())
+          .map((item) => renderPrefillScalarRow(`contact-${item.key}`, item.label, item.value.value, item.value.confidence, item.field))
+          .join("");
+        if (contactRows) {
+          html += `<section class="prefill-section"><h4>Contacto</h4>${contactRows}</section>`;
+        }
+
+        const objectiveRows = [];
+        if (targetAreaValue) {
+          objectiveRows.push(renderPrefillScalarRow("objective-targetArea", "Área buscada", targetAreaValue, targetAreaConfidence, "targetArea"));
+        } else if (String(profile.objective?.targetArea?.value || "").trim()) {
+          objectiveRows.push(`<p class="form-note">Área sugerida "${CVListo.escapeHtml(profile.objective.targetArea.value)}" no coincide con las opciones; elegila manualmente en el paso 2.</p>`);
+        }
+        scalarFields.filter((item) => ["targetRole", "summary"].includes(item.key))
+          .filter((item) => String(item.value?.value || "").trim())
+          .forEach((item) => objectiveRows.push(renderPrefillScalarRow(`objective-${item.key}`, item.label, item.value.value, item.value.confidence, item.field)));
+        if (objectiveRows.length) {
+          html += `<section class="prefill-section"><h4>Objetivo laboral</h4>${objectiveRows.join("")}</section>`;
+        }
+
+        const experiences = (profile.experiences || []).filter((item) => item.place || item.role || item.tasks);
+        if (experiences.length) {
+          html += `<section class="prefill-section"><h4>Experiencias</h4>`;
+          if (experiences.length > 3) {
+            html += `<p class="form-note">Encontramos ${experiences.length} experiencias; el formulario admite hasta 3. Se aplicarán las primeras 3 seleccionadas.</p>`;
+          }
+          html += experiences.map((item, index) => {
+            const dates = [item.startMonth, item.startYear, item.endMonth, item.endYear].filter(Boolean).join("/");
+            const checked = defaultPrefillChecked(item.confidence);
+            return `<label class="prefill-item prefill-exp-card confidence-${item.confidence || "low"}"><input type="checkbox" data-prefill-kind="experience" data-prefill-index="${index}" ${checked ? "checked" : ""} /><span><strong>${CVListo.escapeHtml(item.role || "Sin rol")}</strong> — ${CVListo.escapeHtml(item.place || "Sin lugar")}${dates ? `<br /><small>${CVListo.escapeHtml(dates)}</small>` : ""}${item.tasks ? `<br />${CVListo.escapeHtml(item.tasks)}` : ""}<br /><small class="prefill-confidence">${confidenceLabel(item.confidence)}</small></span></label>`;
+          }).join("");
+          html += `</section>`;
+        }
+
+        if (educationItems.length) {
+          html += `<section class="prefill-section"><h4>Educación y cursos</h4>`;
+          if (educationItems.length > 3) {
+            html += `<p class="form-note">Encontramos ${educationItems.length} ítems; el formulario admite hasta 3.</p>`;
+          }
+          html += educationItems.map((item, index) => {
+            const checked = defaultPrefillChecked(item.confidence);
+            return `<label class="prefill-item confidence-${item.confidence || "low"}"><input type="checkbox" data-prefill-kind="education" data-prefill-index="${index}" ${checked ? "checked" : ""} /><span>${CVListo.escapeHtml(item.text)}<br /><small class="prefill-confidence">${confidenceLabel(item.confidence)}</small></span></label>`;
+          }).join("");
+          html += `</section>`;
+        }
+
+        if (String(skillsValue).trim()) {
+          html += `<section class="prefill-section"><h4>Habilidades</h4>${renderPrefillScalarRow("skills", "Habilidades sugeridas", skillsValue, profile.skills?.confidence, "skills")}</section>`;
+        }
+
+        if (String(profile.notes?.value || "").trim()) {
+          html += `<section class="prefill-section"><h4>Notas adicionales</h4>${renderPrefillScalarRow("notes", "Notas", profile.notes.value, profile.notes.confidence, "extraNotes")}</section>`;
+        }
+
+        if (String(profile.links?.github?.value || "").trim()) {
+          html += `<section class="prefill-section"><h4>Otros links</h4>${renderPrefillScalarRow("github", "GitHub", profile.links.github.value, profile.links.github.confidence, "github")}</section>`;
+        }
+
+        sections.innerHTML = html || `<p class="form-note">No encontramos datos claros para prellenar. Podés completar el formulario a mano.</p>`;
+        sections.dataset.prefillPayload = JSON.stringify({ profile, meta });
+
+        if (warningsBox) {
+          if (warnings?.length) {
+            warningsBox.innerHTML = `<p><strong>Avisos de la lectura:</strong></p><ul>${warnings.map((item) => `<li>${CVListo.escapeHtml(item)}</li>`).join("")}</ul>`;
+            warningsBox.hidden = false;
+          } else {
+            warningsBox.innerHTML = "";
+            warningsBox.hidden = true;
+          }
+        }
+      }
+
+      function renderPrefillScalarRow(id, label, value, confidence, fieldName) {
+        const text = String(value || "").trim();
+        if (!text) return "";
+        const checked = defaultPrefillChecked(confidence, fieldName);
+        const display = fieldName === "summary" || fieldName === "extraNotes" || fieldName === "skills"
+          ? `<textarea class="prefill-inline-edit" data-prefill-edit="${fieldName}" rows="${fieldName === "summary" ? 2 : 3}" onclick="event.stopPropagation()">${CVListo.escapeHtml(text)}</textarea>`
+          : `<span>${CVListo.escapeHtml(text)}</span>`;
+        return `<label class="prefill-item confidence-${confidence || "low"}"><input type="checkbox" data-prefill-kind="scalar" data-prefill-field="${fieldName}" ${checked ? "checked" : ""} /><span><strong>${CVListo.escapeHtml(label)}</strong><br />${display}<br /><small class="prefill-confidence">${confidenceLabel(confidence)}</small></span></label>`;
+      }
+
+      function getPrefillScalarSourceValue(profile, fieldName) {
+        const map = {
+          fullName: profile.contact?.fullName?.value,
+          email: profile.contact?.email?.value,
+          phone: profile.contact?.phone?.value,
+          location: profile.contact?.location?.value,
+          address: profile.contact?.address?.value,
+          dni: profile.contact?.dni?.value,
+          linkedin: profile.links?.linkedin?.value,
+          targetRole: profile.objective?.targetRole?.value,
+          summary: profile.objective?.summary?.value,
+          skills: profile.skills?.value || (profile.skills?.items || []).join(", "),
+          extraNotes: profile.notes?.value,
+          github: profile.links?.github?.value,
+          targetArea: mapTargetAreaOption(profile.objective?.targetArea?.value || "") || profile.objective?.targetArea?.value,
+        };
+        return String(map[fieldName] || "").trim();
+      }
+
+      function applyPrefillSelections() {
+        const sections = document.querySelector("#prefill-sections");
+        if (!sections?.dataset.prefillPayload) return false;
+        let payload;
+        try {
+          payload = JSON.parse(sections.dataset.prefillPayload);
+        } catch {
+          return false;
+        }
+        const profile = payload.profile || {};
+        const checkedScalars = Array.from(sections.querySelectorAll('[data-prefill-kind="scalar"]:checked'));
+
+        checkedScalars.forEach((input) => {
+          const fieldName = input.dataset.prefillField;
+          const inline = sections.querySelector(`[data-prefill-edit="${fieldName}"]`);
+          let value = inline ? inline.value.trim() : getPrefillScalarSourceValue(profile, fieldName);
+          if (!String(value).trim()) return;
+
+          if (fieldName === "github") {
+            const linkedin = document.querySelector('[name="linkedin"]');
+            const notes = document.querySelector('[name="extraNotes"]');
+            if (linkedin && !String(linkedin.value || "").trim()) {
+              linkedin.value = value;
+              linkedin.dispatchEvent(new Event("input", { bubbles: true }));
+            } else if (notes) {
+              const prefix = notes.value.trim() ? notes.value.trim() + "\n" : "";
+              notes.value = (prefix + "GitHub: " + value).slice(0, Number(notes.maxLength || 12000));
+              notes.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+            return;
+          }
+
+          const field = document.querySelector(`#resume-form [name="${fieldName}"]`);
+          if (!field) return;
+          if (fieldName === "targetArea") {
+            const mapped = mapTargetAreaOption(value);
+            if (mapped) {
+              field.value = mapped;
+              persistArea(mapped);
+              field.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+            return;
+          }
+          if (fieldName === "extraNotes") {
+            const prefix = field.value.trim() ? field.value.trim() + "\n\n" : "";
+            field.value = (prefix + value).slice(0, Number(field.maxLength || 12000));
+          } else {
+            field.value = value;
+          }
+          field.dispatchEvent(new Event("input", { bubbles: true }));
+        });
+
+        const selectedExperiences = Array.from(sections.querySelectorAll('[data-prefill-kind="experience"]:checked'))
+          .map((input) => Number(input.dataset.prefillIndex))
+          .filter((index) => Number.isFinite(index))
+          .map((index) => (profile.experiences || [])[index])
+          .filter(Boolean)
+          .slice(0, 3);
+
+        if (selectedExperiences.length) {
+          applyPrefillExperiences(selectedExperiences);
+        }
+
+        const educationPool = [
+          ...(profile.educationItems || []),
+          ...(profile.certifications || []).map((item) => ({ text: item.text })),
+        ];
+        const selectedEducation = Array.from(sections.querySelectorAll('[data-prefill-kind="education"]:checked'))
+          .map((input) => Number(input.dataset.prefillIndex))
+          .filter((index) => Number.isFinite(index))
+          .map((index) => educationPool[index])
+          .filter((item) => item && String(item.text || "").trim())
+          .slice(0, 3);
+
+        if (selectedEducation.length) {
+          applyPrefillEducation(selectedEducation);
+        }
+
+        return true;
+      }
+
+      function applyPrefillExperiences(items) {
+        const experienceType = document.querySelector('[name="experienceType"]');
+        if (experienceType) {
+          experienceType.value = "formal";
+          experienceType.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        document.querySelectorAll("[data-choice-for='experienceType'] button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.value === "formal");
+        });
+
+        const experienceList = document.querySelector("#experience-list");
+        const template = experienceList?.querySelector("[data-repeat='experience']");
+        if (!experienceList || !template) return;
+
+        while (experienceList.querySelectorAll("[data-repeat='experience']").length < items.length && experienceList.querySelectorAll("[data-repeat='experience']").length < 3) {
+          const clone = template.cloneNode(true);
+          clone.querySelectorAll("input, textarea, select").forEach((field) => {
+            if (field.type === "checkbox") field.checked = false;
+            else field.value = "";
+          });
+          clone.insertAdjacentHTML("beforeend", "<button class='button secondary small-button remove-repeat' type='button'>Eliminar experiencia</button>");
+          clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
+          experienceList.appendChild(clone);
+          clone.querySelectorAll(".chip-row button").forEach((button) => button.addEventListener("click", handleChipClick));
+        }
+
+        items.forEach((item, index) => {
+          const card = experienceList.querySelectorAll("[data-repeat='experience']")[index];
+          if (!card) return;
+          card.querySelector('[name="experiencePlace"]').value = item.place || "";
+          card.querySelector('[name="experienceRole"]').value = item.role || "";
+          card.querySelector('[name="startMonth"]').value = normalizePrefillMonth(item.startMonth);
+          card.querySelector('[name="startYear"]').value = String(item.startYear || "").slice(0, 4);
+          card.querySelector('[name="endMonth"]').value = normalizePrefillMonth(item.endMonth);
+          card.querySelector('[name="endYear"]').value = String(item.endYear || "").slice(0, 4);
+          const isCurrent = card.querySelector('[name="isCurrent"]');
+          if (isCurrent) isCurrent.checked = Boolean(item.isCurrent);
+          card.querySelector('[name="experience"]').value = item.tasks || "";
+        });
+      }
+
+      function applyPrefillEducation(items) {
+        const educationList = document.querySelector("#education-list");
+        const template = educationList?.querySelector("[data-repeat='education']");
+        if (!educationList || !template) return;
+
+        while (educationList.querySelectorAll("[data-repeat='education']").length < items.length && educationList.querySelectorAll("[data-repeat='education']").length < 3) {
+          const clone = template.cloneNode(true);
+          clone.querySelectorAll("textarea").forEach((field) => { field.value = ""; });
+          clone.insertAdjacentHTML("beforeend", "<button class='button secondary small-button remove-repeat' type='button'>Eliminar</button>");
+          clone.querySelector(".remove-repeat").addEventListener("click", () => clone.remove());
+          educationList.appendChild(clone);
+        }
+
+        items.forEach((item, index) => {
+          const card = educationList.querySelectorAll("[data-repeat='education']")[index];
+          if (!card) return;
+          card.querySelector('[name="education"]').value = item.text || "";
         });
       }
 

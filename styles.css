@@ -3278,3 +3278,153 @@ h3 {
 .file-extract-status.warn {
   color: var(--danger, #b42318);
 }
+
+/* --- Fase G: panel de revision del prefill --- */
+.file-entry-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file-entry {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  font-size: var(--text-sm);
+}
+
+.file-entry--ok {
+  border-color: color-mix(in oklch, var(--success-ink, #1a7f4b) 35%, var(--line));
+}
+
+.file-entry--error {
+  border-color: color-mix(in oklch, var(--danger, #b42318) 35%, var(--line));
+}
+
+.file-entry--pending {
+  opacity: 0.85;
+}
+
+.file-entry-icon {
+  font-weight: 700;
+}
+
+.file-entry-meta {
+  color: var(--muted);
+  text-align: right;
+}
+
+.prefill-review-panel {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+  background: color-mix(in oklch, var(--accent) 6%, var(--paper));
+}
+
+.prefill-review-panel h3 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.prefill-warnings {
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--warning, #b54708) 10%, var(--paper));
+  font-size: var(--text-sm);
+}
+
+.prefill-warnings ul {
+  margin: 6px 0 0;
+  padding-left: 1.2rem;
+}
+
+.prefill-section {
+  display: grid;
+  gap: 8px;
+}
+
+.prefill-section h4 {
+  margin: 0;
+  font-size: var(--text-base);
+}
+
+.prefill-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.prefill-item input[type="checkbox"] {
+  margin-top: 4px;
+}
+
+.prefill-item.confidence-high {
+  border-left: 3px solid var(--success-ink, #1a7f4b);
+}
+
+.prefill-item.confidence-medium {
+  border-left: 3px solid color-mix(in oklch, var(--accent) 70%, var(--ink));
+}
+
+.prefill-item.confidence-low {
+  border-left: 3px solid var(--muted);
+}
+
+.prefill-confidence {
+  color: var(--muted);
+}
+
+.prefill-inline-edit {
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  resize: vertical;
+}
+
+.prefill-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.prefill-applied-msg {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--success-ink, #1a7f4b) 12%, var(--paper));
+  color: var(--success-ink, #1a7f4b);
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 640px) {
+  .file-entry {
+    grid-template-columns: auto 1fr;
+  }
+
+  .file-entry-meta {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .prefill-actions .button {
+    width: 100%;
+  }
+}
