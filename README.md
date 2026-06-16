@@ -87,6 +87,19 @@ No guardar credenciales en el repositorio. Usar Variables and Secrets de Cloudfl
 
 El formulario de soporte manual usa FormSubmit temporalmente hacia un correo operativo. No usar `soporte@cvlisto.com.ar` como destino real hasta activar el dominio/casilla.
 
+## Prefill del formulario por archivos (Profesional y Enfocado)
+
+En el Paso 1 del formulario, los planes con IA pueden subir hasta 5 archivos (PDF con texto o `.docx`, máximo 4 MB cada uno). El flujo es:
+
+1. **Extracción** — `POST /api/extract` lee el texto de cada archivo en memoria (sin guardar binarios) y lo devuelve. El texto se vuelca al campo "notas" como contexto adicional para la IA del CV.
+2. **Prefill estructurado** — `POST /api/ai/prefill-profile` envía ese texto a Groq con un prompt específico que devuelve campos estructurados (`contact`, `links`, `objective`, `experiences`, `educationItems`, `skills`, `notes`) con nivel de confianza por dato.
+3. **Panel de revisión** — el usuario ve "Esto encontramos en tus archivos", con checkboxes por dato. Los de baja confianza vienen desmarcados; los datos que el usuario ya completó manualmente no se marcan para no pisarlos.
+4. **Aplicación granular** — al confirmar, solo lo seleccionado se vuelca a los campos y repeaters (hasta 3 experiencias y 3 ítems de educación). Todo queda 100 % editable.
+
+El texto crudo de los archivos vive solo en memoria del navegador entre las dos llamadas al backend; nunca se persiste en D1. Solo se guarda lo que el usuario aceptó y quedó en el formulario, igual que cualquier dato tipeado.
+
+Verificación QA: ver `QA-PREFILL.md`.
+
 ## Arquitectura objetivo
 
 Ver `ARCHITECTURE.md`.
