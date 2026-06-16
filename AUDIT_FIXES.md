@@ -60,6 +60,8 @@ Estados:
 - [x] Agregar CSP en `_headers`.
 - [x] (R2) Quitar `'unsafe-inline'` de `script-src`: CSP con nonce por-request via `functions/_middleware.js` y handlers `on*=` convertidos a listeners. `style-src` sigue con `'unsafe-inline'` (estilos inline, fuera de alcance).
 - [x] Aplicar expiracion real usando `orders.expires_at` en endpoints sensibles.
+- [x] (R3) Aceptar token por header `Authorization: Bearer` en `GET /api/orders/:id` (unico endpoint con token en URL); el resto ya lo recibe por body POST. Frontend lo manda por header. Navegacion sigue con token en URL (necesario para reabrir links).
+- [ ] (R1) Unificar el pipeline de render del CV (cliente vs servidor). Diferido a post-lanzamiento por riesgo de regresion sobre el producto core.
 - [x] Agregar rate limit basico por email/order/IP para endpoints criticos.
 - [x] Agregar rate limit a `/api/validate`.
 - [x] Agregar rate limit a `/api/payments/check`, `/api/generate-final` y guardado de perfil.

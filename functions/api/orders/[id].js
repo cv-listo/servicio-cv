@@ -1,7 +1,8 @@
-import { json } from "../_utils.js";
+import { json, bearerToken } from "../_utils.js";
 
 export async function onRequestGet({ request, params, env }) {
-  const token = new URL(request.url).searchParams.get("token") || "";
+  // Acepta el token por header (preferido, no queda en logs) o por query (fallback).
+  const token = bearerToken(request) || new URL(request.url).searchParams.get("token") || "";
   const order = await env.DB.prepare("SELECT * FROM orders WHERE id = ? AND token = ?")
     .bind(params.id, token)
     .first();

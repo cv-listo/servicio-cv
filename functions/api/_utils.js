@@ -116,6 +116,18 @@ export function isTestCodeEnabled(env, code, email) {
 }
 
 /**
+ * Extrae el token de un header `Authorization: Bearer <token>`.
+ * Permite no exponer el token en la URL (logs/historial). Devuelve "" si no hay.
+ * @param {Request} request
+ * @returns {string}
+ */
+export function bearerToken(request) {
+  const header = request.headers.get("authorization") || "";
+  const match = header.match(/^Bearer\s+(.+)$/i);
+  return match ? match[1].trim() : "";
+}
+
+/**
  * @param {Request} request
  * @returns {string}
  */

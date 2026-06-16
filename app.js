@@ -84,7 +84,10 @@ function cacheOrder(order) {
 }
 
 async function fetchBackendOrder(id, token) {
-  const response = await fetch(`/api/orders/${id}?token=${encodeURIComponent(token)}`);
+  // Token por header Authorization para que no quede en la URL ni en logs.
+  const response = await fetch(`/api/orders/${id}`, {
+    headers: { authorization: `Bearer ${token}` },
+  });
   if (!response.ok) throw new Error("Backend order unavailable");
   const result = await response.json();
   return { ...result.order, token };

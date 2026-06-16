@@ -5,7 +5,12 @@ import {
   isTestCodeEnabled,
   getPlans,
   formatPrice,
+  bearerToken,
 } from "../functions/api/_utils.js";
+
+function fakeRequest(authValue) {
+  return { headers: { get: (name) => (name === "authorization" ? authValue : null) } };
+}
 
 describe("hasPromptInjection", () => {
   it("detecta intentos de override de instrucciones", () => {
@@ -98,6 +103,18 @@ describe("getPlans", () => {
     expect(plans.basic.amount).toBe(1000);
     expect(plans.professional.amount).toBe(2000);
     expect(plans.focused.amount).toBe(12990);
+  });
+});
+
+describe("bearerToken", () => {
+  it("extrae el token de Authorization: Bearer (case-insensitive y con trim)", () => {
+    expect(bearerToken(fakeRequest("Bearer abc123"))).toBe("abc123");
+    expect(bearerToken(fakeRequest("bearer   xToken  "))).toBe("xToken");
+  });
+
+  it("devuelve vacío sin header o con otro esquema", () => {
+    expect(bearerToken(fakeRequest(null))).toBe("");
+    expect(bearerToken(fakeRequest("Basic dXNlcjpwYXNz"))).toBe("");
   });
 });
 
