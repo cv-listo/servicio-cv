@@ -159,8 +159,7 @@ a {
 
 .hero {
   background:
-    radial-gradient(circle at 15% 20%, rgba(52, 87, 213, 0.18), transparent 28%),
-    linear-gradient(135deg, #ffffff 0%, #f2f5ff 52%, #eef8f6 100%);
+    linear-gradient(180deg, var(--paper) 0%, var(--bg) 100%);
   border-bottom: 1px solid var(--line);
 }
 
@@ -247,7 +246,7 @@ a {
 
 .hero-mockup svg {
   width: 100%;
-  filter: drop-shadow(0 24px 44px rgba(23, 32, 51, 0.16));
+  filter: drop-shadow(var(--shadow-md));
 }
 
 .btn-lg {
@@ -356,28 +355,28 @@ a {
 .eyebrow {
   margin: 0 0 10px;
   color: var(--accent-dark);
-  font-size: 0.82rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .hero-ai-badge {
   display: inline-flex;
-  border-radius: 999px;
-  padding: 7px 11px;
-  background: linear-gradient(135deg, #6366f1, var(--ai), #ec4899);
-  color: #fff;
-  font-size: 0.86rem;
-  font-weight: 900;
-  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.18);
+  align-items: center;
+  gap: 6px;
+  border: 1px solid color-mix(in srgb, var(--ai) 22%, transparent);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  background: var(--ai-soft);
+  color: var(--ai);
+  font-size: var(--text-sm);
+  font-weight: 700;
 }
 
 .hero-accent {
-  background: linear-gradient(135deg, var(--accent), var(--ai));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--accent);
+  -webkit-text-fill-color: var(--accent);
 }
 
 h1,
@@ -388,14 +387,16 @@ h3 {
 }
 
 h1 {
-  max-width: 840px;
-  font-size: clamp(2.6rem, 7vw, 5.6rem);
-  letter-spacing: -0.06em;
+  max-width: 18ch;
+  font-size: var(--text-4xl);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
 }
 
 h2 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  letter-spacing: -0.04em;
+  font-size: var(--text-3xl);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
 }
 
 h3 {
@@ -457,22 +458,39 @@ h3 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 12px 18px;
-  font-weight: 900;
+  font-weight: 700;
   text-decoration: none;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
 }
 
-.button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 20px rgba(52, 87, 213, 0.12);
+@media (hover: hover) and (pointer: fine) {
+  .button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.button:active {
+  transform: scale(0.985);
+  transition-duration: var(--dur-fast);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button:active {
+    transform: none;
+  }
 }
 
 .button.primary {
   background: var(--accent);
-  color: white;
+  color: var(--accent-ink);
 }
 
 .button.primary:hover {
@@ -480,17 +498,21 @@ h3 {
 }
 
 .button.basic-cta {
-  background: #1f2937;
-  color: #fff;
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .button.basic-cta:hover {
-  background: #111827;
+  background: var(--ink-2);
 }
 
 .button.gradient {
-  background: linear-gradient(135deg, var(--accent), #7c3aed);
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.button.gradient:hover {
+  background: var(--accent-dark);
 }
 
 .button.secondary {
@@ -730,8 +752,8 @@ h3 {
 }
 
 .price-card:nth-child(3) .plan-label {
-  background: linear-gradient(135deg, var(--accent), #7c3aed);
-  color: #fff;
+  background: var(--surface-2);
+  color: var(--ink-2);
 }
 
 .price {
