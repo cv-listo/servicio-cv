@@ -3227,3 +3227,38 @@ h3 {
     padding: 18px;
   }
 }
+
+/* --- Fase C: subida y extraccion de archivos (solo plan Enfocado) --- */
+.file-extract-box {
+  display: grid;
+  gap: 10px;
+}
+
+.file-extract-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.file-extract-row input[type="file"] {
+  flex: 1 1 220px;
+  min-width: 0;
+  color: var(--ink);
+  font: inherit;
+}
+
+.file-extract-status {
+  min-height: 1.2em;
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.file-extract-status.ok {
+  color: var(--success-ink, #1a7f4b);
+}
+
+.file-extract-status.warn {
+  color: var(--danger, #b42318);
+}

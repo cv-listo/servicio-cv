@@ -1,0 +1,8 @@
+{
+  "name": "servicio-cv",
+  "private": true,
+  "description": "CV Listo - dependencias minimas para funciones serverless (extraccion de texto en plan Enfocado).",
+  "dependencies": {
+    "unpdf": "^1.6.0"
+  }
+}
