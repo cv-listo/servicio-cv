@@ -196,11 +196,6 @@
               </div>
             </div>
             <label>Habilidades<textarea name="skills" rows="3" placeholder="Ej: atención al cliente, manejo de caja, Excel, trabajo en equipo, puntualidad."></textarea></label>
-            <div class="ai-plan-only suggestion-box">
-              <p>Notas para la IA (opcional)</p>
-              <label>¿Algo más que quieras que tengamos en cuenta?<textarea name="extraNotes" rows="3" maxlength="1500" placeholder="Ej: Tengo certificado de manipulación de alimentos y carnet de conducir. Quiero destacar mi disponibilidad horaria. Manejo redes sociales para emprendimientos."></textarea></label>
-              <span class="form-note">La IA usa esto como información adicional para ordenar tu CV. No inventa datos que no escribas.</span>
-            </div>
           </section>
 
           <section class="wizard-step focused-only" data-step="4">
@@ -221,6 +216,8 @@
                 <button type="button" class="button secondary" id="cv-file-btn">Leer archivo</button>
               </div>
               <p class="file-extract-status" id="cv-file-status" role="status" aria-live="polite"></p>
+              <label>Texto leído del archivo y notas para la IA<textarea name="extraNotes" rows="8" maxlength="6000" placeholder="Acá va a aparecer el texto extraído. Podés revisarlo, borrar partes o sumar notas útiles para adaptar el CV."></textarea></label>
+              <span class="form-note">La IA usa este texto como información adicional para ordenar tu CV. No inventa datos que no escribas.</span>
             </div>
           </section>
 
@@ -668,8 +665,8 @@
             if (notes) {
               const prefix = notes.value.trim() ? notes.value.trim() + "\n\n" : "";
               const combined = (prefix + "Del archivo subido:\n" + extracted);
-              // Respetar el limite del textarea (maxlength 1500).
-              notes.value = combined.slice(0, 1500);
+              // Respetar el limite del textarea.
+              notes.value = combined.slice(0, Number(notes.maxLength || 6000));
               notes.dispatchEvent(new Event("input", { bubbles: true }));
             }
             setStatus("Listo: leímos el texto y lo agregamos a tus notas. Revisalo y editá lo que quieras.", "ok");
