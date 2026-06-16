@@ -66,7 +66,7 @@ Estados:
 - [x] Centralizar la deteccion de inyeccion (`hasPromptInjection`/`PROMPT_INJECTION_PATTERNS`) en `_utils.js`; `validate.js` y `process-cv.js` la importan (sin copias divergentes).
 - [x] Revisar soporte con FormSubmit y documentar tratamiento de adjuntos/PII.
 - [x] Evitar usar `soporte@cvlisto.com.ar` como destino/contacto operativo mientras la casilla no exista.
-- [ ] Cambiar FormSubmit a hash/alias para no exponer el email operativo en el HTML.
+- [x] Cambiar FormSubmit a hash/alias para no exponer el email operativo en el HTML.
 - [ ] Migrar soporte a endpoint propio `/api/support` con Resend o proveedor transaccional.
 
 ## Admin y soporte
