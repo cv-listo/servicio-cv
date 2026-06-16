@@ -248,7 +248,7 @@
             <button class="button secondary" type="button" id="prev-step">Volver</button>
             <span class="form-note" id="autosave-note">Los datos se guardan automáticamente</span>
             <button class="button primary" type="button" id="next-step">Siguiente</button>
-            <button class="button primary" type="submit" id="submit-form">Ver vista previa</button>
+            <button class="button primary" type="button" id="submit-form">Ver vista previa</button>
           </div>
         </form>
       </section>
@@ -1211,9 +1211,37 @@
 
       loadOrder();
 
-      document.querySelector("#resume-form")?.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const data = CVListo.collectFormData(event.currentTarget);
+      async function submitResumeForm() {
+        const form = document.querySelector("#resume-form");
+        if (!form) return;
+
+        const allSteps = Array.from(form.querySelectorAll(".wizard-step"));
+        const allRequired = Array.from(form.querySelectorAll("[required]"));
+        const invalid = allRequired.find((field) => !field.checkValidity());
+        if (invalid) {
+          const stepElement = invalid.closest(".wizard-step");
+          const targetIndex = stepElement ? allSteps.indexOf(stepElement) : -1;
+          if (targetIndex >= 0) {
+            allSteps.forEach((step, index) => step.classList.toggle("active", index === targetIndex));
+            const submit = document.querySelector("#submit-form");
+            const next = document.querySelector("#next-step");
+            const previous = document.querySelector("#prev-step");
+            if (submit) { submit.hidden = true; submit.style.display = "none"; }
+            if (next) { next.hidden = false; next.style.display = "inline-flex"; }
+            if (previous) previous.disabled = targetIndex === 0;
+            const label = document.querySelector("#step-label");
+            if (label) label.textContent = `Paso ${targetIndex + 1} de ${allSteps.length}`;
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+          setTimeout(() => {
+            invalid.focus();
+            invalid.reportValidity();
+          }, 150);
+          alert("Falta completar un campo obligatorio. Te llevamos al paso correcto.");
+          return;
+        }
+
+        const data = CVListo.collectFormData(form);
         const reports = CVListo.validateResumeData(data, order.planId);
         try {
           await CVListo.saveBackendProfile(order.id, order.token, data, reports);
@@ -1227,10 +1255,19 @@
             alert(message);
             return;
           }
-          // En desarrollo local sin Functions, guardamos local para probar UX.
         }
         CVListo.updateOrder(order.id, { status: "preview_ready", data, reports, aiProcessed: false });
         window.location.href = `./preview.html?order=${order.id}&token=${order.token}`;
+      }
+
+      document.querySelector("#submit-form")?.addEventListener("click", (event) => {
+        event.preventDefault();
+        submitResumeForm();
+      });
+
+      document.querySelector("#resume-form")?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        submitResumeForm();
       });
     </script>
   </body>
