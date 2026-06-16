@@ -933,6 +933,9 @@
 
         sections.innerHTML = html || `<p class="form-note">No encontramos datos claros para prellenar. Podés completar el formulario a mano.</p>`;
         sections.dataset.prefillPayload = JSON.stringify({ profile, meta });
+        sections.querySelectorAll(".prefill-inline-edit").forEach((el) => {
+          el.addEventListener("click", (event) => event.stopPropagation());
+        });
 
         if (warningsBox) {
           if (warnings?.length) {
@@ -950,7 +953,7 @@
         if (!text) return "";
         const checked = defaultPrefillChecked(confidence, fieldName);
         const display = fieldName === "summary" || fieldName === "extraNotes" || fieldName === "skills"
-          ? `<textarea class="prefill-inline-edit" data-prefill-edit="${fieldName}" rows="${fieldName === "summary" ? 2 : 3}" onclick="event.stopPropagation()">${CVListo.escapeHtml(text)}</textarea>`
+          ? `<textarea class="prefill-inline-edit" data-prefill-edit="${fieldName}" rows="${fieldName === "summary" ? 2 : 3}">${CVListo.escapeHtml(text)}</textarea>`
           : `<span>${CVListo.escapeHtml(text)}</span>`;
         return `<label class="prefill-item confidence-${confidence || "low"}"><input type="checkbox" data-prefill-kind="scalar" data-prefill-field="${fieldName}" ${checked ? "checked" : ""} /><span><strong>${CVListo.escapeHtml(label)}</strong><br />${display}<br /><small class="prefill-confidence">${confidenceLabel(confidence)}</small></span></label>`;
       }

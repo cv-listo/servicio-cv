@@ -224,7 +224,7 @@
 
       function renderAdminNoteForm(order) {
         return `
-          <form class="admin-note-form" onsubmit="saveAdminNote(event, '${escapeJs(order.id)}')">
+          <form class="admin-note-form" data-order-id="${escapeHtml(order.id)}">
             <label>Nota interna de soporte<textarea name="message" rows="3" maxlength="1200" placeholder="Ej: Cliente consultó por pago duplicado, se respondió por WhatsApp."></textarea></label>
             <p class="form-note" data-note-status hidden></p>
             <button class="button secondary" type="submit">Guardar nota</button>
@@ -243,8 +243,8 @@
             <a class="button secondary" href="${links.formulario}" target="_blank">Formulario</a>
             <a class="button secondary" href="${links.preview}" target="_blank">Preview</a>
             <a class="button secondary" href="${links.descarga}" target="_blank">Descarga</a>
-            <button class="button primary" type="button" onclick="copyAdminLink('${escapeJs(primary.url)}')">${escapeHtml(primary.label)}</button>
-            <button class="button secondary" type="button" onclick="copyClientMessage('${escapeJs(order.email || "")}', '${escapeJs(primary.url)}')">Copiar mensaje para cliente</button>
+            <button class="button primary" type="button" data-copy-link="${escapeHtml(primary.url)}">${escapeHtml(primary.label)}</button>
+            <button class="button secondary" type="button" data-copy-message-url="${escapeHtml(primary.url)}" data-copy-message-email="${escapeHtml(order.email || "")}">Copiar mensaje para cliente</button>
           </div>
         `;
       }
@@ -352,10 +352,6 @@
           .replaceAll("'", "&#039;");
       }
 
-      function escapeJs(value) {
-        return String(value || "").replaceAll("\\", "\\\\").replaceAll("'", "\\'");
-      }
-
       async function copyAdminLink(url) {
         await navigator.clipboard?.writeText(url);
         alert("Link copiado.");
@@ -367,9 +363,26 @@
         alert("Mensaje copiado.");
       }
 
-      async function saveAdminNote(event, orderId) {
+      detail.addEventListener("submit", (event) => {
+        const form = event.target.closest(".admin-note-form");
+        if (form) saveAdminNote(event, form);
+      });
+
+      detail.addEventListener("click", (event) => {
+        const copyLink = event.target.closest("[data-copy-link]");
+        if (copyLink) {
+          copyAdminLink(copyLink.dataset.copyLink);
+          return;
+        }
+        const copyMessage = event.target.closest("[data-copy-message-url]");
+        if (copyMessage) {
+          copyClientMessage(copyMessage.dataset.copyMessageEmail || "", copyMessage.dataset.copyMessageUrl);
+        }
+      });
+
+      async function saveAdminNote(event, form) {
         event.preventDefault();
-        const form = event.currentTarget;
+        const orderId = form.dataset.orderId;
         const message = form.message.value.trim();
         if (!message) return;
         try {

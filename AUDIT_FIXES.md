@@ -58,6 +58,7 @@ Estados:
 - [x] Quitar autenticacion alternativa por `ADMIN_TOKEN` si ya no se usa en codigo/documentacion.
 - [x] Evitar guardar password admin en `sessionStorage`; evaluar sesion temporal o Cloudflare Access.
 - [x] Agregar CSP en `_headers`.
+- [x] (R2) Quitar `'unsafe-inline'` de `script-src`: CSP con nonce por-request via `functions/_middleware.js` y handlers `on*=` convertidos a listeners. `style-src` sigue con `'unsafe-inline'` (estilos inline, fuera de alcance).
 - [x] Aplicar expiracion real usando `orders.expires_at` en endpoints sensibles.
 - [x] Agregar rate limit basico por email/order/IP para endpoints criticos.
 - [x] Agregar rate limit a `/api/validate`.
