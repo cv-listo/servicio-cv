@@ -543,8 +543,8 @@
         const experienceList = document.querySelector("#experience-list");
         addExperience?.addEventListener("click", () => {
           const count = experienceList.querySelectorAll("[data-repeat='experience']").length;
-          if (count >= 3) {
-            alert("Por ahora podés cargar hasta 3 experiencias.");
+          if (count >= 8) {
+            alert("Por ahora podés cargar hasta 8 experiencias.");
             return;
           }
           const clone = experienceList.querySelector("[data-repeat='experience']").cloneNode(true);
@@ -564,8 +564,8 @@
         const educationList = document.querySelector("#education-list");
         addEducation?.addEventListener("click", () => {
           const count = educationList.querySelectorAll("[data-repeat='education']").length;
-          if (count >= 3) {
-            alert("Por ahora podés cargar hasta 3 estudios o cursos.");
+          if (count >= 8) {
+            alert("Por ahora podés cargar hasta 8 estudios o cursos.");
             return;
           }
           const clone = educationList.querySelector("[data-repeat='education']").cloneNode(true);
@@ -893,8 +893,8 @@
         if (!experiences.length) {
           html += `<p class="form-note">No encontramos experiencias claras en los archivos. Cargalas a mano en el Paso 3.</p>`;
         } else {
-          if (experiences.length > 3) {
-            html += `<p class="form-note">Encontramos ${experiences.length} experiencias; el formulario admite hasta 3. Se aplicarán las primeras 3 seleccionadas.</p>`;
+          if (experiences.length > 8) {
+            html += `<p class="form-note">Encontramos ${experiences.length} experiencias; el formulario admite hasta 8. Se aplicarán las primeras 8 seleccionadas.</p>`;
           }
           html += experiences.map((item, index) => {
             const dates = [item.startMonth, item.startYear, item.endMonth, item.endYear].filter(Boolean).join("/");
@@ -908,8 +908,8 @@
         if (!educationItems.length) {
           html += `<p class="form-note">No encontramos estudios o cursos claros. Cargalos a mano en el Paso 4.</p>`;
         } else {
-          if (educationItems.length > 3) {
-            html += `<p class="form-note">Encontramos ${educationItems.length} ítems; el formulario admite hasta 3.</p>`;
+          if (educationItems.length > 8) {
+            html += `<p class="form-note">Encontramos ${educationItems.length} ítems; el formulario admite hasta 8.</p>`;
           }
           html += educationItems.map((item, index) => {
             const checked = defaultPrefillChecked(item.confidence);
@@ -1041,7 +1041,7 @@
           .filter((index) => Number.isFinite(index))
           .map((index) => (profile.experiences || [])[index])
           .filter(Boolean)
-          .slice(0, 3);
+          .slice(0, 8);
 
         if (selectedExperiences.length) {
           applyPrefillExperiences(selectedExperiences);
@@ -1057,7 +1057,7 @@
           .filter((index) => Number.isFinite(index))
           .map((index) => educationPool[index])
           .filter((item) => item && String(item.text || "").trim())
-          .slice(0, 3);
+          .slice(0, 8);
 
         if (selectedEducation.length) {
           applyPrefillEducation(selectedEducation);
@@ -1121,7 +1121,7 @@
 
         items.forEach((item) => {
           const cards = experienceList.querySelectorAll("[data-repeat='experience']");
-          if (cards.length >= 3 && !Array.from(cards).some(isExperienceCardEmpty)) return;
+          if (cards.length >= 8 && !Array.from(cards).some(isExperienceCardEmpty)) return;
           const emptyCard = Array.from(cards).find(isExperienceCardEmpty);
           const target = emptyCard || ensureExperienceCard(experienceList, template);
           fillExperienceCard(target, item);
@@ -1144,7 +1144,7 @@
 
         items.forEach((item) => {
           const cards = educationList.querySelectorAll("[data-repeat='education']");
-          if (cards.length >= 3 && !Array.from(cards).some(isEducationCardEmpty)) return;
+          if (cards.length >= 8 && !Array.from(cards).some(isEducationCardEmpty)) return;
           const emptyCard = Array.from(cards).find(isEducationCardEmpty);
           const target = emptyCard || ensureEducationCard(educationList, template);
           target.querySelector('[name="education"]').value = item.text || "";

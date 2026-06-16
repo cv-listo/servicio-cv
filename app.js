@@ -2,22 +2,22 @@ const PLANS = {
   basic: {
     id: "basic",
     name: "Básico",
-    price: "$9.999",
-    amount: 9999,
+    price: "$4.990",
+    amount: 4990,
     includes: ["CV A4 simple", "PDF", "Sin IA avanzada", "Una generación final"],
   },
   professional: {
     id: "professional",
     name: "Profesional",
-    price: "$19.999",
-    amount: 19999,
+    price: "$8.990",
+    amount: 8990,
     includes: ["Mejora de redacción", "PDF A4", "Vista previa editable", "Una generación final"],
   },
   focused: {
     id: "focused",
     name: "Enfocado",
-    price: "$29.999",
-    amount: 29999,
+    price: "$12.990",
+    amount: 12990,
     includes: ["Puesto y empresa objetivo", "Aviso laboral", "Versión ATS-friendly", "Una generación final"],
   },
 };
@@ -328,7 +328,11 @@ function trimDanglingConnector(value) {
 }
 
 function actionPhraseBoundaryPattern() {
-  return /\s+(?=(cobraba|realizaba|acomodaba|limpiaba|atendía|atencion|atención|ayudaba|cargaba|revisaba|organizaba|preparaba|respondía|respondia|cargué|cargue|revisé|revise|organicé|organice|preparé|prepare|respondí|respondi|atención|atencion|automatización|automatizacion|carga|control|desarrollo|diseño|diseno|gestión|gestion|implementación|implementacion|limpieza|manejo|modelos|optimización|optimizacion|preparación|preparacion|procesamiento|respuesta|reposición|reposicion|revisión|revision|soporte|organización|organizacion|elaboración|elaboracion|evaluación|evaluacion|investigación|investigacion|dictado)\b)/gi;
+  // Divide solo cuando una palabra de acción arranca una cláusula nueva.
+  // El lookbehind evita cortar cuando la palabra viene precedida por una
+  // preposición, conjunción o artículo (ej: "sistemas de gestión",
+  // "indicadores y modelos"), que es lo que rompía los bullets.
+  return /(?<!\b(?:de|del|la|el|los|las|un|una|unos|unas|y|e|o|u|en|con|para|por|al|a|su|sus|que|sobre|entre|mediante|tras|según|sin|este|esta|estos|estas)\b)\s+(?=(cobraba|realizaba|acomodaba|limpiaba|atendía|atencion|atención|ayudaba|cargaba|revisaba|organizaba|preparaba|respondía|respondia|cargué|cargue|revisé|revise|organicé|organice|preparé|prepare|respondí|respondi|automatización|automatizacion|control|desarrollo|diseño|diseno|gestión|gestion|implementación|implementacion|limpieza|manejo|optimización|optimizacion|preparación|preparacion|procesamiento|reposición|reposicion|revisión|revision|soporte|organización|organizacion|elaboración|elaboracion|evaluación|evaluacion|investigación|investigacion|dictado)\b)/gi;
 }
 
 function polishCvText(value) {

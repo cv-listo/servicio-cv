@@ -1,7 +1,7 @@
 export const DEFAULT_PLANS = {
-  basic: { id: "basic", name: "Básico", amount: 9999 },
-  professional: { id: "professional", name: "Profesional", amount: 19999 },
-  focused: { id: "focused", name: "Enfocado", amount: 29999 },
+  basic: { id: "basic", name: "Básico", amount: 4990 },
+  professional: { id: "professional", name: "Profesional", amount: 8990 },
+  focused: { id: "focused", name: "Enfocado", amount: 12990 },
 };
 
 export const PLANS = DEFAULT_PLANS;

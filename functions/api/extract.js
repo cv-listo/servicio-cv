@@ -139,12 +139,53 @@ async function extractPdfText(bytes) {
     for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
       const page = await pdf.getPage(pageNumber);
       const content = await page.getTextContent();
-      pages.push(content.items.map((item) => item.str || "").join(" "));
+      pages.push(joinTextItems(content.items));
     }
   } finally {
     await pdf.destroy?.();
   }
   return pages.join("\n");
+}
+
+// pdf.js entrega el texto en fragmentos con su posición (transform) y ancho.
+// Unir todo con un espacio fijo parte palabras ("grandes" -> "gran des").
+// Acá decidimos el separador según el hueco real entre fragmentos: si están
+// pegados no metemos espacio, si hay salto de línea ponemos \n.
+function joinTextItems(items) {
+  let text = "";
+  let prevEndX = null;
+  let prevY = null;
+  for (const item of items) {
+    const str = item.str || "";
+    if (!str) {
+      if (item.hasEOL) {
+        text += "\n";
+        prevEndX = null;
+        prevY = null;
+      }
+      continue;
+    }
+    const transform = Array.isArray(item.transform) ? item.transform : null;
+    const x = transform ? transform[4] : null;
+    const y = transform ? transform[5] : null;
+    const width = Number(item.width) || 0;
+    const height = Number(item.height) || 10;
+
+    if (prevY !== null && y !== null && Math.abs(y - prevY) > height * 0.6) {
+      text += "\n";
+    } else if (prevEndX !== null && x !== null) {
+      const gap = x - prevEndX;
+      // Umbral ~25% del alto de fuente: huecos menores son la misma palabra.
+      text += gap > height * 0.25 ? " " : "";
+    } else if (text && !/\s$/.test(text)) {
+      text += " ";
+    }
+
+    text += str;
+    prevEndX = x !== null ? x + width : null;
+    prevY = y;
+  }
+  return text;
 }
 
 async function extractDocxText(bytes) {

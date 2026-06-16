@@ -20,19 +20,19 @@ Arquitectura principal:
 ## Planes comerciales
 
 ```text
-Básico - $9.999 ARS
+Básico - $4.990 ARS
   Sin LLM.
   Datos estructurados + plantilla limpia.
   PDF.
   1 generación.
 
-Profesional - $19.999 ARS
+Profesional - $8.990 ARS
   LLM económico para mejorar redacción.
   Perfil profesional y experiencia mejor redactados.
   PDF A4.
   Preview editable y una única generación final.
 
-Enfocado - $29.999 ARS
+Enfocado - $12.990 ARS
   LLM obligatorio.
   Adaptación a puesto, empresa y aviso laboral.
   Versión ATS-friendly.
