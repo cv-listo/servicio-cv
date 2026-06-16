@@ -747,8 +747,17 @@
         const reports = CVListo.validateResumeData(data, order.planId);
         try {
           await CVListo.saveBackendProfile(order.id, order.token, data, reports);
-        } catch {
-          // GitHub Pages no ejecuta Functions. Guardamos local para probar UX.
+        } catch (error) {
+          if (!isLocalDev) {
+            const backendReports = error.reports?.length ? error.reports : reports;
+            CVListo.updateOrder(order.id, { data, reports: backendReports });
+            const message = backendReports.find((report) => report.severity === "critical")?.message
+              || error.message
+              || "No pudimos preparar la vista previa. Revisá los campos obligatorios.";
+            alert(message);
+            return;
+          }
+          // En desarrollo local sin Functions, guardamos local para probar UX.
         }
         CVListo.updateOrder(order.id, { status: "preview_ready", data, reports, aiProcessed: false });
         window.location.href = `./preview.html?order=${order.id}&token=${order.token}`;

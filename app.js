@@ -103,8 +103,14 @@ async function saveBackendProfile(id, token, data, reports) {
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ token, data, reports }),
   });
-  if (!response.ok) throw new Error("Backend profile save unavailable");
-  return response.json();
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(result.error || "Backend profile save unavailable");
+    error.reports = result.reports || [];
+    error.status = response.status;
+    throw error;
+  }
+  return result;
 }
 
 async function saveBackendDraft(id, token, data) {
