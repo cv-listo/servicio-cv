@@ -112,10 +112,19 @@ function detectFileType(bytes) {
 }
 
 async function extractPdfText(bytes) {
-  const { extractText, getDocumentProxy } = await import("unpdf");
-  const pdf = await getDocumentProxy(bytes);
-  const { text } = await extractText(pdf, { mergePages: true });
-  return Array.isArray(text) ? text.join("\n") : String(text || "");
+  const pdfjs = await import("pdfjs-serverless");
+  const pdf = await pdfjs.getDocument({ data: bytes, useSystemFonts: true }).promise;
+  const pages = [];
+  try {
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+      const page = await pdf.getPage(pageNumber);
+      const content = await page.getTextContent();
+      pages.push(content.items.map((item) => item.str || "").join(" "));
+    }
+  } finally {
+    await pdf.destroy?.();
+  }
+  return pages.join("\n");
 }
 
 async function extractDocxText(bytes) {

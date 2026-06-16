@@ -3,6 +3,6 @@
   "private": true,
   "description": "CV Listo - dependencias minimas para funciones serverless (extraccion de texto en plan Enfocado).",
   "dependencies": {
-    "unpdf": "^1.6.0"
+    "pdfjs-serverless": "^1.2.3"
   }
 }
