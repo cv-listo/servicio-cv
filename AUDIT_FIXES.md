@@ -62,6 +62,7 @@ Estados:
 - [x] Agregar rate limit a `/api/validate`.
 - [x] Agregar rate limit a `/api/payments/check`, `/api/generate-final` y guardado de perfil.
 - [x] Sanitizar datos libres server-side en guardado de perfil y `generate-final`.
+- [x] Centralizar la deteccion de inyeccion (`hasPromptInjection`/`PROMPT_INJECTION_PATTERNS`) en `_utils.js`; `validate.js` y `process-cv.js` la importan (sin copias divergentes).
 - [x] Revisar soporte con FormSubmit y documentar tratamiento de adjuntos/PII.
 - [x] Evitar usar `soporte@cvlisto.com.ar` como destino/contacto operativo mientras la casilla no exista.
 - [ ] Cambiar FormSubmit a hash/alias para no exponer el email operativo en el HTML.

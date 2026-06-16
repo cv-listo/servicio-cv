@@ -1,21 +1,7 @@
-import { checkRateLimit, clientIp, json, readJson } from "./_utils.js";
+import { checkRateLimit, clientIp, json, readJson, hasPromptInjection } from "./_utils.js";
 
 function clean(value) {
   return String(value || "").trim();
-}
-
-function hasPromptInjection(value) {
-  return [
-    /ignor[aá]\s+(lo\s+anterior|todo|todas?\s+las?\s+instrucciones?|las?\s+instrucciones?)/i,
-    /olv[ií]date\s+de\s+(todo|las?\s+instrucciones?)/i,
-    /invent[aáe]?\b/i,
-    /dec[ií]\s+que\s+(soy|fui|tengo|sabe?s?)/i,
-    /agreg[aáe]r?\b/i,
-    /nueva\s+instrucci[oó]n/i,
-    /act[uú]a\s+como/i,
-    /\b(system|developer|assistant|prompt|api[_\s-]?key)\s*:/i,
-    /\[INST\]|<\|im_start\|>/i,
-  ].some((pattern) => pattern.test(String(value || "")));
 }
 
 function hasUnsafePromptText(value) {

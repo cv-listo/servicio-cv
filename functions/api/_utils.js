@@ -86,18 +86,30 @@ export async function checkRateLimit(env, key, limit = 10, windowSeconds = 300) 
   return { ok: true, remaining: limit - Number(current.count) - 1, resetAt: current.reset_at };
 }
 
+// Fuente unica de deteccion de inyeccion de prompts. La usan tanto la
+// validacion previa (validate.js) como el saneo del gateway de IA
+// (process-cv.js) para que los patrones no diverjan entre si.
+export const PROMPT_INJECTION_PATTERNS = [
+  /ignor[aá]\s+(lo\s+anterior|todo|todas?\s+las?\s+instrucciones?|las?\s+instrucciones?)/i,
+  /olv[ií]date\s+de\s+(todo|las?\s+instrucciones?)/i,
+  /invent[aáe]?\b/i,
+  /dec[ií]\s+que\s+(soy|fui|tengo|sabe?s?)/i,
+  /agreg[aáe]r?\b/i,
+  /nueva\s+instrucci[oó]n/i,
+  /act[uú]a\s+como/i,
+  /\b(system|developer|assistant)\s*:/i,
+  /sistem[a]?\s*:/i,
+  /prompt\s*:/i,
+  /prompt\s+(anterior|del\s+sistema|system)/i,
+  /api[_\s-]?key/i,
+  /\[INST\]|<\|im_start\|>/i,
+  /copiar?\s+(este\s+)?aviso/i,
+  /aunque\s+no\s+lo\s+dij/i,
+];
+
 export function hasPromptInjection(value) {
-  return [
-    /ignor[aá]\s+(lo\s+anterior|todo|todas?\s+las?\s+instrucciones?|las?\s+instrucciones?)/i,
-    /olv[ií]date\s+de\s+(todo|las?\s+instrucciones?)/i,
-    /invent[aáe]?\b/i,
-    /dec[ií]\s+que\s+(soy|fui|tengo|sabe?s?)/i,
-    /agreg[aáe]r?\b/i,
-    /nueva\s+instrucci[oó]n/i,
-    /act[uú]a\s+como/i,
-    /\b(system|developer|assistant|prompt|api[_\s-]?key)\s*:/i,
-    /\[INST\]|<\|im_start\|>/i,
-  ].some((pattern) => pattern.test(String(value || "")));
+  const text = String(value || "");
+  return PROMPT_INJECTION_PATTERNS.some((pattern) => pattern.test(text));
 }
 
 export function sanitizeCvData(value) {

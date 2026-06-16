@@ -1,4 +1,4 @@
-import { checkRateLimit, clientIp, json, readJson } from "../_utils.js";
+import { checkRateLimit, clientIp, json, readJson, hasPromptInjection } from "../_utils.js";
 
 const AI_PLANS = new Set(["professional", "focused"]);
 const DEFAULT_TIMEOUT_MS = 10000;
@@ -475,30 +475,6 @@ function sanitizeInjection(value) {
   const text = String(value || "");
   if (hasPromptInjection(text)) return "";
   return text;
-}
-
-function hasPromptInjection(value) {
-  const text = String(value || "");
-  const patterns = [
-    /ignor[aá]\s+(lo\s+anterior|todo|todas?\s+las?\s+instrucciones?|las?\s+instrucciones?)/i,
-    /olv[ií]date\s+de\s+(todo|las?\s+instrucciones?)/i,
-    /dec[ií]\s+que\s+(soy|fui|tengo|sabe?s?)/i,
-    /invent[aáe]?\b/i,
-    /agreg[aáe]r?\b/i,
-    /nueva\s+instrucci[oó]n/i,
-    /act[uú]a\s+como/i,
-    /sistem[a]?\s*:/i,
-    /system\s*:/i,
-    /developer\s*:/i,
-    /assistant\s*:/i,
-    /api[_\s-]?key/i,
-    /prompt\s+(anterior|del\s+sistema|system)/i,
-    /\[INST\]/i,
-    /<\|im_start\|>/i,
-    /copiar?\s+(este\s+)?aviso/i,
-    /aunque\s+no\s+lo\s+dij/i,
-  ];
-  return patterns.some((pattern) => pattern.test(text));
 }
 
 function safeInputText(value) {
