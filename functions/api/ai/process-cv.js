@@ -621,7 +621,7 @@ function splitActionPhrases(value) {
 }
 
 function actionPhraseBoundaryPattern() {
-  return /\s+(?:y\s+)?(?=(cobraba|realizaba|acomodaba|limpiaba|atendía|atencion|atención|ayudaba|cargaba|revisaba|organizaba|preparaba|respondía|respondia|cargué|cargue|revisé|revise|organicé|organice|preparé|prepare|respondí|respondi|carga|revisión|revision|organización|organizacion|preparación|preparacion|respuesta|manejo|reposición|reposicion|limpieza|elaboración|elaboracion|evaluación|evaluacion|investigación|investigacion|dictado)\b)/gi;
+  return /\s+(?:y\s+)?(?=(cobraba|realizaba|acomodaba|limpiaba|atendía|atencion|atención|ayudaba|cargaba|revisaba|organizaba|preparaba|respondía|respondia|cargué|cargue|revisé|revise|organicé|organice|preparé|prepare|respondí|respondi|atención|atencion|carga|control|revisión|revision|organización|organizacion|preparación|preparacion|respuesta|manejo|reposición|reposicion|limpieza|elaboración|elaboracion|evaluación|evaluacion|investigación|investigacion|dictado)\b)/gi;
 }
 
 function filterNoisyDiagnostics(items, original) {
