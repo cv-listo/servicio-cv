@@ -107,7 +107,7 @@ export function sanitizeCvData(value) {
   }
   if (typeof value !== "string") return value;
   const text = value
-    .replace(/\borganizé\b/gi, "organicé")
+    .replace(/\borganiz([ée])/gi, "organic$1")
     .replace(/\s+(y|e|o|u)$/i, "")
     .trim();
   if (!hasPromptInjection(text)) return text;

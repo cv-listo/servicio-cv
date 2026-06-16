@@ -636,7 +636,7 @@ function splitActionPhrases(value) {
     .filter(Boolean);
 }
 
-function actionPhraseBoundaryPattern() {
+export function actionPhraseBoundaryPattern() {
   // Divide solo cuando una palabra de acción arranca una cláusula nueva.
   // El lookbehind evita cortar cuando la palabra viene precedida por una
   // preposición, conjunción o artículo (ej: "sistemas de gestión",

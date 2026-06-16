@@ -15,7 +15,7 @@ Estados:
 - [x] Conectar `pago.html` al endpoint `/api/payments/check` cuando el webhook tarde o falle.
 - [x] Revisar y eliminar fallback local de produccion en `formulario.html`, `preview.html` y `descargar.html` si permite continuar sin backend.
 - [x] Validar que `generate-final` no marque localmente como generado si falla el backend en produccion.
-- [ ] Probar un flujo completo de pago real con precios finales `9999`, `19999`, `29999`.
+- [ ] Probar un flujo completo de pago real con precios finales `4990`, `8990`, `12990`.
 
 ## Mercado Pago
 
@@ -127,6 +127,16 @@ Estados:
 - [x] Agregar limpieza/expiracion de ordenes `payment_pending` viejas.
 - [x] Agregar limpieza de registros IA antiguos si crecen demasiado.
 - [x] Resolver ruido de line endings que deja archivos como modificados sin diff real.
+
+## Tests automatizados
+
+- [x] Configurar Vitest (`npm test`) sin afectar el runtime de las Functions.
+- [x] Tests de dinero/planes: `getPlans`, `withEnvAmount`, `formatPrice` (defaults 4990/8990/12990 y override por variables).
+- [x] Tests de seguridad: `hasPromptInjection`, `sanitizeCvData`, `validateData` (inyeccion, contacto, fechas, plan Enfocado).
+- [x] Tests del codigo de prueba: `isTestCodeEnabled` (case-insensitive).
+- [x] Test de firma MP: `timingSafeEqual`.
+- [x] Test de regresion del splitting de bullets: `actionPhraseBoundaryPattern` (no corta tras preposiciones/conjunciones).
+- [ ] Cobertura de extraccion de archivos (`/api/extract`) e integracion end-to-end.
 
 ## Checklist de pruebas finales
 

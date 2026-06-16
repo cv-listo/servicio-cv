@@ -2,7 +2,13 @@
   "name": "servicio-cv",
   "private": true,
   "description": "CV Listo - dependencias minimas para funciones serverless (extraccion de texto en plan Enfocado).",
+  "scripts": {
+    "test": "vitest run"
+  },
   "dependencies": {
     "pdfjs-serverless": "^1.2.3"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.9"
   }
 }

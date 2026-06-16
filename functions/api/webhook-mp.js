@@ -257,7 +257,7 @@ async function insertMpEvent(env, event = {}) {
   }
 }
 
-function timingSafeEqual(a, b) {
+export function timingSafeEqual(a, b) {
   if (a.length !== b.length) return false;
   let result = 0;
   for (let index = 0; index < a.length; index += 1) {
