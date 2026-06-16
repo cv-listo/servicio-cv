@@ -1,17 +1,128 @@
+/* ============================================================================
+   CV Listo — Design Tokens (Fase 0)
+   Sistema calmo y confiable. Azul como acento de confianza/accion.
+   Neutros con tinte minimo hacia el azul de marca (no warm-default, no rainbow).
+   Contraste fuerte: body >= 4.5:1, large text >= 3:1.
+   OKLCH como fuente de verdad; los hex de respaldo van primero para navegadores
+   viejos y luego OKLCH sobrescribe donde es soportado.
+   Las 13 variables originales se conservan por nombre (compatibilidad de cascada).
+   ========================================================================== */
+
 :root {
-  --bg: #f4f6fb;
-  --paper: #ffffff;
-  --ink: #172033;
-  --muted: #5e6a7d;
-  --line: #d9e0ea;
-  --accent: #3457d5;
-  --accent-dark: #223a92;
-  --accent-soft: #e8edff;
-  --ok: #0f766e;
-  --warning: #a16207;
-  --ai: #7c3aed;
-  --ai-soft: #f3e8ff;
-  --shadow: 0 18px 45px rgba(23, 32, 51, 0.1);
+  /* --- Superficies y neutros (tinte minimo hacia el azul de marca) --- */
+  --bg: #f5f7fb;                 /* fondo de pagina, casi blanco con tinte azul levisimo */
+  --bg: oklch(0.975 0.006 255);
+  --paper: #ffffff;             /* superficies elevadas / tarjetas */
+  --paper: oklch(1 0 0);
+  --surface-2: #eef2f8;         /* superficie secundaria (rellenos suaves, inputs) */
+  --surface-2: oklch(0.955 0.008 255);
+
+  /* --- Tinta / texto (contraste fuerte, sin gris-elegante lavado) --- */
+  --ink: #131a28;               /* texto principal, ~14:1 sobre --bg */
+  --ink: oklch(0.21 0.025 260);
+  --ink-2: #2c3650;            /* subtitulos / texto secundario fuerte */
+  --ink-2: oklch(0.34 0.022 260);
+  --muted: #51607a;             /* texto terciario, AUN >=4.5:1 sobre --bg y --paper */
+  --muted: oklch(0.47 0.028 260);
+
+  /* --- Lineas y bordes --- */
+  --line: #d7dee9;             /* bordes / divisores */
+  --line: oklch(0.89 0.009 255);
+  --line-strong: #c2cbda;      /* borde de enfasis (inputs activos, tablas) */
+  --line-strong: oklch(0.83 0.012 255);
+
+  /* --- Acento: azul de confianza (acciones, links, estados activos) --- */
+  --accent: #2f56d4;
+  --accent: oklch(0.52 0.18 262);
+  --accent-dark: #1f3da3;      /* hover / texto sobre fondos claros */
+  --accent-dark: oklch(0.42 0.16 262);
+  --accent-ink: #ffffff;       /* texto sobre el acento solido */
+  --accent-soft: #e7edff;      /* relleno suave (badges, fondos de acento) */
+  --accent-soft: oklch(0.95 0.03 262);
+
+  /* --- Estados semanticos --- */
+  --ok: #0f766e;               /* exito / pago aprobado */
+  --ok: oklch(0.52 0.09 178);
+  --ok-soft: #d7f0ec;
+  --ok-soft: oklch(0.94 0.04 178);
+  --warning: #9a5b07;          /* aviso / pendiente (oscurecido para contraste) */
+  --warning: oklch(0.55 0.12 70);
+  --warning-soft: #fbeccd;
+  --warning-soft: oklch(0.94 0.05 80);
+  --danger: #b42318;           /* error / rechazado */
+  --danger: oklch(0.52 0.18 27);
+  --danger-soft: #fbe3e0;
+  --danger-soft: oklch(0.94 0.04 27);
+
+  /* --- IA: violeta SOLO como senal funcional, nunca decorativo --- */
+  --ai: #6d3bd1;
+  --ai: oklch(0.5 0.18 295);
+  --ai-soft: #efe7fb;
+  --ai-soft: oklch(0.95 0.035 295);
+
+  /* --- Anillo de foco accesible --- */
+  --focus-ring: rgba(47, 86, 212, 0.45);
+
+  /* --- Tipografia (system stack, sin dependencias externas / CSP-safe) --- */
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+
+  /* Escala fluida con clamp(): contraste real de tamano entre niveles.
+     Ceiling de display <= 6rem (regla impeccable). */
+  --text-xs: 0.78rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: clamp(1.25rem, 1.1rem + 0.7vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.3rem + 1.1vw, 2rem);
+  --text-3xl: clamp(1.9rem, 1.5rem + 2vw, 2.75rem);
+  --text-4xl: clamp(2.3rem, 1.7rem + 3vw, 3.5rem);   /* hero, tope ~56px: no grita */
+
+  /* Letter-spacing: floor de -0.04em en display (regla impeccable). */
+  --tracking-tight: -0.02em;
+  --tracking-display: -0.03em;
+
+  /* --- Escala de radios (pills SOLO en chips/acciones; superficies moderadas) --- */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  /* --- Escala de sombras contenida (adios 0 24px 44px) --- */
+  --shadow-xs: 0 1px 2px rgba(19, 26, 40, 0.06);
+  --shadow-sm: 0 2px 6px rgba(19, 26, 40, 0.07);
+  --shadow-md: 0 6px 18px rgba(19, 26, 40, 0.08);
+  --shadow-lg: 0 14px 34px rgba(19, 26, 40, 0.10);
+  /* Compat: --shadow original conservado, recalibrado a la nueva escala lg */
+  --shadow: 0 14px 34px rgba(19, 26, 40, 0.10);
+
+  /* --- Espaciado (rhythm) --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 80px;
+
+  /* --- Easing custom (Emil: las curvas nativas son debiles) --- */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-fast: 140ms;     /* feedback de :active */
+  --dur-base: 200ms;     /* dropdowns, transiciones de paso */
+  --dur-slow: 280ms;     /* modales / overlays (tope 300ms en UI) */
+
+  /* --- z-index semantico (adios 999/9999 arbitrarios) --- */
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-overlay: 30;
+  --z-modal: 40;
+  --z-toast: 50;
+  --z-tooltip: 60;
 }
 
 * {
@@ -30,8 +141,11 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
   line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 a {
@@ -39,7 +153,7 @@ a {
 }
 
 :focus-visible {
-  outline: 3px solid rgba(52, 87, 213, 0.32);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
