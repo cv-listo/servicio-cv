@@ -1,3 +1,9 @@
 node_modules/
 .wrangler/
 .dev.vars
+
+# Documentos de trabajo/diseño que no forman parte del producto desplegado.
+CLAUDE_SKILL_01_IMPECCABLE.md
+CLAUDE_SKILL_02_DESIGN_ENGINEERING.md
+CLAUDE_SKILL_03_TASTE_FRONTEND.md
+REDESIGN_ROADMAP_CLAUDE.md
