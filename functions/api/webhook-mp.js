@@ -1,5 +1,9 @@
 // @ts-check
-import { json, nowIso, readJson } from "./_utils.js";
+import { json, nowIso, readJson, timingSafeEqual } from "./_utils.js";
+
+// Se re-exporta para mantener compatibilidad con los tests existentes y otros
+// consumidores que lo importaban desde este módulo.
+export { timingSafeEqual };
 
 export async function onRequestPost({ request, env }) {
   const url = new URL(request.url);
@@ -235,6 +239,11 @@ async function verifyMercadoPagoSignature(request, url, secret, paymentId) {
   return timingSafeEqual(expected, v1);
 }
 
+/**
+ * @param {Record<string, any>} env
+ * @param {Record<string, any>} [event]
+ * @returns {Promise<void>}
+ */
 async function insertMpEvent(env, event = {}) {
   if (!env.DB) return;
   try {
@@ -264,19 +273,4 @@ async function insertMpEvent(env, event = {}) {
   } catch {
     // La auditoría de eventos no debe bloquear la conciliación del pago.
   }
-}
-
-/**
- * Comparacion en tiempo constante para evitar timing attacks en firmas.
- * @param {string} a
- * @param {string} b
- * @returns {boolean}
- */
-export function timingSafeEqual(a, b) {
-  if (a.length !== b.length) return false;
-  let result = 0;
-  for (let index = 0; index < a.length; index += 1) {
-    result |= a.charCodeAt(index) ^ b.charCodeAt(index);
-  }
-  return result === 0;
 }

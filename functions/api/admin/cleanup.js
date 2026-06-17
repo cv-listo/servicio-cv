@@ -1,4 +1,4 @@
-import { json, nowIso } from "../_utils.js";
+import { json, nowIso, isAdmin } from "../_utils.js";
 
 export async function onRequestPost({ request, env }) {
   if (!isAdmin(request, env)) {
@@ -36,19 +36,4 @@ export async function onRequestPost({ request, env }) {
     changed: ordersResult.meta?.changes || 0,
     aiDeleted: aiResult.meta?.changes || 0,
   });
-}
-
-function isAdmin(request, env) {
-  const auth = request.headers.get("authorization") || "";
-  const basic = auth.startsWith("Basic ") ? decodeBasic(auth.slice(6)) : null;
-  return Boolean(env.ADMIN_USER && env.ADMIN_PASSWORD && basic?.user === env.ADMIN_USER && basic?.password === env.ADMIN_PASSWORD);
-}
-
-function decodeBasic(value) {
-  try {
-    const [user, ...passwordParts] = atob(value).split(":");
-    return { user, password: passwordParts.join(":") };
-  } catch {
-    return null;
-  }
 }

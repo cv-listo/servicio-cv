@@ -128,6 +128,56 @@ export function bearerToken(request) {
 }
 
 /**
+ * Comparación en tiempo constante para evitar timing attacks al comparar
+ * firmas o credenciales. La diferencia de longitud se filtra de inmediato.
+ * @param {string} a
+ * @param {string} b
+ * @returns {boolean}
+ */
+export function timingSafeEqual(a, b) {
+  const left = String(a == null ? "" : a);
+  const right = String(b == null ? "" : b);
+  if (left.length !== right.length) return false;
+  let result = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    result |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+  return result === 0;
+}
+
+/**
+ * Decodifica el par usuario:contraseña de un header `Authorization: Basic`.
+ * @param {string} value
+ * @returns {{ user: string, password: string } | null}
+ */
+function decodeBasicAuth(value) {
+  try {
+    const [user, ...passwordParts] = atob(value).split(":");
+    return { user, password: passwordParts.join(":") };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Valida credenciales de administrador por Basic Auth contra las variables
+ * de entorno, con comparación en tiempo constante. Centraliza la lógica que
+ * antes estaba duplicada en cada endpoint de /api/admin.
+ * @param {Request} request
+ * @param {Record<string, any>} env
+ * @returns {boolean}
+ */
+export function isAdmin(request, env) {
+  const auth = request.headers.get("authorization") || "";
+  if (!auth.startsWith("Basic ")) return false;
+  const basic = decodeBasicAuth(auth.slice(6));
+  if (!basic || !env || !env.ADMIN_USER || !env.ADMIN_PASSWORD) return false;
+  const userOk = timingSafeEqual(basic.user, String(env.ADMIN_USER));
+  const passwordOk = timingSafeEqual(basic.password, String(env.ADMIN_PASSWORD));
+  return userOk && passwordOk;
+}
+
+/**
  * @param {Request} request
  * @returns {string}
  */

@@ -170,3 +170,11 @@ Estados:
 - [ ] Soporte con adjunto invalido.
 - [x] Admin login incorrecto/correcto.
 
+## Segunda auditoria (validacion final)
+
+- [x] **[Media] Exposicion de archivos internos.** Como `pages_build_output_dir = "."`, toda la raiz se publicaba como estatico (`/schema.sql`, `/*.md`, `/package.json`, `/tsconfig.json`, `/wrangler.toml`, `/tests/*`, `.dev.vars.example`, `.gitignore`). Se agrego `isProtectedAssetPath` en `functions/_middleware.js` que responde 404 a esas rutas antes de servirlas. No habia secretos en esos archivos (solo esquema de BD y notas internas). Verificado con `tests/middleware.test.js`.
+- [x] **[Media-Baja] Auth admin endurecida y deduplicada.** `isAdmin`/`decodeBasic` estaban duplicados en los 4 endpoints de `/api/admin` con comparacion `===` (no constant-time). Se centralizo `isAdmin` + `timingSafeEqual` en `_utils.js` con comparacion en tiempo constante (sin short-circuit entre usuario y contraseña). Verificado con `tests/utils.test.js`.
+- [x] **[Baja] Typo-fix alineado.** `process-cv.js` usaba `/\borganizé\b/gi` (no matchea por el acento, mismo bug ya corregido en `_utils.js`). Unificado a `/\borganiz([ée])/gi`.
+- [x] **[Baja] Vulnerabilidades dev-only resueltas.** `npm audit` reportaba 5 vulns (1 critica) en el toolchain de test (esbuild/vite/vitest); produccion siempre estuvo en 0 (`--omit=dev`). Se subio `vitest` a 4.x: `npm audit` ahora da 0 y los 50 tests siguen pasando.
+- [x] **timingSafeEqual unificado.** Una sola implementacion en `_utils.js`, re-exportada desde `webhook-mp.js` para compatibilidad de tests.
+

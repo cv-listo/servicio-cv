@@ -2,6 +2,38 @@
 // Esto permite quitar 'unsafe-inline' de script-src sin tener que externalizar
 // todos los <script> inline. El resto de headers de seguridad sigue en _headers.
 
+// Como pages_build_output_dir = ".", toda la raíz del repo se publica como
+// estático. Estos archivos son código fuente / documentación / configuración
+// interna y no deben servirse por URL directa, así que los respondemos con 404.
+const PROTECTED_EXTENSIONS = [".md", ".sql", ".toml", ".lock", ".example"];
+const PROTECTED_FILES = new Set([
+  "/package.json",
+  "/package-lock.json",
+  "/tsconfig.json",
+  "/.gitignore",
+  "/.gitattributes",
+]);
+const PROTECTED_PREFIXES = ["/tests/", "/node_modules/", "/.git"];
+
+/**
+ * Indica si una ruta corresponde a un archivo interno que no debe servirse.
+ * @param {string} pathname
+ * @returns {boolean}
+ */
+export function isProtectedAssetPath(pathname) {
+  const path = String(pathname || "").toLowerCase();
+  // Recursos públicos estándar (verificaciones de dominio, etc.) sí se sirven.
+  if (path.startsWith("/.well-known/")) return false;
+  // Deny-by-default de dotfiles: cubre secretos y config local aunque por error
+  // terminen en el deploy (.env, .dev.vars, .npmrc, .gitignore, .git/...).
+  const lastSegment = path.split("/").pop() || "";
+  if (lastSegment.startsWith(".")) return true;
+  if (PROTECTED_FILES.has(path)) return true;
+  if (PROTECTED_EXTENSIONS.some((ext) => path.endsWith(ext))) return true;
+  if (PROTECTED_PREFIXES.some((prefix) => path.startsWith(prefix))) return true;
+  return false;
+}
+
 const CONNECT_SRC = [
   "'self'",
   "https://api.groq.com",
@@ -28,6 +60,10 @@ function buildCsp(nonce) {
 }
 
 export async function onRequest(context) {
+  if (isProtectedAssetPath(new URL(context.request.url).pathname)) {
+    return new Response("Not found", { status: 404 });
+  }
+
   const response = await context.next();
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("text/html")) {

@@ -485,7 +485,7 @@ function cleanText(value) {
   return String(value || "")
     .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email]")
     .replace(/(?:\+?54)?\s?9?\s?\d{2,4}[\s.-]?\d{3,4}[\s.-]?\d{3,4}/g, "[telefono]")
-    .replace(/\borganizé\b/gi, "organicé")
+    .replace(/\borganiz([ée])/gi, "organic$1")
     .replace(/\s+/g, " ")
     .trim();
 }

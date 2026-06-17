@@ -6,11 +6,44 @@ import {
   getPlans,
   formatPrice,
   bearerToken,
+  isAdmin,
 } from "../functions/api/_utils.js";
 
 function fakeRequest(authValue) {
   return { headers: { get: (name) => (name === "authorization" ? authValue : null) } };
 }
+
+function basicRequest(user, password) {
+  return fakeRequest(`Basic ${btoa(`${user}:${password}`)}`);
+}
+
+describe("isAdmin", () => {
+  const env = { ADMIN_USER: "lic.poletti@gmail.com", ADMIN_PASSWORD: "s3cr3t-pass" };
+
+  it("acepta credenciales Basic correctas", () => {
+    expect(isAdmin(basicRequest("lic.poletti@gmail.com", "s3cr3t-pass"), env)).toBe(true);
+  });
+
+  it("rechaza usuario o contraseña incorrectos", () => {
+    expect(isAdmin(basicRequest("otro@gmail.com", "s3cr3t-pass"), env)).toBe(false);
+    expect(isAdmin(basicRequest("lic.poletti@gmail.com", "mala"), env)).toBe(false);
+  });
+
+  it("rechaza si faltan las variables de entorno", () => {
+    expect(isAdmin(basicRequest("lic.poletti@gmail.com", "s3cr3t-pass"), {})).toBe(false);
+  });
+
+  it("rechaza headers ausentes o con otro esquema", () => {
+    expect(isAdmin(fakeRequest(null), env)).toBe(false);
+    expect(isAdmin(fakeRequest("Bearer token"), env)).toBe(false);
+    expect(isAdmin(fakeRequest("Basic %%%no-base64%%%"), env)).toBe(false);
+  });
+
+  it("admite contraseñas que contienen ':'", () => {
+    const colonEnv = { ADMIN_USER: "admin", ADMIN_PASSWORD: "a:b:c" };
+    expect(isAdmin(basicRequest("admin", "a:b:c"), colonEnv)).toBe(true);
+  });
+});
 
 describe("hasPromptInjection", () => {
   it("detecta intentos de override de instrucciones", () => {
