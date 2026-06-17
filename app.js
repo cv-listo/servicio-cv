@@ -4,21 +4,21 @@ const PLANS = {
     name: "Básico",
     price: "$4.990",
     amount: 4990,
-    includes: ["CV A4 simple", "PDF", "Sin IA avanzada", "Una generación final"],
+    includes: ["CV A4 simple", "2 plantillas a elegir", "PDF", "Carga manual (sin archivos)", "Sin IA avanzada", "Una generación final"],
   },
   professional: {
     id: "professional",
     name: "Profesional",
     price: "$8.990",
     amount: 8990,
-    includes: ["Mejora de redacción", "PDF A4", "Vista previa editable", "Una generación final"],
+    includes: ["Mejora de redacción con IA", "Subís CV viejo o certificados (PDF o Word)", "2 plantillas a elegir", "PDF A4", "Vista previa editable", "Una generación final"],
   },
   focused: {
     id: "focused",
     name: "Enfocado",
     price: "$12.990",
     amount: 12990,
-    includes: ["Puesto y empresa objetivo", "Aviso laboral", "Versión ATS-friendly", "Una generación final"],
+    includes: ["Todo lo del Profesional (IA + archivos)", "Puesto y empresa objetivo", "Aviso laboral", "2 plantillas a elegir", "Una generación final"],
   },
 };
 
